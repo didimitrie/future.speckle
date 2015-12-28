@@ -42,12 +42,14 @@ block content
       hr
       for myModel in data.userModels
         p.
-          #[strong #{myModel.name}] | Size: #{myModel.fileSize} #[span.pull-right #[a(href="#{myModel.fileLocation}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
+          #[strong #{myModel.name}] | #[small Size: #{(myModel.fileSize)} ]
+          #[span.pull-right #[a(href="#{myModel.fileLocation}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
         hr
 
   script(src="/scripts/custom-file-input.js")
   script.
     $(function(){
       // TODO 
-      // ajax handling of upload pls with progress bar prefferably 
-    })
+      // ajax handling of upload pls with progress bar pls 
+    });
+  

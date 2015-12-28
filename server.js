@@ -16,17 +16,18 @@ var session      = require('express-session');
 
 var configDB = require('./config/database.js');
 
-// configuration ===============================================================
-mongoose.connect(configDB.url); // connect to our database
+mongoose.connect(configDB.url); 
 
-require('./config/passport'); // pass passport for configuration
+require('./config/passport'); 
 
 // set up our express application
 app.use(morgan('dev')); // log every request to the console
 app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser()); // get information from html forms
-app.set('view engine', 'jade');
+app.set('view engine', 'jade'); // after some whitespace fighthing, we start to like... jade
+
 app.use(express.static('views'));
+app.use(express.static('uploads'));
 
 // required for passport
 app.use(session({ secret: 'shhhhhhh' })); // session secret
