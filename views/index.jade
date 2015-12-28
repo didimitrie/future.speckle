@@ -1,0 +1,40 @@
+// views/index.jade
+
+extends ./layout.jade
+
+block content
+  .container
+    .col-sm-6.col-sm-offset-3
+      h1.text-centerx Future.Speckle
+      hr
+      h4.lead.text-justify.
+        Share with your clients the full flexibility of your designs: display and explore parametric models in your browser.  
+      hr
+      p.text-justify.
+        Design iteration has always been difficult to communicate with the right people, that's why we devised a tool & methodology to help leverage the felxibility of computational design in evnironments outside the architectural office.
+      script(src='https://cdn.auth0.com/js/lock-7.12.min.js')   
+      script(type='text/javascript').
+        var lock = new Auth0Lock('BBXzV7vyE6KnrAbPkRM8ynf62WOqQTr2', 'dim.eu.auth0.com');
+        function signin() {
+          lock.show({
+          callbackURL: 'http://localhost:8000/callback'
+          , responseType: 'code'
+          , authParams: {
+          scope: 'openid profile'
+          }
+          });
+        }
+      hr  
+      if(!loggedIn)
+        p.text-center
+          button.btn.btn-lg.btn-default(onclick='window.signin();') Get Started!
+      else
+        p.text-center
+          button.btn.btn-lg.btn-default(onclick='window.location.href="/profile"') Open Dashboard.
+      hr
+      p.text-center
+        button.btn.btn-lg.btn-default(onclick='window.location.href="/profile"') Getting Started Guide
+      hr
+      p.small.text-center.
+        Terms of service: #[br]You are being researched. Anonymously. 
+

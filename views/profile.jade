@@ -1,0 +1,53 @@
+// views/profile.jade
+
+extends ./layout.jade
+block header
+  style.
+    .inputfile {
+      width: 0.1px;
+      height: 0.1px;
+      opacity: 0;
+      overflow: hidden;
+      position: absolute;
+      z-index: -1;
+    }
+    .inputfile + label {
+      font-weight: 700;
+      
+      background-color: #E6E6E6;
+      display: inline-block;
+      padding:10px;
+    }
+    .inputfile:focus + label,
+    .inputfile + label:hover {
+        background-color: #CCCCCC;
+    }
+    .inputfile + label {
+      cursor: pointer; /* "hand" cursor */
+    }
+
+block content
+  .container
+    .col-sm-6.col-sm-offset-3
+      h1.text-center Future.Speckle
+      hr
+      h4.lead.text-justify.
+        Hello #[strong #{data.user._json.nickname}! ] #[span.pull-right #[small #[a(href="/logout") Logout]]]
+      hr
+      br
+      form.text-center(action='/api/upload', enctype='multipart/form-data', method='post')
+        input#file.inputfile(type='file', name='userModel', onchange='this.form.submit()')
+        label(for='file') #[span Upload a new file] 
+      br 
+      hr
+      for myModel in data.userModels
+        p.
+          #[strong #{myModel.name}] | Size: #{myModel.fileSize} #[span.pull-right #[a(href="#{myModel.fileLocation}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
+        hr
+
+  script(src="/scripts/custom-file-input.js")
+  script.
+    $(function(){
+      // TODO 
+      // ajax handling of upload pls with progress bar prefferably 
+    })
