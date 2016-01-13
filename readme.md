@@ -11,7 +11,7 @@ Model management: mongodb @ mongolab + local app fs
 #### 1. Authorization & User mngmt + Viewing permissions
 
 Is handled by Auth0
-- we need to replicate on our side on user signup.  
+~~- we need to replicate on our side on user signup.~~ done 
 
 Viewing permissions on the models would be good (JWT tokens maybe?). Three options: 
 - public models (they get added to the public gallery)
@@ -24,7 +24,7 @@ Viewing permissions on the models would be good (JWT tokens maybe?). Three optio
 - We now handle file uploads and file deletion in quite a bad way. A progress bar would be nice, since we're expecting rather big files. 
 - Unzip files on upload to their specific folder. 
 - Maybe upload to cheap storage somewhere.
-- Update User Disk Space usage on upload (need user replication on our side)
+~~- Update User Disk Space usage on upload (need user replication on our side)~~ done
 
 **Model Deletion** (GET /api/delete/:id)
 - Should be a DELETE request. 
