@@ -2,6 +2,7 @@
 
 extends ./layout.jade
 block header
+  script(src="scripts/dropzone.js")
   style.
     .inputfile {
       width: 0.1px;
@@ -29,15 +30,22 @@ block header
 block content
   .container
     .col-sm-6.col-sm-offset-3
-      h1.text-center Future.Speckle
+      h1 #[a(href="/") Future.Speckle]/Dashboard
       hr
       h4.lead.text-justify.
         Hello #[strong #{data.user._json.nickname}! ] #[span.pull-right #[small #[a(href="/logout") Logout]]]
+      p.small.text-center.
+        Your usage quota stands at: #[strong #{data.usedStoragePerc.toFixed(2)}% ] (#{data.usedStorage} out of 1GB) from #[strong #{data.userModels.length} ]  models. You are on the #[strong #{data.userTier}] plan. 
+      hr
+      p.alert-info.text-center
+        #[i.fa.fa-long-arrow-right] Hey there. It seems this is your first visit! Be sure to read the #[a(href="#") getting started guide].
       hr
       br
       form.text-center(action='/api/upload', enctype='multipart/form-data', method='post')
         input#file.inputfile(type='file', name='userModel', onchange='this.form.submit()')
         label(for='file') #[span Upload a new file] 
+      //form#my-awesome-dropzone.dropzone(action='/api/upload')
+
       br 
       hr
       for myModel in data.userModels
@@ -45,7 +53,8 @@ block content
           #[strong #{myModel.name}] | #[small Size: #{(myModel.fileSize)} ]
           #[span.pull-right #[a(href="#{myModel.fileLocation}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
         hr
-
+      include ./partials/footer.jade
+  
   script(src="/scripts/custom-file-input.js")
   script.
     $(function(){

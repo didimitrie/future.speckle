@@ -21,9 +21,7 @@ modelSchema.statics.findOwnerModels = function(myOwnerId, callback) {
 modelSchema.statics.deleteModel = function(modelId, ownerId, callback) {
   // TODO:
   // check if ownerId = model.ownerId to prevent api abuse
-  // TODO !important:
-  // before db delete, make sure to fs.remove!!!
-  // 
+
   this.findById(modelId , function(err, model) {
     if(err) console.log(err);
     // delete file
@@ -31,11 +29,11 @@ modelSchema.statics.deleteModel = function(modelId, ownerId, callback) {
       fs.unlink( appDir + '/' + model.fileLocation, function (err) {
         if (err) throw err;
         console.log('successfully deleted ' + model.fileLocation);
+        callback(model.fileSize);
       });
-    else console.log("no model found, fail, f@1L, fA1l");
+    else 
+      console.log("no model found, fail, f@1L, fA1l");
   }).remove().exec();
-  //this.find({_id : modelId}).remove().exec();
-  callback();
 }
 
 module.exports = mongoose.model('Models', modelSchema);

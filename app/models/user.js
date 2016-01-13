@@ -2,22 +2,16 @@ var mongoose = require("mongoose");
 var bcrypt = require("bcrypt-nodejs");
 
 var userSchema = mongoose.Schema({
-
-    local : {
-        name         : String,
-        email        : String,
-        password     : String,
-    }
+  auth0id : String,
+  username : String,
+  tier : String,
+  usedStorage : Number
 });
 
-userSchema.methods.generateHash = function(password) {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-};
+userSchema.statics.saveUnique = function(user, saveUser) {
+  this.count({auth0id : user.id}, function(err, count) {
+    if(count == 0) saveUser();
+  });
+}
 
-// checking if password is valid
-userSchema.methods.validPassword = function(password) {
-    return bcrypt.compareSync(password, this.local.password);
-};
-
-// create the model for users and expose it to our app
 module.exports = mongoose.model('User', userSchema);
