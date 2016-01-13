@@ -5,6 +5,7 @@ Web service that allows for uploading and deleteing user models for the future s
 
 ###Structure:
 User management: Auth0 + (TODO) mongodb @ mongolab
+
 Model management: mongodb @ mongolab + local app fs
 
 ###TODOS:
