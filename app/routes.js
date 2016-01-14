@@ -138,7 +138,7 @@ module.exports = function(app, passport) {
         var myModel = new Model();
         myModel.ownerId = req.user.id;
         myModel.name = req.file.originalname;
-        myModel.fileLocation = req.file.path;
+        myModel.fileLocation = req.file.path.replace("uploads/","");
         myModel.deflateLocation = extractionPath;
         myModel.fileSize = req.file.size;
 

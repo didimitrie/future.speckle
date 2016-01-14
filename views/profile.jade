@@ -53,9 +53,9 @@ block content
           h2.text-center.
             No models uploaded.
         for myModel in data.userModels
-          p.
+          h4.
             #[strong #{myModel.name}] | #[small Size: #{(myModel.fileSize)} ]
-            #[span.pull-right #[a(href="#{myModel.fileLocation}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
+            #[span.pull-right #[a(href="#{myModel.fileLocation}") Analytics] | #[a(href="#{myModel.fileLocation}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
           hr.small-hr
 
   
