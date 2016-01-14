@@ -6,6 +6,7 @@
     "body-parser": "~1.0.0",
     "connect-flash": "~0.1.1",
     "cookie-parser": "~1.0.0",
+    "decompress-zip": "^0.2.0",
     "express": "~4.0.0",
     "express-session": "~1.0.0",
     "formidable": "^1.0.17",
@@ -19,6 +20,8 @@
     "passport-facebook": "~1.0.2",
     "passport-google-oauth": "~0.1.5",
     "passport-local": "~0.1.6",
-    "passport-twitter": "~1.0.2"
+    "passport-twitter": "~1.0.2",
+    "rimraf": "^2.5.0",
+    "unzip": "^0.1.11"
   }
 }

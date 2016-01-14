@@ -3,13 +3,15 @@ var bcrypt = require("bcrypt-nodejs");
 var fs = require('fs');
 var path = require('path');
 var appDir = path.dirname(require.main.filename);
+var rimraf = require('rimraf');
 
 var modelSchema = mongoose.Schema({
   id : String,
   name : String,
   ownerId : String,
   fileSize : String,
-  fileLocation : String
+  fileLocation : String, 
+  deflateLocation : String
 });
 
 modelSchema.statics.findOwnerModels = function(myOwnerId, callback) {
@@ -21,18 +23,18 @@ modelSchema.statics.findOwnerModels = function(myOwnerId, callback) {
 modelSchema.statics.deleteModel = function(modelId, ownerId, callback) {
   // TODO:
   // check if ownerId = model.ownerId to prevent api abuse
-
+  // TODO: 
+  // this will break if I unzip
+  // 
   this.findById(modelId , function(err, model) {
-    if(err) console.log(err);
-    // delete file
-    if(model) 
-      fs.unlink( appDir + '/' + model.fileLocation, function (err) {
-        if (err) throw err;
-        console.log('successfully deleted ' + model.fileLocation);
-        callback(model.fileSize);
-      });
-    else 
-      console.log("no model found, fail, f@1L, fA1l");
+    if(err) console.log("DB error");
+    if(model) {
+      //rimraf(model.deflateLocation, fs, function(){});
+      console.log("I should now delete the folder: " + model.deflateLocation);
+    }
+    else {
+      console.log("No model found in DB");
+    }
   }).remove().exec();
 }
 

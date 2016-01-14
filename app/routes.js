@@ -1,20 +1,28 @@
 var Model = require('../app/models/models');
 var User = require('../app/models/user');
+var fs = require('fs');
+var DecompressZip = require('decompress-zip');
+var path = require('path');
+var appDir = path.dirname(require.main.filename);
+
 
 // *****************************************************
 //	MULTER UPLOAD STUFF
 // *****************************************************
 
+
 var multer  = require('multer');
+
 var storage = multer.diskStorage({
 	destination : function(req, file, callback) {
 		callback(null, './uploads');
 	}, 
 	filename : function(req, file, callback) {
-		callback(null, file.fieldname + '-' + Date.now());
+		callback(null, file.fieldname + '-' + Date.now() + '-' + req.user.id);
 	}
 });
-var upload = multer({ storage : storage}).single('userModel');
+
+var upload = multer( { storage : storage} ).single('userModel');
 
 // *****************************************************
 //	ROUTING
@@ -104,16 +112,34 @@ module.exports = function(app, passport) {
 	 */
 	app.post("/api/upload", isLoggedIn, function(req, res){
 	 		upload(req, res, function(err) {
+        
         if(err) {
             return res.end("Error uploading file.");
         }
-             
+        
         if(req.file == undefined) return res.end("Meep. Empty file.");
 
+        var unzipper = new DecompressZip(req.file.path);      
+        var extractionPath = "./uploads/" + req.file.path.replace("uploads", "deflated");
+        unzipper.extract({
+          path: extractionPath
+        });
+
+        unzipper.on('error', function(log){
+          console.log('Caught an error while unzipping the file. soz.');
+        });
+
+        unzipper.on('extract', function (log) {
+          fs.unlink(req.file.path, function (err) {  } );
+          console.log('Finished extracting; deleted the original zip');
+        });
+
+        // create a new model entry
         var myModel = new Model();
         myModel.ownerId = req.user.id;
         myModel.name = req.file.originalname;
         myModel.fileLocation = req.file.path;
+        myModel.deflateLocation = extractionPath;
         myModel.fileSize = req.file.size;
 
         // save the file in our db.

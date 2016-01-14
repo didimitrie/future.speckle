@@ -13,15 +13,15 @@ block header
       z-index: -1;
     }
     .inputfile + label {
-      font-weight: 700;
-      
-      background-color: #E6E6E6;
+      font-weight: normal;
       display: inline-block;
-      padding:10px;
+      xxxpadding:10px;
+      width:100%
     }
     .inputfile:focus + label,
     .inputfile + label:hover {
-        background-color: #CCCCCC;
+        xxbackground-color: #CCCCCC;
+        color: #0080FF
     }
     .inputfile + label {
       cursor: pointer; /* "hand" cursor */
@@ -29,36 +29,37 @@ block header
 
 block content
   .container
-    .col-sm-6.col-sm-offset-3
-      h1 #[a(href="/") Future.Speckle]/Dashboard
-      hr
-      h4.lead.text-justify.
-        Hello #[strong #{data.user._json.nickname}! ] #[span.pull-right #[small #[a(href="/logout") Logout]]]
-      p.small.text-center.
-        Your usage quota stands at: #[strong #{data.usedStoragePerc.toFixed(2)}% ] (#{data.usedStorage} out of 1GB) from #[strong #{data.userModels.length} ]  models. You are on the #[strong #{data.userTier}] plan. 
-      hr
-      p.alert-info.text-center
-        #[i.fa.fa-long-arrow-right] Hey there. It seems this is your first visit! Be sure to read the #[a(href="#") getting started guide].
-      hr
-      br
-      form.text-center(action='/api/upload', enctype='multipart/form-data', method='post')
-        input#file.inputfile(type='file', name='userModel', onchange='this.form.submit()')
-        label(for='file') #[span Upload a new file] 
-      //form#my-awesome-dropzone.dropzone(action='/api/upload')
-
-      br 
-      hr
-      for myModel in data.userModels
-        p.
-          #[strong #{myModel.name}] | #[small Size: #{(myModel.fileSize)} ]
-          #[span.pull-right #[a(href="#{myModel.fileLocation}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
+    .row
+      .col-sm-12.col-sm-offset-3x
+        h1 #[a(href="/") Future.Speckle]/Dashboard
         hr
-      include ./partials/footer.jade
+      .col-sm-4
+        h4.lead.
+          Hello #[strong #{data.user._json.nickname}! ] #[span.pull-right #[small #[a(href="/logout") Logout?]]]
+        p.small.
+          Your usage quota stands at: #[strong #{data.usedStoragePerc.toFixed(2)}% ] (#{data.usedStorage} out of 1GB) from #[strong #{data.userModels.length} ]  models. You are on the #[strong #{data.userTier}] plan. 
+        
+        form.text-center(action='/api/upload', enctype='multipart/form-data', method='post')
+          input#file.inputfile(type='file', accept=".zip" ,name='userModel', onchange='this.form.submit()')
+          label(for='file') #[h1 #[i.fa.fa-plus.fa-2x] ] #[p.small Upload a new model]
+        
+        p.alert-info
+          #[i.fa.fa-long-arrow-right] Hey there. Be sure to read the #[a(href="#") getting started guide]. If you have any questions, feel free to ask a question in the forums.
+        hr
+        p.small.
+          Terms of service.
+      .col-sm-8
+        if data.userModels.length == 0 
+          h2.text-center.
+            No models uploaded.
+        for myModel in data.userModels
+          p.
+            #[strong #{myModel.name}] | #[small Size: #{(myModel.fileSize)} ]
+            #[span.pull-right #[a(href="#{myModel.fileLocation}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
+          hr.small-hr
+
   
-  script(src="/scripts/custom-file-input.js")
   script.
     $(function(){
-      // TODO 
-      // ajax handling of upload pls with progress bar pls 
     });
   
