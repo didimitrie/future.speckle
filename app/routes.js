@@ -131,6 +131,12 @@ module.exports = function(app, passport) {
           path: extractionPath
         });
 
+        unzipper.on('progress', function (fileIndex, fileCount) {
+          //console.log('Extracted file ' + (fileIndex + 1) + ' of ' + fileCount);
+          res.send("hello");
+          console.log("file was extracted.");
+        });
+
         unzipper.on('extract', function (log) {
           // delete the original upload after we have extracted stuff
           fs.unlink(req.file.path, function (err) {  } );
@@ -149,10 +155,6 @@ module.exports = function(app, passport) {
         // save the file in our db.
         myModel.save(function(err){
         	if(err) return res.end("Db error");
-        	else { 
-  			 		res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-        		res.redirect("/profile");
-        	}
         });
 
         // update user quota.

@@ -2,7 +2,7 @@
 
 extends ./layout.jade
 block header
-  script(src="scripts/dropzone.js")
+  script(src="scripts/nanobar.min.js")
   style.
     .inputfile {
       width: 0.1px;
@@ -26,6 +26,13 @@ block header
     .inputfile + label {
       cursor: pointer; /* "hand" cursor */
     }
+    .nanobarholder {
+      width: 100%;
+      height:50px;
+      line-height:50px;
+      background-color: #0080FF;
+      display: none;
+    }
 
 block content
   .container
@@ -40,26 +47,72 @@ block content
           Your usage quota stands at: #[strong #{data.usedStoragePerc.toFixed(2)}% ] (#{data.usedStorage} out of 1GB) from #[strong #{data.userModels.length} ]  models. You are on the #[strong #{data.userTier}] plan. 
         
         form.text-center(action='/api/upload', enctype='multipart/form-data', method='post')
-          input#file.inputfile(type='file', accept=".zip" ,name='userModel', onchange='this.form.submit()')
-          label(for='file') #[h1 #[i.fa.fa-plus.fa-2x] ] #[p.small Upload a new model #{data.firstVisit}]
-        if data.firstVisit
-          p.alert-info
-            #[i.fa.fa-long-arrow-right] Hey there. Be sure to read the #[a(href="#") getting started guide ]. If you have any questions, feel free to ask a question in the forums.
+          input#file.inputfile(type='file', accept=".zip" ,name='userModel', onchange='submitForm();')
+          label(for='file') #[h1 #[i.fa.fa-plus.fa-2x] ] #[p.small Upload a new model!]
+        //styling html progress bars is ridiculously stupid
+        //progress
         hr
         p.small.
           Terms of service.
       .col-sm-8
+        div.nanobarholder.text-center Uploading...
         if data.userModels.length == 0 
-          h2.text-center.
-            No models uploaded.
+          h3.text-center.strong.
+            No models here :( 
+            #[br]
+          p.text-center.
+            #[strong Have a model?] Press that big plus button on the left. #[strong First time here?] Have a look at the #[strong #[a(href="#") getting started guide]].
         for myModel in data.userModels
           h4.
             #[strong #{myModel.name}] 
-            #[span.pull-right #[small Size: #[strong #{(myModel.formatedFileSize)} ]  | Added On: #[strong #{(myModel.dateAdded)} ] |]  #[a(href="#{myModel.fileLocation}") Analytics] | #[a(href="#{myModel.fileLocation}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
+            #[span.pull-right #[small Size: #[strong #{(myModel.formatedFileSize)} ]  | Added On: #[strong #{(myModel.dateAdded)} ] |] #[a(href="#{myModel.fileLocation}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
           hr.small-hr
 
   
   script.
+    function completeHandler()
+    {
+      location.reload();
+      //console.log("request is done");
+    }
+
+    function progressHandlingFunction(e){
+      console.log(e);
+      if(e.lengthComputable)
+      {
+        console.log(e.loaded + " / " + e.total);
+        
+        $('progress').attr({value:e.loaded, max:e.total});
+        
+        if(e.loaded === e.total) 
+          console.log("upload is done, waiting for the server side processing");
+      }
+    }
+    function submitForm()
+    {
+      var formData = new FormData($("form")[0]);
+      $.ajax({
+        url: '/api/upload/',  //Server script to process data
+        type: 'POST',
+        xhr: function() {  // Custom XMLHttpRequest
+            var myXhr = $.ajaxSettings.xhr();
+            if(myXhr.upload){ // Check if upload property exists
+                myXhr.upload.addEventListener('progress', progressHandlingFunction, false); // For handling the progress of the upload
+            }
+            return myXhr;
+        },
+        //Ajax events
+        //beforeSend: beforeSendHandler,
+        success: completeHandler,
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false
+      });
+    }
+
     $(function(){
+
+
     });
   
