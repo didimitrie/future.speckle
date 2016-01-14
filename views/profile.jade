@@ -41,10 +41,10 @@ block content
         
         form.text-center(action='/api/upload', enctype='multipart/form-data', method='post')
           input#file.inputfile(type='file', accept=".zip" ,name='userModel', onchange='this.form.submit()')
-          label(for='file') #[h1 #[i.fa.fa-plus.fa-2x] ] #[p.small Upload a new model]
-        
-        p.alert-info
-          #[i.fa.fa-long-arrow-right] Hey there. Be sure to read the #[a(href="#") getting started guide]. If you have any questions, feel free to ask a question in the forums.
+          label(for='file') #[h1 #[i.fa.fa-plus.fa-2x] ] #[p.small Upload a new model #{data.firstVisit}]
+        if data.firstVisit
+          p.alert-info
+            #[i.fa.fa-long-arrow-right] Hey there. Be sure to read the #[a(href="#") getting started guide ]. If you have any questions, feel free to ask a question in the forums.
         hr
         p.small.
           Terms of service.
@@ -54,8 +54,8 @@ block content
             No models uploaded.
         for myModel in data.userModels
           h4.
-            #[strong #{myModel.name}] | #[small Size: #{(myModel.fileSize)} ]
-            #[span.pull-right #[a(href="#{myModel.fileLocation}") Analytics] | #[a(href="#{myModel.fileLocation}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
+            #[strong #{myModel.name}] 
+            #[span.pull-right #[small Size: #[strong #{(myModel.formatedFileSize)} ]  | Added On: #[strong #{(myModel.dateAdded)} ] |]  #[a(href="#{myModel.fileLocation}") Analytics] | #[a(href="#{myModel.fileLocation}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
           hr.small-hr
 
   

@@ -56,7 +56,8 @@ module.exports = function(app, passport) {
 	 				userTier : req.myUser.tier,
 	 				usedStorage : getBytesWithUnit(req.myUser.usedStorage),
 	 				usedStoragePerc : getQouta(req.myUser.usedStorage),
-	 				userModels : models.reverse()
+	 				userModels : models.reverse(),
+          firstVisit : req.firstVisit
 	 			}
 	 		})		
 	 	});	 	
@@ -74,15 +75,29 @@ module.exports = function(app, passport) {
 		  if (!req.user) {
 	      throw new Error('user null');
 	    }
-	    User.saveUnique(req.user, function() {
-	    	var myUser = new User();
-	    	myUser.auth0id = req.user.id;
-	      myUser.username = req.user.nickname;
-	      myUser.tier = "Amazing Alpha Tester";
-	      myUser.usedStorage = 0;
-	      myUser.save();
+	    
+      User.saveUnique(req.user, function(save) {
+	    	if(save) {
+          var myUser = new User();
+          myUser.auth0id = req.user.id;
+          myUser.username = req.user.nickname;
+          myUser.tier = "Amazing Alpha Tester";
+          myUser.usedStorage = 0;
+          myUser.save();
+
+          // add stuff to req, needed
+          req.myUser = myUser;
+          req.firstVisit = true;
+          console.log("setting first visit to TRUE from callback");
+        }
+        else {
+          req.myUser = myUser;
+          req.firstVisit = false;
+          console.log("setting first visit to false from callback");
+        }
+	      res.redirect("/profile");        
 	    });
-    	res.redirect("/profile");
+      
   });
 
 	/**
@@ -96,16 +111,6 @@ module.exports = function(app, passport) {
 	// *****************************************************
 	//	MODELS API
 	// *****************************************************
-	
-	/**
-	 * Get all user models / Testing purposes only
-	 */
-	app.get("/api/models", isLoggedIn, function(req, res){
-	 		Model.findOwnerModels(req.user.id, function(err, model){
-	 			if(err) throw(err);
-	 			res.json(model);	
-	 		});
-	});
 
 	/**
 	 * Upload
@@ -129,7 +134,6 @@ module.exports = function(app, passport) {
         unzipper.on('extract', function (log) {
           // delete the original upload after we have extracted stuff
           fs.unlink(req.file.path, function (err) {  } );
-          console.log('Finished extracting; deleted the original zip');
         });
 
         // create a new model entry
@@ -139,6 +143,8 @@ module.exports = function(app, passport) {
         myModel.fileLocation = req.file.path.replace("uploads/","");
         myModel.deflateLocation = extractionPath;
         myModel.fileSize = req.file.size;
+        myModel.formatedFileSize = getBytesWithUnit(req.file.size);
+        myModel.dateAdded = getFormatedDate();
 
         // save the file in our db.
         myModel.save(function(err){
@@ -181,20 +187,14 @@ module.exports = function(app, passport) {
 function isLoggedIn(req, res, next) {
 	if(req.isAuthenticated()) {
 		User.findOne({auth0id : req.user.id}, function(err, user){
-			
 			if(err) res.redirect("/");
-
 			req.myUser = user;
+      if(req.firstVisit === null) { req.firstVisit = false; console.log("setting first visit to false from isloggedin"); } else {req.firstVisit = true;}
 			return next();
 		});
 	} else 
 		res.redirect("/");
 }
-
-/**
- * This should move to the frontend, and we shoudl just store bytes as 
- * bytes, not strings and such ffs.
- */
 
 function getBytesWithUnit( bytes ) {
   if( isNaN( bytes ) ){ return; }
@@ -208,7 +208,7 @@ function getBytesWithUnit( bytes ) {
  
   // Rounds to 3 decimals places.
         if( bytes.toString().length > bytes.toFixed(3).toString().length ){
-            bytes = bytes.toFixed(3);
+            bytes = bytes.toFixed(2);
         }
   return bytes + units[i];
 }
@@ -217,6 +217,25 @@ function getQouta(usedStorage)
 {
 	var maxStorage = 1073741824;
 	return (usedStorage/maxStorage * 100);
+}
+
+function getFormatedDate()
+{
+  var date = new Date();
+
+  var year = date.getUTCFullYear();
+  var month = date.getUTCMonth();
+  var day = date.getUTCDate();
+
+  //month 2 digits
+  month = ("0" + (month + 1)).slice(-2);
+
+  //year 2 digits
+  year = year.toString().substr(2,2);
+
+  var formattedDate = day + '/' + month + "/" + year;
+
+  return formattedDate;
 }
 
 

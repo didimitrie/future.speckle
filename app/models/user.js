@@ -10,7 +10,8 @@ var userSchema = mongoose.Schema({
 
 userSchema.statics.saveUnique = function(user, saveUser) {
   this.count({auth0id : user.id}, function(err, count) {
-    if(count == 0) saveUser();
+    if(count == 0) saveUser(true);
+    else saveUser(false);
   });
 }
 

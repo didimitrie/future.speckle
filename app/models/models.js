@@ -10,8 +10,10 @@ var modelSchema = mongoose.Schema({
   name : String,
   ownerId : String,
   fileSize : String,
+  formatedFileSize : String,
   fileLocation : String, 
-  deflateLocation : String
+  deflateLocation : String,
+  dateAdded : String
 });
 
 modelSchema.statics.findOwnerModels = function(myOwnerId, callback) {
