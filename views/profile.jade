@@ -2,7 +2,7 @@
 
 extends ./layout.jade
 block header
-  script(src="scripts/dropzone.js")
+  script(src="scripts/nanobar.min.js")
   style.
     .inputfile {
       width: 0.1px;
@@ -15,8 +15,7 @@ block header
     .inputfile + label {
       font-weight: normal;
       display: inline-block;
-      xxxpadding:10px;
-      width:100%
+      width:100%;
     }
     .inputfile:focus + label,
     .inputfile + label:hover {
@@ -27,6 +26,24 @@ block header
       cursor: pointer; /* "hand" cursor */
     }
 
+    .nanobarholder {
+      width: 100%;
+      height:36px;
+      line-height:36px;
+      background-color: #6C6C6C;
+      color: white;
+      display: none;
+    }
+    .nanotext {
+      z-index: 100000;
+      position: relative;
+      top: -100%;
+    }
+    #mynano {
+      height:100% !important;
+    }
+
+
 block content
   .container
     .row
@@ -35,31 +52,102 @@ block content
         hr
       .col-sm-4
         h4.lead.
-          Hello #[strong #{data.user._json.nickname}! ] #[span.pull-right #[small #[a(href="/logout") Logout?]]]
-        p.small.
-          Your usage quota stands at: #[strong #{data.usedStoragePerc.toFixed(2)}% ] (#{data.usedStorage} out of 1GB) from #[strong #{data.userModels.length} ]  models. You are on the #[strong #{data.userTier}] plan. 
-        
-        form.text-center(action='/api/upload', enctype='multipart/form-data', method='post')
-          input#file.inputfile(type='file', accept=".zip" ,name='userModel', onchange='this.form.submit()')
-          label(for='file') #[h1 #[i.fa.fa-plus.fa-2x] ] #[p.small Upload a new model #{data.firstVisit}]
-        if data.firstVisit
-          p.alert-info
-            #[i.fa.fa-long-arrow-right] Hey there. Be sure to read the #[a(href="#") getting started guide ]. If you have any questions, feel free to ask a question in the forums.
+          Hello #[strong #{data.user._json.nickname}! ] #[span.pull-right #[small #[a(href="/logout") Logout]]]
         hr
         p.small.
+          Your usage quota stands at: #[strong #{data.usedStoragePerc.toFixed(2)}% ] (#{data.usedStorage} out of 1GB) from #[strong #{data.userModels.length} ]  models. You are on the #[strong #{data.userTier}] plan. 
+        hr
+        form.text-center(action='/api/upload', enctype='multipart/form-data', method='post')
+          input#file.inputfile(type='file', accept=".zip" ,name='userModel', onchange='submitForm();')
+          label(for='file')
+            
+            h2.lead Upload
+        hr
+        p.small.text-center.
           Terms of service.
+
       .col-sm-8
+        h4.lead #[strong Uploaded Models:]
+        hr
+      .col-sm-8
+         div.nanobarholder.text-center 
+           p.text-center.nanotext  #[small Upper & Uplifting Uploading. ]
+        .col-sm-8
         if data.userModels.length == 0 
-          h2.text-center.
-            No models uploaded.
+          h3.text-center.strong.
+            No models here :( 
+            #[br]
+          p.text-center.
+            #[strong Have a model?] Press that big plus button on the left. #[strong First time here?] Have a look at the #[strong #[a(href="#") getting started guide]].
+        .col-sm-8
         for myModel in data.userModels
           h4.
-            #[strong #{myModel.name}] 
-            #[span.pull-right #[small Size: #[strong #{(myModel.formatedFileSize)} ]  | Added On: #[strong #{(myModel.dateAdded)} ] |]  #[a(href="#{myModel.fileLocation}") Analytics] | #[a(href="#{myModel.fileLocation}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
+            - #[strongx #{myModel.name.replace(".zip", "")}] 
+            #[span.pull-right #[small Size: #[strong #{(myModel.formatedFileSize)} ]  | Added On: #[strong #{(myModel.dateAdded)} ] | ]  #[a(href="#{myModel.urlId}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
           hr.small-hr
 
   
   script.
+    
+    var nanobar; 
+
+    function completeHandler()
+    {
+      location.reload();
+      //console.log("request is done");
+    }
+
+    function progressHandlingFunction(e){
+      if(e.lengthComputable)
+      {
+        var perc = e.loaded/e.total * 100;
+        nanobar.go( perc.toFixed(2)-0.5);
+
+        $('progress').attr({value:e.loaded, max:e.total});
+        if(e.loaded === e.total) {
+          $(".nanotext").html("Processing the file - go for a coffee, might take a while.")
+          console.log("upload is done, waiting for the server side processing");
+        }
+      }
+    }
+
+    function submitForm()
+    {
+      var formData = new FormData($("form")[0]);
+      
+      $("form").css("opacity", "0.3"); $("form :input").prop("disabled", true);
+      $(".nanobarholder").css("display", "block");
+
+      $.ajax({
+        url: '/api/upload/',  //Server script to process data
+        type: 'POST',
+        xhr: function() {  // Custom XMLHttpRequest
+            var myXhr = $.ajaxSettings.xhr();
+            if(myXhr.upload){ // Check if upload property exists
+                myXhr.upload.addEventListener('progress', progressHandlingFunction, false); // For handling the progress of the upload
+            }
+            return myXhr;
+        },
+        //Ajax events
+        //beforeSend: beforeSendHandler,
+        success: completeHandler,
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false
+      });
+    }
+
     $(function(){
+
+      nanobar = new Nanobar({
+        //bg: "#60D6FF",
+        bg: "#000",
+        target: $(".nanobarholder")[0],
+        id: 'mynano'
+      });
+
+      nanobar.go(50);
+
     });
   

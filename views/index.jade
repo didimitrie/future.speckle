@@ -4,8 +4,8 @@ extends ./layout.jade
 
 block content
   .container
-    .col-sm-6.col-sm-offset-3
-      h1.text-centerx Future.Speckle
+    .col-sm-12.col-sm-offset-3x
+      h1 #[a(href="/") Future.Speckle]
       hr
       h4.lead.text-justify.
         Share with your clients the full flexibility of your designs: display and explore parametric models in your browser.  
@@ -30,7 +30,7 @@ block content
           button.btn.btn-lg.btn-default(onclick='window.signin();') Get Started!
       else
         p.text-center
-          button.btn.btn-lg.btn-default(onclick='window.location.href="/profile"') Hey #{username}! Open Dashboard.
+          button.btn.btn-lg.btn-default(onclick='window.location.href="/profile"') Hello #{username}, want to go to your dashboard?
       hr
       p.text-center
         button.btn.btn-lg.btn-default(onclick='window.location.href="/profile"') Getting Started Guide

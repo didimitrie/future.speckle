@@ -1,7 +1,8 @@
 var Model = require('../app/models/models');
 var User = require('../app/models/user');
-var fs = require('fs');
 var DecompressZip = require('decompress-zip');
+var shortid = require('shortid');
+var fs = require('fs');
 var path = require('path');
 var appDir = path.dirname(require.main.filename);
 
@@ -131,6 +132,10 @@ module.exports = function(app, passport) {
           path: extractionPath
         });
 
+        unzipper.on('progress', function (fileIndex, fileCount) {
+          //console.log('Extracted file ' + (fileIndex + 1) + ' of ' + fileCount);
+        });
+
         unzipper.on('extract', function (log) {
           // delete the original upload after we have extracted stuff
           fs.unlink(req.file.path, function (err) {  } );
@@ -145,20 +150,18 @@ module.exports = function(app, passport) {
         myModel.fileSize = req.file.size;
         myModel.formatedFileSize = getBytesWithUnit(req.file.size);
         myModel.dateAdded = getFormatedDate();
+        myModel.urlId = shortid.generate();
 
         // save the file in our db.
         myModel.save(function(err){
         	if(err) return res.end("Db error");
-        	else { 
-  			 		res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-        		res.redirect("/profile");
-        	}
         });
 
         // update user quota.
         User.findOne({auth0id : req.user.id}, function(err, user) {
         	user.usedStorage += req.file.size;
         	user.save();
+          res.end();
         });
 
     });
