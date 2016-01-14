@@ -121,15 +121,13 @@ module.exports = function(app, passport) {
 
         var unzipper = new DecompressZip(req.file.path);      
         var extractionPath = "./uploads/" + req.file.path.replace("uploads", "deflated");
+        
         unzipper.extract({
           path: extractionPath
         });
 
-        unzipper.on('error', function(log){
-          console.log('Caught an error while unzipping the file. soz.');
-        });
-
         unzipper.on('extract', function (log) {
+          // delete the original upload after we have extracted stuff
           fs.unlink(req.file.path, function (err) {  } );
           console.log('Finished extracting; deleted the original zip');
         });
