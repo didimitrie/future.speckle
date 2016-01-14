@@ -82,7 +82,7 @@ block content
         .col-sm-8
         for myModel in data.userModels
           h4.
-            - #[strongx #{myModel.name.replace(".zip", "")}] 
+            #[strongx #{myModel.name.replace(".zip", "")}] 
             #[span.pull-right #[small Size: #[strong #{(myModel.formatedFileSize)} ]  | Added On: #[strong #{(myModel.dateAdded)} ] | ]  #[a(href="#{myModel.urlId}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
           hr.small-hr
 

@@ -13,7 +13,6 @@ var appDir = path.dirname(require.main.filename);
 
 
 var multer  = require('multer');
-
 var storage = multer.diskStorage({
 	destination : function(req, file, callback) {
 		callback(null, './uploads');
@@ -22,14 +21,13 @@ var storage = multer.diskStorage({
 		callback(null, file.fieldname + '-' + Date.now() + '-' + req.user.id);
 	}
 });
-
 var upload = multer( { storage : storage} ).single('userModel');
 
 // *****************************************************
 //	ROUTING
 // *****************************************************
 
-module.exports = function(app, passport) {
+module.exports = function(app, passport, express) {
 
 	// *****************************************************
 	//	MAIN VIEWS
@@ -181,6 +179,18 @@ module.exports = function(app, passport) {
         });
 	 	});
 	});
+
+  // *****************************************************
+  //  VIEWER ROUTES
+  // *****************************************************
+
+  app.get("/view", function(req, res) {
+    res.sendfile(appDir + "/modelviewer/index.html");
+  });
+
+  /**
+   * END OF MODULE.EXPORTS
+   */
 };
 
 // *****************************************************
