@@ -1,7 +1,8 @@
 var Model = require('../app/models/models');
 var User = require('../app/models/user');
-var fs = require('fs');
 var DecompressZip = require('decompress-zip');
+var shortid = require('shortid');
+var fs = require('fs');
 var path = require('path');
 var appDir = path.dirname(require.main.filename);
 
@@ -133,8 +134,6 @@ module.exports = function(app, passport) {
 
         unzipper.on('progress', function (fileIndex, fileCount) {
           //console.log('Extracted file ' + (fileIndex + 1) + ' of ' + fileCount);
-          res.send("hello");
-          console.log("file was extracted.");
         });
 
         unzipper.on('extract', function (log) {
@@ -151,6 +150,7 @@ module.exports = function(app, passport) {
         myModel.fileSize = req.file.size;
         myModel.formatedFileSize = getBytesWithUnit(req.file.size);
         myModel.dateAdded = getFormatedDate();
+        myModel.urlId = shortid.generate();
 
         // save the file in our db.
         myModel.save(function(err){
@@ -161,6 +161,7 @@ module.exports = function(app, passport) {
         User.findOne({auth0id : req.user.id}, function(err, user) {
         	user.usedStorage += req.file.size;
         	user.save();
+          res.end();
         });
 
     });
