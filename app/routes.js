@@ -159,8 +159,10 @@ module.exports = function(app, passport, express) {
         User.findOne({auth0id : req.user.id}, function(err, user) {
         	user.usedStorage += req.file.size;
         	user.save();
-          res.end();
         });
+
+        // release the dragon
+        res.end();
 
     });
 	});
@@ -184,8 +186,9 @@ module.exports = function(app, passport, express) {
   //  VIEWER ROUTES
   // *****************************************************
 
-  app.get("/view", function(req, res) {
+  app.get("/view/:id", isAuthorized, function(req, res) {
     res.sendfile(appDir + "/modelviewer/index.html");
+    //res.render("test.jade");
   });
 
   /**
@@ -196,6 +199,11 @@ module.exports = function(app, passport, express) {
 // *****************************************************
 //	HELPER FUNC
 // *****************************************************
+
+function isAuthorized(req, res, next) {
+  // for now everything is authorized - YAY
+  return next();
+}
 
 function isLoggedIn(req, res, next) {
 	if(req.isAuthenticated()) {

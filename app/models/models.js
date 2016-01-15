@@ -35,7 +35,8 @@ modelSchema.statics.deleteModel = function(modelId, ownerId, callback) {
       callback(model.fileSize);
     }
     else {
-      console.log("No model found in DB");
+      console.log("No model found in DB. This is an error. Meep :/");
+      callback(0);
     }
   }).remove().exec();
 }

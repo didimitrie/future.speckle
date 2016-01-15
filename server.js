@@ -36,6 +36,7 @@ app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
 // routes ======================================================================
+app.use(serveStatic(__dirname + '/views'));
 app.use(serveStatic(__dirname + '/uploads'));
 
 console.log(path.join(__dirname, 'tester'));
