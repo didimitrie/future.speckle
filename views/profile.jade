@@ -23,9 +23,9 @@ block header
         color: #0080FF
     }
     .inputfile + label {
-      cursor: pointer; /* "hand" cursor */
+      cursor: pointer; /* "hand" cursor */ 
     }
-
+    label h2 {color:#0080FF !important;}
     .nanobarholder {
       width: 100%;
       height:36px;
@@ -46,22 +46,22 @@ block header
 
 block content
   .container
-    .row
+    .row(style="margin-top:20px")
       .col-sm-12.col-sm-offset-3x
-        h1 #[a(href="/") Future.Speckle]/Dashboard
+        h1 #[a(href="/") #[i.fa.fa-sliders] S ]/ Dashboard
         hr
       .col-sm-4
         h4.lead.
           Hello #[strong #{data.user._json.nickname}! ] #[span.pull-right #[small #[a(href="/logout") Logout]]]
         hr
-        p.small.
+        p.
           Your usage quota stands at: #[strong #{data.usedStoragePerc.toFixed(2)}% ] (#{data.usedStorage} out of 1GB) from #[strong #{data.userModels.length} ]  models. You are on the #[strong #{data.userTier}] plan. 
         hr
         form.text-center(action='/api/upload', enctype='multipart/form-data', method='post')
           input#file.inputfile(type='file', accept=".zip" ,name='userModel', onchange='submitForm();')
           label(for='file')
             
-            h2.lead Upload
+            h2.lead + Upload +
         hr
         p.small.text-center.
           Terms of service.

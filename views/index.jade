@@ -4,39 +4,100 @@ extends ./layout.jade
 
 block content
   .container
-    .col-sm-12.col-sm-offset-3x
-      h1 #[a(href="/") Future.Speckle]
-      hr
-      h2.lead.text-justify.
-        Share with | your clients / the community / financial analysts / structural engineers | the full flexibility of your designs: display and explore parametric models in your browser.  
-      hr
-      p.text-justify.
-        Design iteration has always been difficult to communicate with the right people, that's why we devised a tool & methodology to help leverage the felxibility of computational design in evnironments outside the architectural office.
-      p.text-justify.
-        Parametric models can go beyond aesthetic and technical exploration: they can tell a story and they can be the base of collaborative decision making. 
-      script(src='https://cdn.auth0.com/js/lock-7.12.min.js')   
-      script(type='text/javascript').
-        var lock = new Auth0Lock('BBXzV7vyE6KnrAbPkRM8ynf62WOqQTr2', 'dim.eu.auth0.com');
-        function signin() {
-          lock.show({
-          callbackURL: 'http://localhost:8000/callback'
-          , responseType: 'code'
-          , authParams: {
-          scope: 'openid profile'
+    .row(style="margin-top:20px")
+      .col-sm-12
+        .row.vertical-align
+          .col-sm-8
+            h1 #[a(href="/") #[i.fa.fa-sliders] S ]
+          .col-sm-4
+            h4.pull-right
+              if(loggedIn)
+                a(href="/profile") Welcome back, #[strong #{username}]!
+              else
+                #[strong #[a(href="#", onclick="window.signin();") Log in | Register ]]
+      hr(style="margin-top:3px; margin-bottom:3px")
+           
+      
+      .col-sm-6.col-sm-offset-3
+        br
+        br
+        br
+        br
+        h2.lead.text-justify.
+          Share with | your clients / the community / financial analysts / structural engineers | the full flexibility of your designs: #[strong display and explore parametric models in your browser].  
+        br
+        br
+        br
+        br
+      .clearfix
+      .col-sm-12
+        hr
+      .col-sm-12
+        .row.vertical-align
+          .col-sm-6
+            br
+            h4.text-justify.
+              Design iteration has always been difficult to communicate with the right people, that's why we devised a tool (& methodology) to help leverage the felxibility of computational design in evnironments outside the architectural office.
+              #[span.blue Parametric models can go beyond aesthetic and technical exploration: they can tell a story and they can be the base of collaborative decision making. ]
+            br
+          .col-sm-6.text-center
+            h1.blue
+              i.fa.fa-circle-o.fa-1x
+      .col-sm-12
+        hr
+      .col-sm-12
+        .row
+          .col-sm-12.text-center
+            h2.
+              How does it work?
+          .col-sm-3.text-center
+            h1 A
+            p Speckle generates a model that can be uploaded based on the sliders you select and the measures you want to display.
+          .col-sm-3.text-center
+            h1 B
+            p You upload the model to our servers and get a sharable link.
+          .col-sm-3.text-center
+            h1 C
+            p Sending this link to your clients will enable them to view your parametric model in the browser and save preffered configurations.
+          .col-sm-3.text-center
+            h1 D
+            p You can review the usage analytics and subsequently take the right decisions based on the user input you gathered.
+      .clearfix
+      .col-sm-12
+        hr
+      .col-sm-12
+        .row.vertical-align
+          .col-sm-6
+            h2.
+              #[i.fa.fa-angle-right] Getting Started
+            h4. 
+              1. Register as a user. This will enable you to upload and share models. #[br]
+              2. Download the GH component & install it. #[br]
+              3. Export a model from GH.#[br]
+              4. Upload it & enjoy!#[br]
+          .col-sm-6.text-center
+            h1.blue Register!
+      .clearfix
+
+      
+      .clearfix
+      .col-sm-12
+        hr
+        br
+        br
+        br
+           
+        script(src='https://cdn.auth0.com/js/lock-7.12.min.js')   
+        script(type='text/javascript').
+          var lock = new Auth0Lock('BBXzV7vyE6KnrAbPkRM8ynf62WOqQTr2', 'dim.eu.auth0.com');
+          function signin() {
+            lock.show({
+            callbackURL: 'http://localhost:8000/callback'
+            , responseType: 'code'
+            , authParams: {
+            scope: 'openid profile'
+            },
+
+            });
           }
-          });
-        }
-      hr  
-      if(!loggedIn)
-        p.text-center
-          button.btn.btn-lg.btn-default(onclick='window.signin();') Get Started!
-      else
-        p.text-center
-          button.btn.btn-lg.btn-default(onclick='window.location.href="/profile"') Hello #{username}, want to go to your dashboard?
-      hr
-      p.text-center
-        button.btn.btn-lg.btn-default(onclick='window.location.href="/profile"') Getting Started Guide
-      hr
-      p.small.text-center.
-        Terms of service: #[br]You are being researched. Anonymously. 
 
