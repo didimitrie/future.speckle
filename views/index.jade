@@ -10,7 +10,7 @@ block content
           .col-sm-8
             h1 #[a(href="/") #[i.fa.fa-sliders] S ]
           .col-sm-4
-            h4.pull-right
+            h4.pull-right.text-right
               if(loggedIn)
                 a(href="/profile") Welcome back, #[strong #{username}]!
               else
@@ -18,13 +18,15 @@ block content
       hr(style="margin-top:3px; margin-bottom:3px")
            
       
-      .col-sm-6.col-sm-offset-3
+      .col-sm-10.col-sm-offset-1
         br
         br
         br
         br
-        h2.lead.text-justify.
-          Share with | your clients / the community / financial analysts / structural engineers | the full flexibility of your designs: #[strong display and explore parametric models in your browser].  
+        h2.text-justify.
+          Share with your clients the full flexibility of your designs: #[strong display and explore #[span.blue parametric models] in your browser].  
+        //h2.text-center.
+          #[strong Display and explore #[span.blue parametric models] in your browser].  
         br
         br
         br
@@ -50,18 +52,15 @@ block content
           .col-sm-12.text-center
             h2.
               How does it work?
-          .col-sm-3.text-center
+          .col-sm-4.text-center
             h1 A
             p Speckle generates a model that can be uploaded based on the sliders you select and the measures you want to display.
-          .col-sm-3.text-center
+          .col-sm-4.text-center
             h1 B
             p You upload the model to our servers and get a sharable link.
-          .col-sm-3.text-center
+          .col-sm-4.text-center
             h1 C
             p Sending this link to your clients will enable them to view your parametric model in the browser and save preffered configurations.
-          .col-sm-3.text-center
-            h1 D
-            p You can review the usage analytics and subsequently take the right decisions based on the user input you gathered.
       .clearfix
       .col-sm-12
         hr
