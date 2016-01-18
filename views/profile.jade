@@ -3,45 +3,9 @@
 extends ./layout.jade
 block header
   script(src="js/nanobar.min.js")
+  link(rel="stylesheet", href="/css/profile.css")
   style.
-    .inputfile {
-      width: 0.1px;
-      height: 0.1px;
-      opacity: 0;
-      overflow: hidden;
-      position: absolute;
-      z-index: -1;
-    }
-    .inputfile + label {
-      font-weight: normal;
-      display: inline-block;
-      width:100%;
-    }
-    .inputfile:focus + label,
-    .inputfile + label:hover {
-        xxbackground-color: #CCCCCC;
-        color: #0080FF
-    }
-    .inputfile + label {
-      cursor: pointer; /* "hand" cursor */ 
-    }
-    label h2 {color:#0080FF !important;}
-    .nanobarholder {
-      width: 100%;
-      height:36px;
-      line-height:36px;
-      background-color: #6C6C6C;
-      color: white;
-      display: none;
-    }
-    .nanotext {
-      z-index: 100000;
-      position: relative;
-      top: -100%;
-    }
-    #mynano {
-      height:100% !important;
-    }
+
 
 
 block content
@@ -61,7 +25,7 @@ block content
           input#file.inputfile(type='file', accept=".zip" ,name='userModel', onchange='submitForm();')
           label(for='file')
             
-            h2.lead + Upload +
+            h2 + Upload +
         hr
         p.small.text-center.
           Terms of service.

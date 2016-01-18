@@ -1,0 +1,38 @@
+.inputfile {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1; }
+
+.inputfile + label {
+  font-weight: normal;
+  display: inline-block;
+  width: 100%; }
+
+.inputfile:focus + label, .inputfile + label:hover {
+  color: #0000FF; }
+
+.inputfile + label {
+  cursor: pointer;
+  /* "hand" cursor */ }
+
+label h2 {
+  color: #0000FF; }
+
+.nanobarholder {
+  width: 100%;
+  height: 36px;
+  line-height: 36px;
+  background-color: #0000FF;
+  color: white;
+  display: none; }
+
+.nanotext {
+  z-index: 100000;
+  position: relative;
+  top: -100%; }
+
+#mynano {
+  height: 100% !important; }

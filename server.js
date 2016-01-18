@@ -4,8 +4,10 @@ var port     = process.env.PORT || 8000;
 var mongoose = require('mongoose');
 var passport = require('passport');
 var flash    = require('connect-flash');
-var path = require('path');
-var appDir = path.dirname(require.main.filename);
+var path     = require('path');
+var appDir   = path.dirname(require.main.filename);
+var sass     = require('node-sass');
+var sassMiddleware = require('node-sass-middleware');
 
 var passport = require("passport");
 var strategy = require("./config/passport")
@@ -27,6 +29,16 @@ app.use(morgan('dev')); // log every request to the console
 app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser()); // get information from html forms
 app.set('view engine', 'jade'); // after some whitespace fighthing, we start to like... jade
+
+// set up express to use the sass middleware (compiling scss)
+app.use(
+  sassMiddleware({
+    src: './assets/scss',
+    dest: './assets/css',
+    debug: true,
+    prefix:  '/css' // this is important! 
+  })
+);
 
 // required for passport
 app.use(session({ secret: 'shhhhhhh' })); // session secret
