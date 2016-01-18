@@ -197,7 +197,7 @@ module.exports = function(app, passport, express) {
 };
 
 // *****************************************************
-//	HELPER FUNC
+//	HELPER FUNC / probably should go into controllers, this file is getting unwieldly.
 // *****************************************************
 
 function isAuthorized(req, res, next) {
@@ -236,7 +236,7 @@ function getBytesWithUnit( bytes ) {
 
 function getQouta(usedStorage)
 {
-	var maxStorage = 1073741824;
+	var maxStorage = 1073741824; // 1 GB
 	return (usedStorage/maxStorage * 100);
 }
 

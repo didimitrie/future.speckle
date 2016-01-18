@@ -14,7 +14,6 @@ var morgan       = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 var session      = require('express-session');
-var serveStatic  = require('serve-static')
 
 
 var configDB = require('./config/database.js');
@@ -36,12 +35,11 @@ app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
 // routes ======================================================================
-app.use(serveStatic(__dirname + '/views'));
-app.use(serveStatic(__dirname + '/uploads'));
+app.use(express.static('assets'));
 
-console.log(path.join(__dirname, 'tester'));
+console.log("Fuck off");
 require('./app/routes.js')(app, passport, express); // load our routes and pass in our app and fully configured passport
 
 // launch ======================================================================
 app.listen(port);
-console.log('BugaBuga on ' + port);
+console.log('Bouncing bytes and beats on port ' + port);
