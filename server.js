@@ -37,9 +37,8 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 // routes ======================================================================
 app.use(express.static('assets'));
 
-console.log("Fuck off");
 require('./app/routes.js')(app, passport, express); // load our routes and pass in our app and fully configured passport
 
 // launch ======================================================================
 app.listen(port);
-console.log('Bouncing bytes and beats on port ' + port);
+console.log('Bouncing bytes and beats on port ' + port + ". We are actually having fun!");
