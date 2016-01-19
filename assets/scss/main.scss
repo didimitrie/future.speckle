@@ -37,6 +37,17 @@ a {
   color : $accentColour;
 }
 
+a.logo {
+  text-decoration: none;
+}
+
 .blue {
   color : $accentColour;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #F1F1F1;
 }

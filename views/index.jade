@@ -8,7 +8,7 @@ block content
       .col-sm-12
         .row.vertical-align
           .col-sm-8
-            h1 #[a(href="/") #[i.fa.fa-sliders] S ]
+            h1 #[a.logo(href="/") #[i.fa.fa-sliders] S ]
           .col-sm-4
             h4.pull-right.text-right
               if(loggedIn)
@@ -55,27 +55,48 @@ block content
           .col-sm-4.text-center
             h1 A
             p Speckle generates a model that can be uploaded based on the sliders you select and the measures you want to display.
+            h1.blue
+              i.fa.fa-circle-o.fa-1x
           .col-sm-4.text-center
             h1 B
             p You upload the model to our servers and get a sharable link.
+            h1.blue
+              i.fa.fa-circle-o.fa-1x
           .col-sm-4.text-center
             h1 C
             p Sending this link to your clients will enable them to view your parametric model in the browser and save preffered configurations.
+            h1.blue
+              i.fa.fa-circle-o.fa-1x
+          .col-sm-12.text-center
+            h2 Examples
+            br
+            h4 TODO: 3 examples (urban scenario, architectural scenario, object scenario)
+
       .clearfix
       .col-sm-12
         hr
       .col-sm-12
-        .row.vertical-align
-          .col-sm-6
-            h2.
-              #[i.fa.fa-angle-right] Getting Started
-            h4. 
+        .row.vertical-alignx
+          .col-sm-4
+            h3.
+              #[i.fa.fa-angle-right] Quickstart
+            p. 
               1. Register as a user. This will enable you to upload and share models. #[br]
               2. Download the GH component & install it. #[br]
               3. Export a model from GH.#[br]
               4. Upload it & enjoy!#[br]
-          .col-sm-6.text-center
-            h1.blue Register!
+          .col-sm-4.text-centerx
+            h3
+              #[i.fa.fa-angle-right] Contribute
+            p.
+              We're an open source project (both backend, front-end and backend of the backend). If you want to contribute or file a bug, head over to our Github page. 
+          .col-sm-4
+            h3
+              #[i.fa.fa-angle-right] Supported Software
+            p.
+              Right now we only support Grasshopper/Rhino3d. 
+            p.
+              We would really like it if you would want to write an exporter for Dynamo/Sketchup/Catia/GC/etc. The F.S format is rather basic - so check it out! 
       .clearfix
 
       

@@ -28,5 +28,14 @@ hr {
 a {
   color: #0000FF; }
 
+a.logo {
+  text-decoration: none; }
+
 .blue {
   color: #0000FF; }
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #F1F1F1; }
