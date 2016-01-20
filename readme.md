@@ -46,7 +46,7 @@ Quite important. Things that need doing:
 - file format doc (so we can allow for exports from other param software)
 
 
-#### 4. License
+#### 4. License: GNU General Public License v2.0
 Future.Speckle
 Copyright (C) 2016 Dimitrie Andrei Stefanescu
 
