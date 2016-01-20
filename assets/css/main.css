@@ -2,7 +2,8 @@ body, h1, h2, h3, h4, h5 {
   font-family: "Titillium Web", sans-serif;
   font-weight: 400;
   line-height: 1.8;
-  color: #5D5959; }
+  color: #5D5959;
+  background-color: #FFFFFF; }
 
 h1 {
   font-weight: 400;
@@ -11,6 +12,9 @@ h1 {
 
 .text-justify {
   text-align: justify; }
+
+.strong {
+  font-weight: 700; }
 
 hr {
   border: 0;
@@ -28,6 +32,9 @@ hr {
 a {
   color: #0000FF; }
 
+a:hover {
+  color: #A538BC; }
+
 a.logo {
   text-decoration: none; }
 
@@ -35,7 +42,7 @@ a.logo {
   color: #0000FF; }
 
 .footer {
-  position: fixed;
+  padding-top: 20px;
+  padding-bottom: 20px;
   bottom: 0;
-  width: 100%;
-  background-color: #F1F1F1; }
+  width: 100%; }

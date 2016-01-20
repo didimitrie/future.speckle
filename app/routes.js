@@ -141,8 +141,9 @@ module.exports = function(app, passport, express) {
 
         // create a new model entry
         var myModel = new Model();
+        var name = req.file.originalname.split(".");
         myModel.ownerId = req.user.id;
-        myModel.name = req.file.originalname;
+        myModel.name = name[0];
         myModel.fileLocation = req.file.path.replace("uploads/","");
         myModel.deflateLocation = extractionPath;
         myModel.fileSize = req.file.size;
@@ -186,10 +187,82 @@ module.exports = function(app, passport, express) {
   //  VIEWER ROUTES
   // *****************************************************
 
-  app.get("/view/:id", isAuthorized, function(req, res) {
+  /**
+   * Main viewer route
+   */
+  
+  app.get("/view/*", isAuthorized, function(req, res) {
     res.sendfile(appDir + "/modelviewer/index.html");
-    //res.render("test.jade");
   });
+
+  /**
+   * Get model part
+   * GET requests seem to be cached, so here's hoping for the best
+   * Maybe this is an overkill, but it does add a layer of security
+   * TODO: get a profesional developer
+   */
+  
+  app.get("/api/getmodel/", function (req, res) {
+    var modelName = req.param("mn");
+    var modelKey = req.param("mk");
+    
+    Model.findOne({urlId: modelName}, function(err, myModel) {
+      if(err) { 
+        // DB error
+        res.send("Database Error."); 
+      }
+      else if (myModel === null) {
+        // No model by that name
+        res.send("Couldn't find any model. Soz!"); 
+      } else {
+        // We're almost good to go
+        if((modelKey === undefined) || (modelKey === '')){
+
+          // This is the initial request from the viewer, and we send the url to params.json and static.json
+
+          var response = { 
+            paramsFile : myModel.deflateLocation + "/" + myModel.name + "/params.json",
+            staticGeoFile : myModel.deflateLocation + "/" + myModel.name + "/static.json",
+            modelName : myModel.name,
+            dateAdded : myModel.dateAdded
+          }
+
+          res.json(response);
+        }
+        else {
+          
+          // This is a normal view request
+          var partLocation = path.join(appDir + "/" + myModel.deflateLocation + "/" + myModel.name + "/" + modelKey + ".json");
+          // check to see if the file exists
+          // 
+          fs.access(partLocation, fs.F_OK, function(err) {
+              if (!err) {
+                  var response = {
+                modelPart : partLocation
+              };
+              res.json(response);
+              } else {
+                  res.json({modelPart : "File Not Found.", debugLoc : partLocation, error : e });
+              }
+          });
+          /*
+          try {
+              fs.accessSync(partLocation, fs.F_OK);
+              var response = {
+                modelPart : partLocation
+              };
+              res.json(response);
+          } catch (e) {
+              res.json({modelPart : "File Not Found.", debugLoc : partLocation, error : e });
+          }
+          */
+        }
+      }
+
+    })
+    //res.send(modelKey + " // " + modelInstance);
+
+  }); 
 
   /**
    * END OF MODULE.EXPORTS

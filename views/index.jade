@@ -38,44 +38,68 @@ block content
         .row.vertical-align
           .col-sm-6
             br
+            h1 Why?
             h4.text-justify.
               Design iteration has always been difficult to communicate with the right people, that's why we devised a tool (& methodology) to help leverage the felxibility of computational design in evnironments outside the architectural office.
               #[span.blue Parametric models can go beyond aesthetic and technical exploration: they can tell a story and they can be the base of collaborative decision making. ]
             br
-          .col-sm-6.text-center
-            h1.blue
+          .col-sm-6.text-right
+            img(src="/img/collaborative.svg" onerror="this.onerror=null; this.src='image.png'")
+
+            //h1.blue
               i.fa.fa-circle-o.fa-1x
       .col-sm-12
         hr
       .col-sm-12
         .row
           .col-sm-12.text-center
-            h2.
+            h1.strongx.
               How does it work?
-          .col-sm-4.text-center
-            h1 A
-            p Speckle generates a model that can be uploaded based on the sliders you select and the measures you want to display.
-            h1.blue
-              i.fa.fa-circle-o.fa-1x
-          .col-sm-4.text-center
-            h1 B
-            p You upload the model to our servers and get a sharable link.
-            h1.blue
-              i.fa.fa-circle-o.fa-1x
-          .col-sm-4.text-center
-            h1 C
-            p Sending this link to your clients will enable them to view your parametric model in the browser and save preffered configurations.
-            h1.blue
-              i.fa.fa-circle-o.fa-1x
-          .col-sm-12.text-center
-            h2 Examples
-            br
-            h4 TODO: 3 examples (urban scenario, architectural scenario, object scenario)
+        .row.vertical-align
+          .col-sm-6
+            img(src="/img/howitworks.svg" onerror="this.onerror=null; this.src='image.png'")
+          .col-sm-6.text-justify
+            h3 #[strong Step 1:] Speckle exports the solution & performance space you define inside Grasshopper in a special file. 
+         
+        .row.vertical-align
+          .col-sm-6.text-justify
+            h3 #[strong Step 2:] You upload the #[span.blue file] to future.speckle. Now anyone who you share the link with can view it online!
+          .col-sm-6
+            img(src="/img/howitworks-2.svg" onerror="this.onerror=null; this.src='image.png'")
+        
+        .row.vertical-align
+          .col-sm-6
+            img(src="/img/howitworks-3.svg" onerror="this.onerror=null; this.src='image.png'")
+          .col-sm-6.text-justify
+            h3 #[strong Step 3:] Users can now explore the your design in their browser and can rate copy needed.          
+      .col-sm-12
+        hr
+        if(!loggedIn)
+          h1.strong.text-center #[a(href="#") Curious? Give it a try.]
+        else 
+          h1.strong.text-center Welcome back, #{username}. #[a(href="/profile") Open your dashboard?]
+        hr
 
+      .col-sm-12
+        .row
+          .col-sm-4
+            h3.
+              Example 1
+            p.
+              #[a(href="#") View ] | #[a(href="#") Download ]
+          .col-sm-4
+            h3.
+              Example 2
+            p.
+              #[a(href="#") View ] | #[a(href="#") Download ]
+          .col-sm-4
+            h3.
+              Example 3
+            p.
+              #[a(href="#") View ] | #[a(href="#") Download ] 
       .clearfix
       .col-sm-12
         hr
-      .col-sm-12
         .row.vertical-alignx
           .col-sm-4
             h3.
@@ -89,7 +113,7 @@ block content
             h3
               #[i.fa.fa-angle-right] Contribute
             p.
-              We're an open source project (both backend, front-end and backend of the backend). If you want to contribute or file a bug, head over to our Github page. 
+              The Speckle Parametric Model Viewer and the GH export component are open source. If you want to contribute or file a bug, head over to our Github page. 
           .col-sm-4
             h3
               #[i.fa.fa-angle-right] Supported Software
@@ -102,10 +126,7 @@ block content
       
       .clearfix
       .col-sm-12
-        hr
-        br
-        br
-        br
+      
            
         script(src='https://cdn.auth0.com/js/lock-7.12.min.js')   
         script(type='text/javascript').
