@@ -48,7 +48,7 @@ module.exports = function(app, passport, express) {
 	 */
 	app.get("/profile", isLoggedIn, function(req, res){
 	 	Model.findOwnerModels(req.user.id, function(err, models){
- 			if(err) { res.end("Db error"); }
+ 			//if(err) { res.end("Db error"); }
  			res.render("profile.jade", {
 	 			data : {
 	 				user : req.user,
@@ -202,7 +202,7 @@ module.exports = function(app, passport, express) {
    * TODO: get a profesional developer
    */
   
-  app.get("/api/getmodel/", function (req, res) {
+  app.get("/api/getmodel/", isAuthorized, function (req, res) {
     var modelName = req.param("mn");
     var modelKey = req.param("mk");
     
@@ -245,23 +245,10 @@ module.exports = function(app, passport, express) {
                   res.json({modelPart : "File Not Found.", debugLoc : partLocation, error : e });
               }
           });
-          /*
-          try {
-              fs.accessSync(partLocation, fs.F_OK);
-              var response = {
-                modelPart : partLocation
-              };
-              res.json(response);
-          } catch (e) {
-              res.json({modelPart : "File Not Found.", debugLoc : partLocation, error : e });
-          }
-          */
         }
       }
-
     })
-    //res.send(modelKey + " // " + modelInstance);
-
+  // end of the get route; what a xmas tree in there, man
   }); 
 
   /**
@@ -331,5 +318,3 @@ function getFormatedDate()
 
   return formattedDate;
 }
-
-
