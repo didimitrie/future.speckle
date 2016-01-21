@@ -118,10 +118,14 @@ module.exports = function(app, passport, express) {
 	 		upload(req, res, function(err) {
         
         if(err) {
-            return res.end("Error uploading file.");
+          console.log("ERR_UPLOAD: Upload Err");
+          return res.end("Error uploading file.");
         }
         
-        if(req.file == undefined) return res.end("Meep. Empty file.");
+        if(req.file == undefined) {
+          console.log("ERR_UPLOAD: req.file is undefined");
+          return res.end("Meep. Empty file.");
+        }
 
         var unzipper = new DecompressZip(req.file.path);      
         var extractionPath = "./uploads/" + req.file.path.replace("uploads", "deflated");
@@ -136,7 +140,7 @@ module.exports = function(app, passport, express) {
 
         unzipper.on('extract', function (log) {
           // delete the original upload after we have extracted stuff
-          fs.unlink(req.file.path, function (err) {  } );
+          fs.unlink(req.file.path, function (err) { console.log("ERR_UPLOAD: failed to delete original zip") } );
         });
 
         // create a new model entry
@@ -153,7 +157,10 @@ module.exports = function(app, passport, express) {
 
         // save the file in our db.
         myModel.save(function(err){
-        	if(err) return res.end("Db error");
+        	if(err) {
+            console.log("ERR_UPLOAD: Failed to save model");
+            return res.end("Db error");
+          }
         });
 
         // update user quota.
@@ -163,7 +170,8 @@ module.exports = function(app, passport, express) {
         });
 
         // release the dragon
-        res.end();
+        res.json({ok: "ok"});
+        //res.end();
 
     });
 	});

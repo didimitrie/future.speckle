@@ -25,5 +25,8 @@
   },
   "devDependencies": {
     "node-sass": "^3.4.2"
+  }, 
+  "scripts" : {
+    "watch" : "nodemon server.js --ignore 'uploads'"
   }
 }
