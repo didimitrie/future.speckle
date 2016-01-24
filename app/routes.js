@@ -210,7 +210,7 @@ module.exports = function(app, passport, express) {
    * TODO: get a profesional developer
    */
   
-  app.get("/api/getmodel/", isAuthorized, function (req, res) {
+  app.get("/api/model/", isAuthorized, function (req, res) {
     var modelName = req.param("mn");
     var modelKey = req.param("mk");
     
@@ -224,36 +224,17 @@ module.exports = function(app, passport, express) {
         res.send("Couldn't find any model. Soz!"); 
       } else {
         // We're almost good to go
-        if((modelKey === undefined) || (modelKey === '')){
 
-          // This is the initial request from the viewer, and we send the url to params.json and static.json
-
-          var response = { 
-            paramsFile : myModel.deflateLocation + "/" + myModel.name + "/params.json",
-            staticGeoFile : myModel.deflateLocation + "/" + myModel.name + "/static.json",
-            modelName : myModel.name,
-            dateAdded : myModel.dateAdded
-          }
-
-          res.json(response);
+        // This is the initial request from the viewer, and we send the url to params.json and static.json
+        var response = { 
+          paramsFile : myModel.deflateLocation + "/" + myModel.name + "/params.json",
+          staticGeoFile : myModel.deflateLocation + "/" + myModel.name + "/static.json",
+          modelName : myModel.name,
+          dateAdded : myModel.dateAdded
         }
-        else {
-          
-          // This is a normal view request
-          var partLocation = path.join(appDir + "/" + myModel.deflateLocation + "/" + myModel.name + "/" + modelKey + ".json");
-          // check to see if the file exists
-          // 
-          fs.access(partLocation, fs.F_OK, function(err) {
-              if (!err) {
-                  var response = {
-                modelPart : partLocation
-              };
-              res.json(response);
-              } else {
-                  res.json({modelPart : "File Not Found.", debugLoc : partLocation, error : e });
-              }
-          });
-        }
+
+        res.json(response);
+
       }
     })
   // end of the get route; what a xmas tree in there, man
