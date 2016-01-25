@@ -1,0 +1,33 @@
+{
+  "name": "future.viewer",
+  "version": "0.0.1",
+  "description": "soulution and performance space visualiser",
+  "main": "index.js",
+  "author": "Dimitrie Andrei Stefanescu | http://dimitrie.org",
+  "license": "GPL-2.0",
+  "scripts": {
+    
+    "watch-sass": "sass --watch src/sass/SPKSingle.scss:dist/css/SPKSingle.css src/sass/SPKDouble.scss:dist/css/SPKDouble.css",
+    
+    "watch-jade": "jade --watch src/jade/*.jade -o dist/ -P",
+    
+    "build-js-single": "browserify src/js/SPKSingle.js -o dist/js/SPKSingle.js",
+    "build-js-double": "browserify src/js/SPKDouble.js -o dist/js/SPKDouble.js",
+    "watch-js": "nodemon -e js -w src/js -x 'npm run build-js-single' & nodemon -e js -w src/js -x 'npm run build-js-double'",
+    
+    "serve-local": "http-server -p 1337 -c-1",
+    
+    "watch": "npm run watch-sass & npm run watch-jade & npm run watch-js & npm run serve-local"
+  },
+  "dependencies": {
+    "jade": "^1.11.0",
+    "jquery": "^2.2.0",
+    "nouislider": "github:leongersen/noUiSlider",
+    "three": "^0.73.2",
+    "three-orbit-controls": "^72.0.0",
+    "tween.js": "^16.3.4"
+  },
+  "devDependencies": {
+    "watchify": "^3.7.0"
+  }
+}

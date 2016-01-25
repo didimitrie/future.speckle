@@ -1,0 +1,256 @@
+
+//@import 'variables';
+
+.noUi-target,
+.noUi-target * {
+-webkit-touch-callout: none;
+-webkit-user-select: none;
+-ms-touch-action: none;
+  touch-action: none; 
+-ms-user-select: none;
+-moz-user-select: none;
+-moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.noUi-target {
+  position: relative;
+  direction: ltr;
+}
+.noUi-base {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1; /* Fix 401 */
+}
+.noUi-origin {
+  position: absolute;
+  right: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
+}
+.noUi-handle {
+  position: relative;
+  z-index: 1;
+}
+.noUi-stacking .noUi-handle {
+/* This class is applied to the lower origin when
+   its values is > 50%. */
+  z-index: 10;
+}
+.noUi-state-tap .noUi-origin {
+  -webkit-transition: left 0.3s, top 0.3s;
+  transition: left 0.3s, top 0.3s;
+}
+.noUi-state-drag * {
+  cursor: pointer !important;
+}
+
+/* Painting and performance;
+ * Browsers can paint handles in their own layer.
+ */
+.noUi-base {
+  -webkit-transform: translate3d(0,0,0);
+  transform: translate3d(0,0,0);
+}
+
+/* Slider size and handle placement;
+ */
+.noUi-horizontal {
+  height:10px;
+}
+.noUi-horizontal .noUi-handle {
+  width: 20px;
+  height: 20px;
+  left: -11px;
+  top: -5px;
+
+  -webkit-box-shadow: 0px 0px 22px 1px rgba(50,50,50,0.33);
+  -moz-box-shadow: 0px 0px 22px 1px rgba(50,50,50,0.33);
+  box-shadow: 0px 0px 22px 1px rgba(50,50,50,0.33);
+}
+.noUi-vertical {
+  width: 18px;
+}
+.noUi-vertical .noUi-handle {
+  width: 28px;
+  height: 34px;
+  left: -6px;
+  top: -17px;
+}
+
+/* Styling;
+ */
+.noUi-background {
+  background: #D8D8D8;
+  
+}
+.noUi-connect {
+  background: #0C00FF;
+}
+.noUi-origin {
+  
+}
+.noUi-target {
+  
+}
+.noUi-target.noUi-connect {
+}
+
+/* Handles and cursors;
+ */
+.noUi-draggable {
+  cursor: w-resize;
+}
+.noUi-vertical .noUi-draggable {
+  cursor: n-resize;
+}
+.noUi-handle {
+  border-radius:15px;
+  background: #B9B9B9;
+  cursor: default;
+}
+.noUi-active {
+}
+
+.noUi-handle:after {
+  left: 17px;
+}
+.noUi-vertical .noUi-handle:after {
+  top: 17px;
+}
+
+/* Disabled state;
+ */
+[disabled].noUi-connect,
+[disabled] .noUi-connect {
+  background: #B8B8B8;
+}
+[disabled].noUi-origin,
+[disabled] .noUi-handle {
+  cursor: not-allowed;
+}
+
+
+.noUi-tooltip {
+  display: block;
+  position: absolute;
+  background: white;
+  color: black;
+  size: 12px;
+  padding: 2px;
+  left: -19px;
+  text-align: center;
+  width: 50px;
+  XXXborder: 1px solid black;
+}
+
+.noUi-handle-lower .noUi-tooltip {
+  bottom: -20px;
+}
+
+.noUi-handle-upper .noUi-tooltip {
+  bottom: -32px;
+}
+
+
+/* Base;
+ *
+ */
+.noUi-pips,
+.noUi-pips * {
+-moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.noUi-pips {
+  position: absolute;
+  color: #999;
+}
+
+/* Values;
+ *
+ */
+.noUi-value {
+  width: 40px;
+  position: absolute;
+  text-align: center;
+  color:$txtColour;
+  font-size: x-small;
+}
+.noUi-value-sub {
+  color: #ccc;
+  font-size: 10px;
+}
+
+/* Markings;
+ *
+ */
+.noUi-marker {
+  position: absolute;
+  background: #545454;
+}
+.noUi-marker-sub {
+  background: #AAA;
+}
+.noUi-marker-large {
+  background: #AAA;
+}
+
+/* Horizontal layout;
+ *
+ */
+.noUi-pips-horizontal {
+  padding: 0px 0;
+  height: 50px;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  margin-top: -10px;
+}
+.noUi-value-horizontal {
+  margin-left: -20px;
+  padding-top: 20px;
+}
+.noUi-value-horizontal.noUi-value-sub {
+  padding-top: 10px;
+}
+
+.noUi-marker-horizontal.noUi-marker {
+  margin-left: -1px;
+  width: 1px;
+  height: 0px;
+}
+.noUi-marker-horizontal.noUi-marker-sub {
+  height: 10px;
+}
+.noUi-marker-horizontal.noUi-marker-large {
+  height: 15px;
+}
+
+/* Vertical layout;
+ *
+ */
+.noUi-pips-vertical {
+  padding: 0 10px;
+  height: 100%;
+  top: 0;
+  left: 100%;
+}
+.noUi-value-vertical {
+  width: 15px;
+  margin-left: 20px;
+  margin-top: -5px;
+}
+
+.noUi-marker-vertical.noUi-marker {
+  width: 5px;
+  height: 2px;
+  margin-top: -1px;
+}
+.noUi-marker-vertical.noUi-marker-sub {
+  width: 10px;
+}
+.noUi-marker-vertical.noUi-marker-large {
+  width: 15px;
+}
+

@@ -1,0 +1,59 @@
+
+@import 'app';
+
+::-webkit-scrollbar { 
+    display: none; 
+}
+
+#spk-viewer-1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+}
+
+#spk-viewer-2 {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  border-left: 1px dashed gray;
+  box-sizing: border-box;
+}
+
+
+#spk-sidebar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 25%;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 2;
+  box-sizing: border-box;
+  padding: 20px 60px;
+  overflow: auto;
+}
+
+#spk-sidebar p {
+  display: inline-block;
+  width: 25%;
+  float: left;
+  margin-top: 10px;
+}
+
+.basic-slider {
+  width: 75%;
+  display: inline-block;
+}
+
+#spk-canvas {
+  position: absolute;
+  bottom: 25%;
+  left: 0;
+  width: 100%;
+  height: 75%;
+  z-index: 1;
+}
