@@ -199,10 +199,10 @@ module.exports = function(app, passport, express) {
    * Main viewer route
    */
   
-  app.get("/view/*", isAuthorized, function(req, res) {
-    res.sendfile(appDir + "/modelviewer/index.html");
+  app.get("/view/s/:m", isAuthorized, function(req, res) {
+    res.sendfile(appDir + "/spkw/dist/SPKSingle.html");
   });
-
+  
   /**
    * Get model part
    * GET requests seem to be cached, so here's hoping for the best
@@ -210,10 +210,10 @@ module.exports = function(app, passport, express) {
    * TODO: get a profesional developer
    */
   
-  app.get("/api/model/", isAuthorized, function (req, res) {
-    var modelName = req.param("mn");
-    var modelKey = req.param("mk");
+  app.get("/api/model/:m", isAuthorized, function (req, res) {
     
+    var modelName = req.params.m;
+
     Model.findOne({urlId: modelName}, function(err, myModel) {
       if(err) { 
         // DB error
