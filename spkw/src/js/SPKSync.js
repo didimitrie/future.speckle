@@ -1,5 +1,7 @@
 
-var SPKSync = function (spkInstances) {
+var $           = require('jquery');
+
+var SPKSync = function () {
 
   var SPKSync = this;
 
@@ -33,6 +35,71 @@ var SPKSync = function (spkInstances) {
     }
 
   }
+  
+  SPKSync.zoomExtents = function() {
+    
+    for( var  i = 0; i < SPKSync.instances.length; i++ ) {
+      
+      SPKSync.instances[i].zoomExtents();
+
+    }
+
+  }  
+
+  SPKSync.toggleShadows = function() {
+    
+    for( var  i = 0; i < SPKSync.instances.length; i++ ) {
+      console.log(i + " / " + SPKSync.instances[i].SCENE.shadows);
+      if( SPKSync.instances[i].SCENE.shadows ) {
+        SPKSync.instances[i].SCENE.shadowlight.shadowDarkness = 0;
+        SPKSync.instances[i].SCENE.shadows = false;
+      }
+      else {
+        SPKSync.instances[i].SCENE.shadowlight.shadowDarkness = 0.15;
+        SPKSync.instances[i].SCENE.shadows = true;
+      }
+
+    }
+
+  }
+
+  SPKSync.toggleGrid = function() {
+    
+    for( var  i = 0; i < SPKSync.instances.length; i++ ) {
+      
+      SPKSync.instances[i].SCENE.grid.visible = ! SPKSync.instances[i].SCENE.grid.visible;
+
+    }
+  }
+
+  SPKSync.toggleGroundplane = function () {
+
+    for( var  i = 0; i < SPKSync.instances.length; i++ ) {
+      
+      SPKSync.instances[i].SCENE.plane.visible = ! SPKSync.instances[i].SCENE.plane.visible;
+
+    }
+
+  }
+
+  // centralising key presses across all instances
+  // 
+  $(document).keyup(function(e) {
+
+    if(e.keyCode == 71) 
+      SPKSync.toggleGrid();
+
+    if(e.keyCode == 80)
+      SPKSync.toggleGroundplane();
+
+    if(e.keyCode == 83)
+      SPKSync.toggleShadows();
+
+    if(e.keyCode == 32) 
+      SPKSync.zoomExtents();
+
+  });
+
 
 }
 

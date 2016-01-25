@@ -17,7 +17,8 @@
     
     "serve-local": "http-server -p 1337 -c-1",
     
-    "watch": "npm run watch-sass & npm run watch-jade & npm run watch-js & npm run serve-local"
+    "watch": "npm run watch-sass & npm run watch-jade & npm run watch-js & npm run serve-local",
+    "watch-remote": "npm run watch-sass & npm run watch-jade & npm run watch-js"
   },
   "dependencies": {
     "jade": "^1.11.0",

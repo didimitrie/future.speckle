@@ -24,6 +24,14 @@
   box-shadow: 14px 0px 84px -12px rgba(0,0,0,0.25);
 }
 
+#spk-footer {
+  position: absolute;
+  box-sizing: border-box;
+  padding: 5px 0 10px;
+  bottom: 0;
+  width: 100%;
+}
+
 #spk-canvas {
   position: absolute;
   top: 0;

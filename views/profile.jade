@@ -45,7 +45,7 @@ block content
         for myModel in data.userModels
           h4.
             #[strongx #{myModel.name.replace(".zip", "")}] 
-            #[span.pull-right #[small Size: #[strong #{(myModel.formatedFileSize)} ]  | Added On: #[strong #{(myModel.dateAdded)} ] | ]  #[a(href="view/#{myModel.urlId}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
+            #[span.pull-right #[small Size: #[strong #{(myModel.formatedFileSize)} ]  | Added On: #[strong #{(myModel.dateAdded)} ] | ]  #[a(href="view/s/#{myModel.urlId}") View] | #[a(href="/api/delete/#{myModel._id}") Delete]]         
           hr.small-hr
 
   

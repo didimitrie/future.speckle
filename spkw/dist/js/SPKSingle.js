@@ -49941,7 +49941,11 @@ var SPK = function (wrapper) {
   *************************************************/
 
   SPK.GLOBALS = {
-    metadata : "",
+    metadata : {
+      paramsFile : "",
+      staticGeoFile : "",
+      rootFiles : ""
+    },
     sliders : [],
     currentKey : "",
     boundingSphere : ""
@@ -49957,10 +49961,16 @@ var SPK = function (wrapper) {
     scene : null, 
     controls : null,
     sunlight : null,
-    raycaster : null
+    raycaster : null,
   }
   
 
+  SPK.SCENE = {
+    grid : null,
+    groundplane : null,
+    shadowlight : null,
+    shadows : false
+  }
   /*************************************************
   /   SPK Methods
   *************************************************/
@@ -49991,7 +50001,7 @@ var SPK = function (wrapper) {
     SPK.GLOBALS.model = href.substr(href.lastIndexOf('/') + 1);
 
     // need to init scene before: 
-    // make scene > load static  & first instance (into scene) > 
+    // getmodel meta > load params > make scene > load static  & first instance (into scene) > 
     // > compute bounding box > setup environment > renderloop
     
     SPK.VIEWER.scene = new THREE.Scene();
@@ -50022,15 +50032,18 @@ var SPK = function (wrapper) {
 
     });
 
-   
-
   }
 
   SPK.getModelMeta = function(callback) {
 
     $.getJSON(SPKConfig.GEOMAPI + SPK.GLOBALS.model, function (data) {
-      
-      SPK.GLOBALS.metadata = data;
+    
+      SPK.GLOBALS.metadata.paramsFile = data.paramsFile.replace("./uploads", "http://localhost:8000/uploads");
+      SPK.GLOBALS.metadata.staticGeoFile = data.staticGeoFile.replace("./uploads", "http://localhost:8000/uploads");
+      SPK.GLOBALS.metadata.rootFiles = SPK.GLOBALS.metadata.staticGeoFile.replace("/static.json", "/");
+
+      $(".model-name").html(data.modelName);
+      $(".model-meta").html("Added on " + data.dateAdded + " by " + data.ownerName);
 
       callback();
 
@@ -50264,7 +50277,27 @@ var SPK = function (wrapper) {
     });
 
 
-    // lights
+    // shadow light
+    var light = new THREE.DirectionalLight(0xffffff, 1);
+    light.castShadow = true;
+    light.shadowCameraNear = 0;
+    light.shadowCameraFar = SPK.GLOBALS.boundingSphere.radius * 6;
+    light.shadowCameraLeft = -SPK.GLOBALS.boundingSphere.radius * 2; 
+    light.shadowCameraRight = SPK.GLOBALS.boundingSphere.radius * 2; 
+    light.shadowCameraTop = SPK.GLOBALS.boundingSphere.radius * 2; 
+    light.shadowCameraBottom = -SPK.GLOBALS.boundingSphere.radius * 2; 
+    light.shadowMapWidth = 1024;
+    light.shadowMapHeight = 1024;
+    light.shadowBias = -0.0000022;
+    light.shadowDarkness = 0;
+    light.onlyShadow = true;
+    
+    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius * 1.7, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius * 3 ,SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius * 1.7); 
+
+    SPK.SCENE.shadowlight = light;
+    SPK.VIEWER.scene.add(light);
+
+    // camera light
     
     SPK.VIEWER.scene.add( new THREE.AmbientLight( 0xD8D8D8 ) );
    
@@ -50287,6 +50320,8 @@ var SPK = function (wrapper) {
       SPK.VIEWER.camera.aspect = ($(SPK.HMTL.canvas).innerWidth()-1) / ($(SPK.HMTL.canvas).innerHeight()-5);
       
       SPK.VIEWER.camera.updateProjectionMatrix();
+
+      SPK.alignSliders();
     
     } );
 
@@ -50296,7 +50331,7 @@ var SPK = function (wrapper) {
     
     key = key != -1 ? key : SPK.getCurrentKey();
 
-    SPKLoader.load( "./testmodel/" + key + ".json", function (obj) {
+    SPKLoader.load( SPK.GLOBALS.metadata.rootFiles + key + ".json", function (obj) {
 
       for( var i = 0; i < obj.geometries.length; i++ ) {
 
@@ -50357,42 +50392,57 @@ var SPK = function (wrapper) {
 
     var multiplier = 10;
 
-    var planeGeometry = new THREE.PlaneGeometry( SPK.GLOBALS.boundingSphere.radius * multiplier, SPK.GLOBALS.boundingSphere.radius * multiplier, 2, 2 ); //three.THREE.PlaneGeometry( width, depth, segmentsWidth, segmentsDepth );
+    var planeGeometry = new THREE.PlaneGeometry( SPK.GLOBALS.boundingSphere.radius * multiplier * 2 , SPK.GLOBALS.boundingSphere.radius * multiplier * 2, 2, 2 ); //three.THREE.PlaneGeometry( width, depth, segmentsWidth, segmentsDepth );
     planeGeometry.rotateX( - Math.PI / 2 );
     var planeMaterial = new THREE.MeshBasicMaterial( { color: 0xEEEEEE } ); //0xEEEEEE #D7D7D7
     plane = new THREE.Mesh( planeGeometry, planeMaterial );
     plane.receiveShadow = true;
-    plane.position.set(SPK.GLOBALS.boundingSphere.center.x, 0,SPK.GLOBALS.boundingSphere.center.z );
-    plane.doNotRemove = true;
+    plane.position.set(SPK.GLOBALS.boundingSphere.center.x, -0.1, SPK.GLOBALS.boundingSphere.center.z );
+    plane.visible = false;
 
     grid = new THREE.GridHelper( SPK.GLOBALS.boundingSphere.radius * multiplier, SPK.GLOBALS.boundingSphere.radius*multiplier/30);
     grid.material.opacity = 0.15;
     grid.material.transparent = true;
-    grid.position.set(SPK.GLOBALS.boundingSphere.center.x, 0, SPK.GLOBALS.boundingSphere.center.z );
-    grid.doNotRemove = true;
+    grid.position.set(SPK.GLOBALS.boundingSphere.center.x, -0.1, SPK.GLOBALS.boundingSphere.center.z );
     grid.setColors( 0x0000ff, 0x808080 ); 
 
-    //SPK.VIEWER.scene.add( plane );
+    SPK.VIEWER.scene.add( plane );
     SPK.VIEWER.scene.add( grid );
 
+    SPK.SCENE.grid = grid;
+    SPK.SCENE.plane = plane;
   }
 
   /*************************************************
   /   SPK Random functions that should probs go somewehere else
   *************************************************/
 
+  SPK.zoomExtents = function () {
+
+    var r = SPK.GLOBALS.boundingSphere.radius;
+    var offset = r / Math.tan(Math.PI / 180.0 * SPK.VIEWER.controls.object.fov * 0.5);
+    var vector = new THREE.Vector3(0, 0, 1);
+    var dir = vector.applyQuaternion(SPK.VIEWER.controls.object.quaternion);
+    var newPos = new THREE.Vector3();
+    dir.multiplyScalar(offset * 1.05);
+    newPos.addVectors(SPK.GLOBALS.boundingSphere.center, dir);
+    SPK.VIEWER.controls.object.position.set(newPos.x, newPos.y, newPos.z);
+    SPK.VIEWER.controls.target.set(SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z);
+
+  }
+
   SPK.alignSliders = function () {
+
     var containerHeight = $(SPK.HMTL.sidebar).innerHeight(); 
-    console.log(containerHeight + " <-th");
     
     var wrapperHeight = $(SPK.HMTL.sidebar).find("#wrapper-params").height(); 
-    console.log(wrapperHeight + " <-th");
 
     var diff = containerHeight - wrapperHeight;
-    console.log(diff)
+
     if( diff > 0 ) {
       $(SPK.HMTL.sidebar).find("#wrapper-params").css("top", diff/2 + "px");
     }
+
   }
 
   SPK.beep = function () {
@@ -50751,7 +50801,9 @@ $( function() {
 
 },{"./SPK.js":6,"jquery":1}],12:[function(require,module,exports){
 
-var SPKSync = function (spkInstances) {
+var $           = require('jquery');
+
+var SPKSync = function () {
 
   var SPKSync = this;
 
@@ -50785,8 +50837,73 @@ var SPKSync = function (spkInstances) {
     }
 
   }
+  
+  SPKSync.zoomExtents = function() {
+    
+    for( var  i = 0; i < SPKSync.instances.length; i++ ) {
+      
+      SPKSync.instances[i].zoomExtents();
+
+    }
+
+  }  
+
+  SPKSync.toggleShadows = function() {
+    
+    for( var  i = 0; i < SPKSync.instances.length; i++ ) {
+      console.log(i + " / " + SPKSync.instances[i].SCENE.shadows);
+      if( SPKSync.instances[i].SCENE.shadows ) {
+        SPKSync.instances[i].SCENE.shadowlight.shadowDarkness = 0;
+        SPKSync.instances[i].SCENE.shadows = false;
+      }
+      else {
+        SPKSync.instances[i].SCENE.shadowlight.shadowDarkness = 0.15;
+        SPKSync.instances[i].SCENE.shadows = true;
+      }
+
+    }
+
+  }
+
+  SPKSync.toggleGrid = function() {
+    
+    for( var  i = 0; i < SPKSync.instances.length; i++ ) {
+      
+      SPKSync.instances[i].SCENE.grid.visible = ! SPKSync.instances[i].SCENE.grid.visible;
+
+    }
+  }
+
+  SPKSync.toggleGroundplane = function () {
+
+    for( var  i = 0; i < SPKSync.instances.length; i++ ) {
+      
+      SPKSync.instances[i].SCENE.plane.visible = ! SPKSync.instances[i].SCENE.plane.visible;
+
+    }
+
+  }
+
+  // centralising key presses across all instances
+  // 
+  $(document).keyup(function(e) {
+
+    if(e.keyCode == 71) 
+      SPKSync.toggleGrid();
+
+    if(e.keyCode == 80)
+      SPKSync.toggleGroundplane();
+
+    if(e.keyCode == 83)
+      SPKSync.toggleShadows();
+
+    if(e.keyCode == 32) 
+      SPKSync.zoomExtents();
+
+  });
+
 
 }
 
 module.exports = new SPKSync();
-},{}]},{},[11]);
+},{"jquery":1}]},{},[11]);

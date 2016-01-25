@@ -196,7 +196,7 @@ module.exports = function(app, passport, express) {
   // *****************************************************
 
   /**
-   * Main viewer route
+   * Main viewer route; simple as f££££
    */
   
   app.get("/view/s/:m", isAuthorized, function(req, res) {
@@ -204,9 +204,7 @@ module.exports = function(app, passport, express) {
   });
   
   /**
-   * Get model part
-   * GET requests seem to be cached, so here's hoping for the best
-   * Maybe this is an overkill, but it does add a layer of security
+   * Get model metadata
    * TODO: get a profesional developer
    */
   
@@ -224,19 +222,23 @@ module.exports = function(app, passport, express) {
         res.send("Couldn't find any model. Soz!"); 
       } else {
         // We're almost good to go
-
         // This is the initial request from the viewer, and we send the url to params.json and static.json
-        var response = { 
-          paramsFile : myModel.deflateLocation + "/" + myModel.name + "/params.json",
-          staticGeoFile : myModel.deflateLocation + "/" + myModel.name + "/static.json",
-          modelName : myModel.name,
-          dateAdded : myModel.dateAdded
-        }
+        
+        User.findOne({ auth0id: myModel.ownerId}, function(err, myUser) {
 
-        res.json(response);
+          var response = { 
+            paramsFile : myModel.deflateLocation + "/" + myModel.name + "/params.json",
+            staticGeoFile : myModel.deflateLocation + "/" + myModel.name + "/static.json",
+            modelName : myModel.name,
+            dateAdded : myModel.dateAdded,
+            ownerName : myUser.username
+          }
+
+          res.json(response);
+        });
 
       }
-    })
+    });
   // end of the get route; what a xmas tree in there, man
   }); 
 

@@ -49941,7 +49941,11 @@ var SPK = function (wrapper) {
   *************************************************/
 
   SPK.GLOBALS = {
-    metadata : "",
+    metadata : {
+      paramsFile : "",
+      staticGeoFile : "",
+      rootFiles : ""
+    },
     sliders : [],
     currentKey : "",
     boundingSphere : ""
@@ -49957,10 +49961,15 @@ var SPK = function (wrapper) {
     scene : null, 
     controls : null,
     sunlight : null,
-    raycaster : null
+    raycaster : null,
   }
   
 
+  SPK.SCENE = {
+    grid : null,
+    groundplane : null,
+    shadows : null
+  }
   /*************************************************
   /   SPK Methods
   *************************************************/
@@ -49991,7 +50000,7 @@ var SPK = function (wrapper) {
     SPK.GLOBALS.model = href.substr(href.lastIndexOf('/') + 1);
 
     // need to init scene before: 
-    // make scene > load static  & first instance (into scene) > 
+    // getmodel meta > load params > make scene > load static  & first instance (into scene) > 
     // > compute bounding box > setup environment > renderloop
     
     SPK.VIEWER.scene = new THREE.Scene();
@@ -50022,15 +50031,18 @@ var SPK = function (wrapper) {
 
     });
 
-   
-
   }
 
   SPK.getModelMeta = function(callback) {
 
     $.getJSON(SPKConfig.GEOMAPI + SPK.GLOBALS.model, function (data) {
-      
-      SPK.GLOBALS.metadata = data;
+    
+      SPK.GLOBALS.metadata.paramsFile = data.paramsFile.replace("./uploads", "http://localhost:8000/uploads");
+      SPK.GLOBALS.metadata.staticGeoFile = data.staticGeoFile.replace("./uploads", "http://localhost:8000/uploads");
+      SPK.GLOBALS.metadata.rootFiles = SPK.GLOBALS.metadata.staticGeoFile.replace("/static.json", "/");
+
+      $(".model-name").html(data.modelName);
+      $(".model-meta").html("Added on " + data.dateAdded + " by " + data.ownerName);
 
       callback();
 
@@ -50287,6 +50299,8 @@ var SPK = function (wrapper) {
       SPK.VIEWER.camera.aspect = ($(SPK.HMTL.canvas).innerWidth()-1) / ($(SPK.HMTL.canvas).innerHeight()-5);
       
       SPK.VIEWER.camera.updateProjectionMatrix();
+
+      SPK.alignSliders();
     
     } );
 
@@ -50296,7 +50310,7 @@ var SPK = function (wrapper) {
     
     key = key != -1 ? key : SPK.getCurrentKey();
 
-    SPKLoader.load( "./testmodel/" + key + ".json", function (obj) {
+    SPKLoader.load( SPK.GLOBALS.metadata.rootFiles + key + ".json", function (obj) {
 
       for( var i = 0; i < obj.geometries.length; i++ ) {
 
@@ -50364,6 +50378,7 @@ var SPK = function (wrapper) {
     plane.receiveShadow = true;
     plane.position.set(SPK.GLOBALS.boundingSphere.center.x, 0,SPK.GLOBALS.boundingSphere.center.z );
     plane.doNotRemove = true;
+    plane.visible = false;
 
     grid = new THREE.GridHelper( SPK.GLOBALS.boundingSphere.radius * multiplier, SPK.GLOBALS.boundingSphere.radius*multiplier/30);
     grid.material.opacity = 0.15;
@@ -50372,27 +50387,35 @@ var SPK = function (wrapper) {
     grid.doNotRemove = true;
     grid.setColors( 0x0000ff, 0x808080 ); 
 
-    //SPK.VIEWER.scene.add( plane );
+    SPK.VIEWER.scene.add( plane );
     SPK.VIEWER.scene.add( grid );
 
+    SPK.SCENE.grid = grid;
+    SPK.SCENE.plane = plane;
   }
 
   /*************************************************
   /   SPK Random functions that should probs go somewehere else
   *************************************************/
 
+  SPK.zoomExtents = function () {
+
+    
+    
+  }
+
   SPK.alignSliders = function () {
+
     var containerHeight = $(SPK.HMTL.sidebar).innerHeight(); 
-    console.log(containerHeight + " <-th");
     
     var wrapperHeight = $(SPK.HMTL.sidebar).find("#wrapper-params").height(); 
-    console.log(wrapperHeight + " <-th");
 
     var diff = containerHeight - wrapperHeight;
-    console.log(diff)
+
     if( diff > 0 ) {
       $(SPK.HMTL.sidebar).find("#wrapper-params").css("top", diff/2 + "px");
     }
+
   }
 
   SPK.beep = function () {
@@ -50752,7 +50775,9 @@ var SPKObjectMaker = function() {
 module.exports = new SPKObjectMaker();
 },{"three":4}],12:[function(require,module,exports){
 
-var SPKSync = function (spkInstances) {
+var $           = require('jquery');
+
+var SPKSync = function () {
 
   var SPKSync = this;
 
@@ -50787,7 +50812,39 @@ var SPKSync = function (spkInstances) {
 
   }
 
+  SPKSync.toggleGrid = function() {
+    
+    for( var  i = 0; i < SPKSync.instances.length; i++ ) {
+      
+      SPKSync.instances[i].SCENE.grid.visible = ! SPKSync.instances[i].SCENE.grid.visible;
+
+    }
+  }
+
+  SPKSync.toggleGroundplane = function () {
+
+    for( var  i = 0; i < SPKSync.instances.length; i++ ) {
+      
+      SPKSync.instances[i].SCENE.plane.visible = ! SPKSync.instances[i].SCENE.plane.visible;
+
+    }
+
+  }
+
+  // centralising key presses across all instances
+  // 
+  $(document).keyup(function(e) {
+
+    if(e.keyCode == 71) 
+      SPKSync.toggleGrid();
+
+    if(e.keyCode == 80)
+      SPKSync.toggleGroundplane();
+    
+  });
+
+
 }
 
 module.exports = new SPKSync();
-},{}]},{},[9]);
+},{"jquery":1}]},{},[9]);
