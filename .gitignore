@@ -1,0 +1,6 @@
+node_modules/
+*.map/
+.sass-cache/
+dist/testmodel/
+dist/testmodel-2/
+dist/testmodel-3/
