@@ -10980,7 +10980,8 @@ function closure ( target, options ){
 
 			// Values are only appended for points marked '1' or '2'.
 			if ( values[1] ) {
-				element.innerHTML += '<div '+getTags(offset, cssClasses[22], values)+'>' + formatter.to(values[0]) + '</div>';
+				// dim modification in here dimitrie modification hastag hashtag
+				element.innerHTML += '<div '+getTags(offset, cssClasses[22], values)+'>' + /*formatter.to(*/values[0] /*)*/ + '</div>';
 			}
 		}
 
@@ -50872,6 +50873,7 @@ var SPKSync = function () {
       SPKSync.instances[i].SCENE.grid.visible = ! SPKSync.instances[i].SCENE.grid.visible;
 
     }
+
   }
 
   SPKSync.toggleGroundplane = function () {
@@ -50884,8 +50886,10 @@ var SPKSync = function () {
 
   }
 
-  // centralising key presses across all instances
-  // 
+  // centralising key presses in SPKSync 
+  // Allows for distributed control events to all poss instances
+
+
   $(document).keyup(function(e) {
 
     if(e.keyCode == 71) 

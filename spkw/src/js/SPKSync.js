@@ -70,6 +70,7 @@ var SPKSync = function () {
       SPKSync.instances[i].SCENE.grid.visible = ! SPKSync.instances[i].SCENE.grid.visible;
 
     }
+
   }
 
   SPKSync.toggleGroundplane = function () {
@@ -82,8 +83,10 @@ var SPKSync = function () {
 
   }
 
-  // centralising key presses across all instances
-  // 
+  // centralising key presses in SPKSync 
+  // Allows for distributed control events to all poss instances
+
+
   $(document).keyup(function(e) {
 
     if(e.keyCode == 71) 
