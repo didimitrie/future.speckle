@@ -1,5 +1,4 @@
 var mongoose = require("mongoose");
-var bcrypt = require("bcrypt-nodejs");
 var fs = require('fs');
 var path = require('path');
 var appDir = path.dirname(require.main.filename);
@@ -16,6 +15,7 @@ var modelSchema = mongoose.Schema({
   dateAdded : String,
   urlId : String
 });
+
 
 modelSchema.statics.findOwnerModels = function(myOwnerId, callback) {
   this.find({ownerId : {$in: [myOwnerId]}}, function(err, model){
@@ -39,7 +39,8 @@ modelSchema.statics.deleteModel = function(modelId, ownerId, callback) {
       callback(0);
     }
   }).remove().exec();
-}
+  
+};
 
 module.exports = mongoose.model('Models', modelSchema);
 

@@ -1,5 +1,7 @@
 var Model = require('../app/models/models');
 var User = require('../app/models/user');
+var Session = require('../app/models/session');
+
 var DecompressZip = require('decompress-zip');
 var shortid = require('shortid');
 var fs = require('fs');
@@ -11,16 +13,23 @@ var appDir = path.dirname(require.main.filename);
 //	MULTER UPLOAD STUFF
 // *****************************************************
 
-
 var multer  = require('multer');
 var storage = multer.diskStorage({
+
 	destination : function(req, file, callback) {
+
 		callback(null, './uploads');
+
 	}, 
+
 	filename : function(req, file, callback) {
+
 		callback(null, file.fieldname + '-' + Date.now() + '-' + req.user.id);
+
 	}
+
 });
+
 var upload = multer( { storage : storage} ).single('userModel');
 
 // *****************************************************
@@ -63,7 +72,7 @@ module.exports = function(app, passport, express) {
 	});
 
   // *****************************************************
-	//	AUTH
+	//	AUTH ROUTES
 	// *****************************************************
 
 	/**
@@ -103,12 +112,15 @@ module.exports = function(app, passport, express) {
 	 * Logout 
 	 */
 	app.get("/logout", function(req, res) {
-	 	req.logout();
+	 	
+    req.logout();
+
 	 	res.redirect("/");
+
 	});
 
 	// *****************************************************
-	//	MODELS API
+	//	MODELS API: Upload & Delete 
 	// *****************************************************
 
 	/**
@@ -169,10 +181,7 @@ module.exports = function(app, passport, express) {
         	user.save();
         });
 
-        // release the dragon
         res.json({ok: "ok"});
-        //res.end();
-
     });
 	});
 
@@ -180,7 +189,6 @@ module.exports = function(app, passport, express) {
 	 *  Delete
 	 */
 	app.get("/api/delete/:id", isLoggedIn, function(req, res){
-	 	console.log(req.params.id);
 	 	Model.deleteModel(req.params.id, req.user.id, function(fileSize) {
 	 		User.findOne({auth0id : req.user.id}, function(err, user) {
           user.usedStorage -= fileSize;
@@ -192,7 +200,7 @@ module.exports = function(app, passport, express) {
 	});
 
   // *****************************************************
-  //  VIEWER ROUTES
+  //  VIEWER ROUTES & Some data serving
   // *****************************************************
 
   /**
@@ -213,34 +221,107 @@ module.exports = function(app, passport, express) {
     var modelName = req.params.m;
 
     Model.findOne({urlId: modelName}, function(err, myModel) {
-      if(err) { 
-        // DB error
-        res.send("Database Error."); 
-      }
-      else if (myModel === null) {
-        // No model by that name
-        res.send("Couldn't find any model. Soz!"); 
-      } else {
-        // We're almost good to go
-        // This is the initial request from the viewer, and we send the url to params.json and static.json
         
-        User.findOne({ auth0id: myModel.ownerId}, function(err, myUser) {
+      // TODO: Check for errors along the way
+  
+      User.findOne({ auth0id: myModel.ownerId}, function(err, myUser) {
 
-          var response = { 
-            paramsFile : myModel.deflateLocation + "/" + myModel.name + "/params.json",
-            staticGeoFile : myModel.deflateLocation + "/" + myModel.name + "/static.json",
-            modelName : myModel.name,
-            dateAdded : myModel.dateAdded,
-            ownerName : myUser.username
-          }
+        var response = { 
+          paramsFile : myModel.deflateLocation + "/" + myModel.name + "/params.json",
+          staticGeoFile : myModel.deflateLocation + "/" + myModel.name + "/static.json",
+          modelName : myModel.name,
+          dateAdded : myModel.dateAdded,
+          ownerName : myUser.username
+        }
 
-          res.json(response);
-        });
+        res.json(response);
 
-      }
+      });
+
     });
-  // end of the get route; what a xmas tree in there, man
+
   }); 
+
+
+  // *****************************************************
+  //  METADATA ROUTES
+  // *****************************************************
+
+  // create & update sesssion with various tracking info
+  // possibly a bad pattern to use but i save some typing
+  
+  app.post("/api/model/metadata/", function (req, res) {
+    
+    var sessionid = req.body.sessionid;
+    var type = req.body.type;
+    
+    if(type === "newSession") {
+
+      var mySession = new Session();
+
+      mySession.ip = req.ip;
+
+      mySession.modelid = req.body.modelid;
+
+      mySession.save( function (err, session) { 
+      
+        res.send(session._id); 
+      
+      });
+
+    } else 
+
+    if( type === "updateViewport" ) {
+      Session.findByIdAndUpdate( sessionid, 
+        {$set : {viewportsize: req.body.viewportsize }}, 
+        {safe: true}, 
+        function (err, session) {
+          res.send("all good for now");
+      });
+
+    } else 
+
+    if( type === "addInstance" ) {
+      Session.findByIdAndUpdate( sessionid, 
+        {$push : { "usedinstances" : {key: req.body.key}}}, 
+        {safe: true}, 
+        function ( err, session ) {
+          res.send("all good for now");
+      });
+
+    } else 
+
+    if( type === "addMouseClick" ) {
+      Session.findByIdAndUpdate( sessionid, 
+        {$push : { "mouseclicks" : {location: req.body.mouseloc}}}, 
+        {safe: true}, 
+        function ( err, session ) {
+          res.send("all good for now");
+      });
+
+    } else 
+
+    if( type === "sessionend" ) {
+      Session.findByIdAndUpdate( sessionid, 
+        {$set : {exittime: Date.now() }}, 
+        {safe: true}, 
+        function ( err, session ) {
+          res.send("all good for now");
+      });
+    }
+        
+  });
+
+
+  // *****************************************************
+  //  SAVED INSTANCES MODEL ROUTES
+  // *****************************************************
+  
+  app.post("/api/model/metadata/saveinstance", function (req, res) {
+
+    var a;
+
+  });
 
   /**
    * END OF MODULE.EXPORTS

@@ -15,6 +15,7 @@ var SPKCache    = require('./SPKCache.js');
 var SPKMaker    = require('./SPKObjectMaker.js');
 var SPKSync     = require('./SPKSync.js');
 var SPKConfig   = require('./SPKConfig.js');
+var SPKLogger   = require('./SPKLogger.js');
 
 var SPK = function (wrapper) {
 
@@ -41,6 +42,7 @@ var SPK = function (wrapper) {
   *************************************************/
 
   SPK.GLOBALS = {
+    model : "",
     metadata : {
       paramsFile : "",
       staticGeoFile : "",
@@ -125,6 +127,8 @@ var SPK = function (wrapper) {
           SPK.render(); 
 
           SPKSync.addInstance(SPK);
+
+          SPKLogger.newSession(SPK.GLOBALS.model);
 
         });      
 
@@ -439,10 +443,11 @@ var SPK = function (wrapper) {
           
           SPK.VIEWER.scene.add(obj);
 
-          // TODO : Add to cache
         });
 
       }
+
+      SPKLogger.addUsedInstance(key);
 
       SPK.computeBoundingSphere();
       
@@ -513,7 +518,9 @@ var SPK = function (wrapper) {
     SPK.SCENE.plane = plane;
   }
 
-  /*************************************************
+
+
+/*************************************************
   /   SPK Random functions that should probs go somewehere else
   *************************************************/
 

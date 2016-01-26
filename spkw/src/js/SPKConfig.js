@@ -4,6 +4,7 @@ var SPKConfig = function () {
   var SPKConfig = this;
 
   SPKConfig.GEOMAPI    = "http://localhost:8000/api/model/";
+  SPKConfig.METAAPI    = "http://localhost:8000/api/model/metadata/";
   SPKConfig.APPID      = "SPKWOfficial";
 
 }

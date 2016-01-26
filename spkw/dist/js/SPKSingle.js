@@ -49916,6 +49916,7 @@ var SPKCache    = require('./SPKCache.js');
 var SPKMaker    = require('./SPKObjectMaker.js');
 var SPKSync     = require('./SPKSync.js');
 var SPKConfig   = require('./SPKConfig.js');
+var SPKLogger   = require('./SPKLogger.js');
 
 var SPK = function (wrapper) {
 
@@ -49942,6 +49943,7 @@ var SPK = function (wrapper) {
   *************************************************/
 
   SPK.GLOBALS = {
+    model : "",
     metadata : {
       paramsFile : "",
       staticGeoFile : "",
@@ -50026,6 +50028,8 @@ var SPK = function (wrapper) {
           SPK.render(); 
 
           SPKSync.addInstance(SPK);
+
+          SPKLogger.newSession(SPK.GLOBALS.model);
 
         });      
 
@@ -50340,10 +50344,11 @@ var SPK = function (wrapper) {
           
           SPK.VIEWER.scene.add(obj);
 
-          // TODO : Add to cache
         });
 
       }
+
+      SPKLogger.addUsedInstance(key);
 
       SPK.computeBoundingSphere();
       
@@ -50414,7 +50419,9 @@ var SPK = function (wrapper) {
     SPK.SCENE.plane = plane;
   }
 
-  /*************************************************
+
+
+/*************************************************
   /   SPK Random functions that should probs go somewehere else
   *************************************************/
 
@@ -50464,7 +50471,7 @@ var SPK = function (wrapper) {
 module.exports = SPK;
 
 
-},{"./SPKCache.js":7,"./SPKConfig.js":8,"./SPKLoader.js":9,"./SPKObjectMaker.js":10,"./SPKSync.js":12,"jquery":1,"nouislider":2,"three":4,"three-orbit-controls":3,"tween.js":5}],7:[function(require,module,exports){
+},{"./SPKCache.js":7,"./SPKConfig.js":8,"./SPKLoader.js":9,"./SPKLogger.js":10,"./SPKObjectMaker.js":11,"./SPKSync.js":13,"jquery":1,"nouislider":2,"three":4,"three-orbit-controls":3,"tween.js":5}],7:[function(require,module,exports){
 
 var SPKCache = function() {
   
@@ -50502,6 +50509,7 @@ var SPKConfig = function () {
   var SPKConfig = this;
 
   SPKConfig.GEOMAPI    = "http://localhost:8000/api/model/";
+  SPKConfig.METAAPI    = "http://localhost:8000/api/model/metadata/";
   SPKConfig.APPID      = "SPKWOfficial";
 
 }
@@ -50629,6 +50637,116 @@ var SPKLoader = function () {
 
 module.exports = new SPKLoader();
 },{"three":4}],10:[function(require,module,exports){
+
+var $           = require('jquery');
+var SPKConfig   = require('./SPKConfig.js');
+
+var SPKLogger = function () {
+
+  var SPKLogger = this;
+
+  SPKLogger.sessionid = null;
+
+
+  SPKLogger.mx = 0;
+  SPKLogger.my = 0;
+
+  SPKLogger.newSession = function (id) {
+
+    if( SPKLogger.sessionid != null ) return;
+    
+    var sendData = { 
+      type: "newSession",
+      modelid: id
+    }
+    
+    $.post(SPKConfig.METAAPI, sendData, function (sessionid) {
+
+      SPKLogger.sessionid = sessionid;
+
+    });
+    
+  }
+
+  SPKLogger.postUpdate = function(data) {
+    
+    $.post(SPKConfig.METAAPI, data, function (dataa) {
+
+      if(dataa === "err") 
+        console.warn("SPK_ERR: Failed to update metadata");
+    
+    });
+
+  }
+
+  SPKLogger.updateScreenSize = function() {
+    var sendData = {
+      sessionid: SPKLogger.sessionid,
+      type: "updateViewport",
+      viewportsize: window.innerHeight + "x" + window.innerWidth
+    }
+
+    SPKLogger.postUpdate(sendData);
+
+  }
+
+  SPKLogger.addUsedInstance = function(key) {
+    
+    var sendData = {
+      sessionid : SPKLogger.sessionid,
+      type : "addInstance",
+      key : key
+    }
+    
+    SPKLogger.postUpdate(sendData);
+
+  }
+  
+  SPKLogger.addMouseClick = function(mouseposition) {
+    
+    var sendData = {
+      sessionid : SPKLogger.sessionid,
+      type : "addMouseClick",
+      mouseloc : {x: SPKLogger.mx, y: SPKLogger.my}
+    }
+
+    SPKLogger.postUpdate(sendData);
+
+  }
+
+  SPKLogger.finishSession = function() {
+
+    SPKLogger.postUpdate( {sessionid: SPKLogger.sessionid, type:"sessionend"} );
+
+  }
+
+  /*************************************************
+  /   SPKLogger document events
+  *************************************************/
+
+  // continously update mouse pos
+  window.onmousemove = function(e) { 
+    
+    SPKLogger.mx = e.pageX; 
+
+    SPKLogger.my = e.pageY; 
+
+  }
+
+  // trigger event
+  $(window).click( function() {
+
+    SPKLogger.addMouseClick();
+
+  });
+
+  // update exit time beforeunload
+  $(window).bind('beforeunload', SPKLogger.finishSession );
+
+}
+
+module.exports = new SPKLogger();
+},{"./SPKConfig.js":8,"jquery":1}],11:[function(require,module,exports){
 
 /*
   Makes THREE objects from THREE geometry, adding some sugar in between
@@ -50780,7 +50898,7 @@ var SPKObjectMaker = function() {
 }
 
 module.exports = new SPKObjectMaker();
-},{"three":4}],11:[function(require,module,exports){
+},{"three":4}],12:[function(require,module,exports){
 /**
  * 
  *
@@ -50800,7 +50918,7 @@ $( function() {
 });
 
 
-},{"./SPK.js":6,"jquery":1}],12:[function(require,module,exports){
+},{"./SPK.js":6,"jquery":1}],13:[function(require,module,exports){
 
 var $           = require('jquery');
 
@@ -50910,4 +51028,4 @@ var SPKSync = function () {
 }
 
 module.exports = new SPKSync();
-},{"jquery":1}]},{},[11]);
+},{"jquery":1}]},{},[12]);

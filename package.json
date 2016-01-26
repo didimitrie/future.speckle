@@ -1,11 +1,11 @@
 {
   "name": "Future.Speckle",
   "main": "server.js",
-  "author" : "Dimitrie A. Stefanescu / www.dimitrie.org",
-  "licence" : "CC BY-NC 3.0",
+  "author": "Dimitrie A. Stefanescu / www.dimitrie.org",
+  "licence": "CC BY-NC 3.0",
   "dependencies": {
     "bcrypt-nodejs": "latest",
-    "body-parser": "~1.0.0",
+    "body-parser": "^1.0.2",
     "connect-flash": "~0.1.1",
     "cookie-parser": "~1.0.0",
     "decompress-zip": "^0.2.0",
@@ -25,18 +25,15 @@
   },
   "devDependencies": {
     "node-sass": "^3.4.2"
-  }, 
-  "scripts" : {
+  },
+  "scripts": {
     "watch-sass": "sass --watch spkw/src/sass/SPKSingle.scss:spkw/dist/css/SPKSingle.css spkw/src/sass/SPKDouble.scss:spkw/dist/css/SPKDouble.css",
-    
     "watch-jade": "jade --watch spkw/src/jade/*.jade -o spkw/dist/ -P",
-    
     "build-js-single": "browserify spkw/src/js/SPKSingle.js -o spkw/dist/js/SPKSingle.js",
     "build-js-double": "browserify spkw/src/js/SPKDouble.js -o spkw/dist/js/SPKDouble.js",
     "watch-js": "nodemon -e js -w spkw/src/js -x 'npm run build-js-single' & nodemon -e js -w spkw/src/js -x 'npm run build-js-double'",
-    
     "watch-remote": "npm run watch-sass & npm run watch-jade & npm run watch-js",
-    "watch" : "npm run watch-remote & nodemon server.js --ignore 'uploads'",
-    "watch-simple" : "nodemon server.js --ignore 'uploads'"
+    "watch": "npm run watch-remote & nodemon server.js --ignore 'uploads'",
+    "watch-simple": "nodemon server.js --ignore 'uploads'"
   }
 }
