@@ -13,12 +13,15 @@
     
     "build-js-single": "browserify src/js/SPKSingle.js -o dist/js/SPKSingle.js",
     "build-js-double": "browserify src/js/SPKDouble.js -o dist/js/SPKDouble.js",
+    
     "watch-js": "nodemon -e js -w src/js -x 'npm run build-js-single' & nodemon -e js -w src/js -x 'npm run build-js-double'",
+    "watch-js-single" : "nodemon -e js -w src/js -x 'npm run build-js-single'",
     
     "serve-local": "http-server -p 1337 -c-1",
     
     "watch": "npm run watch-sass & npm run watch-jade & npm run watch-js & npm run serve-local",
-    "watch-remote": "npm run watch-sass & npm run watch-jade & npm run watch-js"
+    "watch-remote": "npm run watch-sass & npm run watch-jade & npm run watch-js",
+    "watch-remote-single": "npm run watch-sass & npm run watch-jade & npm run watch-js-single"
   },
   "dependencies": {
     "jade": "^1.11.0",

@@ -34,6 +34,6 @@
     "watch-js": "nodemon -e js -w spkw/src/js -x 'npm run build-js-single' & nodemon -e js -w spkw/src/js -x 'npm run build-js-double'",
     "watch-remote": "npm run watch-sass & npm run watch-jade & npm run watch-js",
     "watch": "npm run watch-remote & nodemon server.js --ignore 'uploads'",
-    "watch-simple": "nodemon server.js --ignore 'uploads'"
+    "watch-simple": "nodemon server.js --ignore 'uploads' --ignore 'spkw'"
   }
 }

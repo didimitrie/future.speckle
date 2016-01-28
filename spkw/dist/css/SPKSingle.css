@@ -125,7 +125,13 @@ table {
 .noUi-handle {
   border-radius: 15px;
   background: #B9B9B9;
-  cursor: default; }
+  cursor: default;
+  transition: background 0.3s ease; }
+
+.parameter:hover {
+  color: #0000FF; }
+  .parameter:hover .noUi-handle {
+    background: #0000FF; }
 
 .noUi-handle:after {
   left: 17px; }
@@ -266,7 +272,7 @@ p {
   line-height: 1.2rem;
   margin-top: 1.2rem;
   margin-bottom: 0;
-  font-size: 1.0605rem; }
+  font-size: 0.7777rem; }
 
 ul, ol {
   margin-top: 1.2rem;
@@ -291,13 +297,11 @@ h1, h2, h3, h4, h5, h6 {
 
 h1 {
   font-size: 2.828rem;
-  line-height: 3.6rem;
-  margin-top: 2.4rem; }
+  line-height: 3.6rem; }
 
 h2 {
   font-size: 2.121rem;
-  line-height: 2.4rem;
-  margin-top: 2.4rem; }
+  line-height: 2.4rem; }
 
 h3 {
   font-size: 1.414rem; }
@@ -311,14 +315,92 @@ h5 {
 h6 {
   font-size: 0.3535rem; }
 
+/* ----------------------------------------------------------------------------------------------------
+SCSS Form Reset Helpers - Forked from: https://gist.github.com/anthonyshort/552543
+Intended usage:
+- MIXINS: for very specific use cases, when you dont want to reset absolutly all the forms, very verbose output.
+- PLACEHOLDER SELECTORS: use as extending classes. Less verbose, more generic overrides.
+A couple of things to watch out for:
+- IE8: If a text input doesn't have padding on all sides or none the text won't be centered.
+- The default border sizes on text inputs in all UAs seem to be slightly different. You're better off using custom borders.
+- You NEED to set the font-size and family on all form elements
+- Search inputs need to have their appearance reset and the box-sizing set to content-box to match other UAs
+- You can style the upload button in webkit using ::-webkit-file-upload-button
+- ::-webkit-file-upload-button selectors can't be used in the same selector as normal ones. FF and IE freak out.
+- IE: You don't need to fake inline-block with labels and form controls in IE. They function as inline-block.
+- By turning off ::-webkit-search-decoration, it removes the extra whitespace on the left on search inputs
+----------------------------------------------------------------------------------------------------*/
+input, label, select, button, textarea {
+  display: inline-block;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  width: auto;
+  vertical-align: middle;
+  white-space: normal;
+  line-height: inherit;
+  background: none;
+  /* Browsers have different default form fonts */
+  color: inherit;
+  font-size: inherit;
+  font-family: inherit; }
+
+input[type=reset], input[type=button], input[type=submit], input[type=checkbox], input[type=radio], select {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+input {
+  /* Make webkit render the search input like a normal text field */
+  /* Turn off the recent search for webkit. It adds about 15px padding on the left */
+  /* Fix IE7 display bug */
+  /* These elements are usually rendered a certain way by the browser */ }
+  input:focus {
+    outline: 0; }
+  input[type=checkbox], input[type=radio] {
+    width: 13px;
+    height: 13px; }
+  input[type=search] {
+    -webkit-appearance: textfield;
+    -webkit-box-sizing: content-box; }
+  ::-webkit-search-decoration {
+    display: none; }
+  input[type="reset"], input[type="button"], input[type="submit"] {
+    overflow: visible; }
+
+select {
+  /* Move the label to the top */ }
+  select[multiple] {
+    vertical-align: top; }
+
+button {
+  background: none;
+  border: 0;
+  outline: none;
+  /* IE8 and FF freak out if this rule is within another selector */ }
+  button::-moz-focus-inner {
+    border: 0;
+    padding: 0; }
+  button:hover, button:active, button:focus {
+    outline: 0; }
+  ::-webkit-file-upload-button {
+    padding: 0;
+    border: 0;
+    background: none; }
+
+textarea {
+  /* Move the label to the top */
+  vertical-align: top;
+  /* Turn off scroll bars in IE unless needed */
+  overflow: auto; }
+
 body {
   background-color: white;
   color: #333333;
   position: absolute;
   width: 100%;
   height: 100%;
-  font-family: "Titillium Web", sans-serif;
-  overflow: hidden; }
+  font-family: "Titillium Web", sans-serif; }
 
 strong {
   font-weight: 600; }
@@ -351,7 +433,7 @@ p.parameter_name {
   color: #0000FF; }
 
 .basic-slider {
-  width: 75%;
+  width: 72%;
   display: inline-block; }
 
 .parameter {
@@ -367,38 +449,156 @@ p.parameter_name {
   width: 100%;
   height: 100%; }
 
-#spk-sidebar {
+#spk-ui {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 30%;
+  z-index: 9;
+  width: 25%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
-  z-index: 2;
+  top: 0px;
+  left: 0px;
+  display: block; }
+
+#main-wrapper {
+  position: relative;
+  top: -1px;
+  background-color: #FF49F1;
+  height: 100%; }
+
+#spk-metadata {
+  width: 100%;
+  display: inline-block;
+  padding-bottom: 10px;
   box-sizing: border-box;
-  padding: 20px;
-  -webkit-box-shadow: 14px 0px 84px -12px rgba(0, 0, 0, 0.25);
-  -moz-box-shadow: 14px 0px 84px -12px rgba(0, 0, 0, 0.25);
-  box-shadow: 14px 0px 84px -12px rgba(0, 0, 0, 0.25); }
+  border: 10px solid rgba(255, 255, 255, 0);
+  background-color: #FFFFFF;
+  transition: background-color 0.4s ease;
+  box-shadow: 0px -2px 20px 0px rgba(0, 0, 0, 0.15); }
+
+#spk-metadata:hover {
+  background-color: white; }
+
+#spk-ui-controls {
+  width: 100%;
+  display: inline-block;
+  background-color: #EDEDED; }
+  #spk-ui-controls .tag {
+    position: relative;
+    width: 20%;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    background-color: #D0D0D0;
+    font-size: 14px;
+    display: inline-block;
+    float: left;
+    box-sizing: border-box;
+    border-top: 2px solid #D0D0D0;
+    z-index: 4;
+    transition: background-color 0.2s ease; }
+  #spk-ui-controls .tag:hover {
+    background-color: #F8F8F8;
+    border-top: 2px solid #F8F8F8;
+    cursor: pointer; }
+  #spk-ui-controls .tag.active {
+    background-color: white;
+    border-top: 2px solid #0000FF;
+    color: #0000FF; }
+
+#main-wrapper {
+  position: relative;
+  top: -1px;
+  background-color: white; }
+
+#wrapper-params {
+  width: 100%;
+  display: inline-block;
+  box-sizing: border-box;
+  border: 10px solid white;
+  padding-top: 30px;
+  padding-bottom: 30px; }
+
+#wrapper-settings {
+  width: 100%;
+  display: inline-block;
+  box-sizing: border-box;
+  border: 10px solid white; }
 
 #spk-footer {
-  position: absolute;
+  position: fixed;
   box-sizing: border-box;
   padding: 5px 0 10px;
   bottom: 0;
-  width: 100%; }
+  right: 0; }
 
 #spk-canvas {
-  position: absolute;
+  position: fixed;
   top: 0;
-  left: 30%;
-  width: 70%;
+  left: 25%;
+  width: 75%;
   height: 100%;
   z-index: 1; }
 
-#wrapper-params {
+#wrapper-saver {
+  width: 100%;
+  display: inline-block;
+  box-sizing: border-box;
+  border: 10px solid white; }
+  #wrapper-saver button {
+    width: 100%;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 5px;
+    box-shadow: 14px 0px 84px -12px rgba(0, 0, 0, 0.25); }
+  #wrapper-saver button:hover {
+    color: #0000FF;
+    cursor: pointer; }
+  #wrapper-saver textarea {
+    padding: 20px 0;
+    border: none;
+    border-bottom: dashed 1px #c9c9c9;
+    box-sizing: border-box;
+    width: 100%;
+    font-size: 18px;
+    font-family: "Titillium Web", sans-serif;
+    line-height: 20px;
+    margin: 10px 0;
+    background-color: white; }
+  #wrapper-saver textarea:hover {
+    border-bottom: solid 1px #969696; }
+  #wrapper-saver textarea:focus {
+    outline: none; }
+  #wrapper-saver .instance-element {
+    width: 90%;
+    padding-left: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-top: 20px;
+    border-bottom: 2px solid #c9c9c9;
+    transition: left 0.3s ease;
+    position: relative;
+    left: 0; }
+    #wrapper-saver .instance-element p.description {
+      margin-top: 0;
+      font-size: 14px;
+      line-height: 16px; }
+  #wrapper-saver .instance-element:hover {
+    border-color: #0000FF;
+    cursor: pointer;
+    left: 10px; }
+  #wrapper-saver .instance-element.active {
+    border-color: #0000FF;
+    cursor: pointer;
+    left: 10px; }
+
+.wrapper {
   position: absolute;
-  width: 90%;
-  box-sizing: border-box; }
+  transition: left 0.2s ease-in-out;
+  left: 0%;
+  width: 100%;
+  background-color: white;
+  z-index: 3; }
+
+.wrapper.hidden {
+  left: -120%; }
 
 /*# sourceMappingURL=SPKSingle.css.map */

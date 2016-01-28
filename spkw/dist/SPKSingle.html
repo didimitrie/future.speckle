@@ -8,15 +8,32 @@
 </html>
 <body>
   <div id="spk-viewer">
-    <div id="spk-sidebar">
-      <div id="spk-metadata" class="text-center">
-        <h2><i class="fa fa-sliders"></i> <strong class="model-name">... </strong></h2>
-        <p class="model-meta blue">...</p>
+    <div id="spk-ui">
+      <div id="spk-metadata" class="text-centerx">
+        <h3><strong class="model-name"> </strong></h3>
+        <p class="model-meta blue"> </p>
       </div>
-      <div id="wrapper-params">
-        <div id="spk-sliders"></div>
+      <div id="spk-ui-controls"></div>
+      <div id="main-wrapper"> 
+        <div id="wrapper-params" class="wrapper">
+          <div id="spk-sliders"></div><br>
+          <h2 class="text-center"><i class="fa fa-save"></i></h2>
+        </div>
+        <div id="wrapper-saver" class="wrapper hidden">
+          <!--form#save-instance
+          textarea(placeholder="To save a configuration, give it a description and click submit." rows=2)
+          button(type="submit" form="save-instance" value="Submit") Submit  
+          --><br>
+          <div id="instance-list"></div>
+        </div>
+        <div id="wrapper-settings" class="wrapper hidden">
+          <h3 class="text-centerx">Toggle Grid </h3>
+          <h3 class="text-centerx">Toggle Ground Plane </h3>
+          <h3 class="text-centerx">Toggle Shadows</h3>
+          <h3 class="text-centerx">Zoom Extents</h3>
+        </div>
       </div>
-      <div id="spk-footer" class="text-center">
+      <div id="spk-footer">
         <p><a href="/" class="logo">Made With <i class="fa fa-sliders"></i> S</a></p>
       </div>
     </div>

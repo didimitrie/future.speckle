@@ -109,6 +109,14 @@
   border-radius:15px;
   background: #B9B9B9;
   cursor: default;
+  transition: background 0.3s ease;
+}
+
+.parameter:hover {
+  color: $accentColour;
+  .noUi-handle {
+    background: $accentColour;
+  }
 }
 .noUi-active {
 }

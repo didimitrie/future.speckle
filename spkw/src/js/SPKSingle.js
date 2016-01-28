@@ -9,10 +9,15 @@
 
 var $   = require('jquery'); 
 var SPK = require('./SPK.js');
+//var SPKUiManager = require('./SPKUiManager.js');
 
 $( function() {
 
-  var mySPK  = new SPK( $( '#spk-viewer' ) );
+  var mySPK  = new SPK( $( '#spk-viewer' ), {
+    saver : true,
+    settings : true,
+    logger : false
+  });
 
 });
 

@@ -60,7 +60,9 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 app.use(express.static('assets'));
 app.use('/uploads', express.static('uploads'));
 app.use('/view/s/css', express.static('spkw/dist/css'));
+app.use('/view/d/css', express.static('spkw/dist/css'));
 app.use('/view/s/js', express.static('spkw/dist/js'));
+app.use('/view/d/js', express.static('spkw/dist/js'));
 
 require('./app/routes.js')(app, passport, express); // load our routes and pass in our app and fully configured passport
 

@@ -13,7 +13,14 @@ var modelSchema = mongoose.Schema({
   fileLocation : String, 
   deflateLocation : String,
   dateAdded : String,
-  urlId : String
+  urlId : String,
+  savedInstances : [ { 
+    key: String, 
+    description: String,
+    requestip : String,
+    camerapos : String,
+    timestamp: { type: Date, default: Date.now }
+  }]
 });
 
 
@@ -39,7 +46,7 @@ modelSchema.statics.deleteModel = function(modelId, ownerId, callback) {
       callback(0);
     }
   }).remove().exec();
-  
+
 };
 
 module.exports = mongoose.model('Models', modelSchema);

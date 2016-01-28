@@ -49904,21 +49904,23 @@ TWEEN.Interpolation = {
 // License: GNU GPL v3.0
 
 // general deps
-var $           = require('jquery');
-var THREE       = require('three');
-var OrbitCtrls  = require('three-orbit-controls')(THREE);
-var noUISlider  = require('nouislider');
-var TWEEN       = require('tween.js');
+var $               = require('jquery');
+var THREE           = require('three');
+var OrbitCtrls      = require('three-orbit-controls')(THREE);
+var noUISlider      = require('nouislider');
+var TWEEN           = require('tween.js');
 
 // SPK Libs
-var SPKLoader   = require('./SPKLoader.js');
-var SPKCache    = require('./SPKCache.js');
-var SPKMaker    = require('./SPKObjectMaker.js');
-var SPKSync     = require('./SPKSync.js');
-var SPKConfig   = require('./SPKConfig.js');
-var SPKLogger   = require('./SPKLogger.js');
+var SPKLoader       = require('./SPKLoader.js');
+var SPKCache        = require('./SPKCache.js');
+var SPKMaker        = require('./SPKObjectMaker.js');
+var SPKSync         = require('./SPKSync.js');
+var SPKConfig       = require('./SPKConfig.js');
+var SPKLogger       = require('./SPKLogger.js');
+var SPKSaver        = require('./SPKSaver.js');
+var SPKUiManager    = require('./SPKUiManager.js');
 
-var SPK = function (wrapper) {
+var SPK = function (wrapper, options) {
 
   /*************************************************
   /   SPK Global
@@ -49934,6 +49936,7 @@ var SPK = function (wrapper) {
     wrapper : "" , 
     canvas : "", 
     sidebar : "",
+    sliderwrapper : "",
     sliders : "", 
     meta : ""
   };
@@ -49982,7 +49985,7 @@ var SPK = function (wrapper) {
    * Main Init Function
    */
   
-  SPK.init = function(wrapper) {
+  SPK.init = function(wrapper, options) {
 
     if( wrapper === null ) {
 
@@ -49992,11 +49995,11 @@ var SPK = function (wrapper) {
     }
 
     // get those elements in place, you cunt
-    SPK.HMTL.wrapper = $(wrapper);
-    SPK.HMTL.canvas  = $(wrapper).find("#spk-canvas");
-    SPK.HMTL.sidebar = $(wrapper).find("#spk-sidebar");
-    SPK.HMTL.sliders = $(SPK.HMTL.sidebar).find("#spk-sliders");
-    SPK.HMTL.meta    = $(SPK.HMTL.sidebar).find("#spk-metadata");
+    SPK.HMTL.wrapper        = $(wrapper);
+    SPK.HMTL.canvas         = $(wrapper).find("#spk-canvas");
+    SPK.HMTL.sliderwrapper  = $(wrapper).find("#wrapper-params");
+    SPK.HMTL.sliders        = $(wrapper).find("#spk-sliders");
+    SPK.HMTL.meta           = $(SPK.HMTL.wrapper).find("#spk-metadata");
 
     // get the model url
     var href = window.location.pathname;
@@ -50027,9 +50030,21 @@ var SPK = function (wrapper) {
         
           SPK.render(); 
 
+          // add yourself to the Syncer
           SPKSync.addInstance(SPK);
 
-          SPKLogger.newSession(SPK.GLOBALS.model);
+          if(options.logger) 
+            SPKLogger.newSession(SPK.GLOBALS.model);
+          
+          if(options.saver)
+            SPKSaver.init(SPK);
+
+
+          SPKUiManager.addGroup($("#wrapper-settings"), "namedviews", "fa-eye", false);
+          SPKUiManager.addGroup("", "settings", "fa-cogs", false);
+          SPKUiManager.addGroup("", "extra", "fa-plus", false);
+
+          SPKUiManager.init();
 
         });      
 
@@ -50044,10 +50059,13 @@ var SPK = function (wrapper) {
     $.getJSON(SPKConfig.GEOMAPI + SPK.GLOBALS.model, function (data) {
     
       SPK.GLOBALS.metadata.paramsFile = data.paramsFile.replace("./uploads", "http://localhost:8000/uploads");
+      
       SPK.GLOBALS.metadata.staticGeoFile = data.staticGeoFile.replace("./uploads", "http://localhost:8000/uploads");
+      
       SPK.GLOBALS.metadata.rootFiles = SPK.GLOBALS.metadata.staticGeoFile.replace("/static.json", "/");
 
       $(".model-name").html(data.modelName);
+      
       $(".model-meta").html("Added on " + data.dateAdded + " by " + data.ownerName);
 
       callback();
@@ -50072,7 +50090,7 @@ var SPK = function (wrapper) {
         
         var sliderId = paramId + "_slider_" + i;
 
-        $( "#" + paramId ).append( $("<div>", { id: sliderId, class: "basic-slider" } ) );
+        $( "#" + paramId ).append( $( "<div>", { id: sliderId, class: "basic-slider" } ) );
 
         var myRange = {}, norm = 100 / (params[i].values.length-1);
 
@@ -50108,10 +50126,13 @@ var SPK = function (wrapper) {
         slider.on("change", SPK.addNewInstance);
 
         // add to master
-
+        slider.paramName = params[i].name;
         SPK.GLOBALS.sliders.push(slider);
       }
 
+
+      SPKUiManager.addGroup(SPK.HMTL.sliderwrapper, "params", "fa-sliders", false);
+            
       callback();
 
     });
@@ -50253,19 +50274,17 @@ var SPK = function (wrapper) {
     // 
     // make the scene + renderer
 
-    SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : false, alpha: true} );
+    SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : true, alpha: true} );
 
     SPK.VIEWER.renderer.setClearColor( 0xF2F2F2 ); 
 
-    SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );
+    SPK.VIEWER.renderer.setPixelRatio( 1 );  // change to window.devicePixelRatio 
     
     SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); 
 
     SPK.VIEWER.renderer.shadowMap.enabled = true;
     
     $(SPK.HMTL.canvas).append( SPK.VIEWER.renderer.domElement );
-
-    SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); 
 
     SPK.VIEWER.camera = new THREE.PerspectiveCamera( 40, $(SPK.HMTL.canvas).innerWidth() * 1 / $(SPK.HMTL.canvas).innerHeight(), 1, SPK.GLOBALS.boundingSphere.radius * 100 );
 
@@ -50384,6 +50403,26 @@ var SPK = function (wrapper) {
 
   }
 
+  SPK.loadInstanceForced = function(key) {
+
+    if( SPK.GLOBALS.currentKey === key) return;
+
+    SPK.removeCurrentInstance();
+
+    var params = key.split(",");
+    
+    for( var i = 0; i < params.length - 1; i++ ) {
+
+      SPK.GLOBALS.sliders[i].set(params[i]);
+
+    }
+
+    //SPK.GLOBALS.currentKey = key;
+
+    SPK.addNewInstance();
+
+  }
+
   SPK.render = function() {
 
     requestAnimationFrame( SPK.render );
@@ -50417,11 +50456,11 @@ var SPK = function (wrapper) {
 
     SPK.SCENE.grid = grid;
     SPK.SCENE.plane = plane;
+
   }
 
 
-
-/*************************************************
+  /*************************************************
   /   SPK Random functions that should probs go somewehere else
   *************************************************/
 
@@ -50440,7 +50479,9 @@ var SPK = function (wrapper) {
   }
 
   SPK.alignSliders = function () {
-
+    
+    return;
+    
     var containerHeight = $(SPK.HMTL.sidebar).innerHeight(); 
     
     var wrapperHeight = $(SPK.HMTL.sidebar).find("#wrapper-params").height(); 
@@ -50448,7 +50489,7 @@ var SPK = function (wrapper) {
     var diff = containerHeight - wrapperHeight;
 
     if( diff > 0 ) {
-      $(SPK.HMTL.sidebar).find("#wrapper-params").css("top", diff/2 + "px");
+      $(SPK.HMTL.sidebar).find("#wrapper-params").css("top", diff / 2 + "px");
     }
 
   }
@@ -50464,14 +50505,14 @@ var SPK = function (wrapper) {
   /   SPK INIT
   *************************************************/
     
-  SPK.init(wrapper);
+  SPK.init(wrapper, options);
 
 }
 
 module.exports = SPK;
 
 
-},{"./SPKCache.js":7,"./SPKConfig.js":8,"./SPKLoader.js":10,"./SPKLogger.js":11,"./SPKObjectMaker.js":12,"./SPKSync.js":13,"jquery":1,"nouislider":2,"three":4,"three-orbit-controls":3,"tween.js":5}],7:[function(require,module,exports){
+},{"./SPKCache.js":7,"./SPKConfig.js":8,"./SPKLoader.js":10,"./SPKLogger.js":11,"./SPKObjectMaker.js":12,"./SPKSaver.js":13,"./SPKSync.js":14,"./SPKUiManager.js":15,"jquery":1,"nouislider":2,"three":4,"three-orbit-controls":3,"tween.js":5}],7:[function(require,module,exports){
 
 var SPKCache = function() {
   
@@ -50510,6 +50551,7 @@ var SPKConfig = function () {
 
   SPKConfig.GEOMAPI    = "http://localhost:8000/api/model/";
   SPKConfig.METAAPI    = "http://localhost:8000/api/model/metadata/";
+  SPKConfig.INSTAPI    = "http://localhost:8000/api/model/instances/";
   SPKConfig.APPID      = "SPKWOfficial";
 
 }
@@ -50921,6 +50963,135 @@ var SPKObjectMaker = function() {
 module.exports = new SPKObjectMaker();
 },{"three":4}],13:[function(require,module,exports){
 
+var $               = require('jquery');
+var SPKUiManager    = require('./SPKUiManager');
+var SPKConfig       = require('./SPKConfig.js');
+
+var SPKSaver = function (wrapper) {
+  
+  var SPKSaver = this;
+  
+  SPKSaver.HTML = {
+    wrapper: "",
+    list : "",
+    saveform: ""
+  }
+
+  SPKSaver.SPK = "";
+  SPKSaver.paramNames = [];
+
+  SPKSaver.init = function (SPKInstance) {
+    
+    SPKSaver.HTML.wrapper = $("#wrapper-saver");
+    SPKSaver.HTML.form = $(SPKSaver.HTML.wrapper).find("form");
+    SPKSaver.HTML.list = $(SPKSaver.HTML.wrapper).find("#instance-list");
+
+    SPKSaver.SPK = SPKInstance;
+
+    $(SPKSaver.HTML.form).on("submit", function (e) {
+
+      e.preventDefault();
+
+      var dataToSubmit = {
+        type : "addnew",
+        model: SPKSaver.SPK.GLOBALS.model, 
+        key : SPKSaver.SPK.GLOBALS.currentKey,
+        description: $(SPKSaver.HTML.form).find("textarea").val(),
+        camerapos: { x: SPKSaver.SPK.VIEWER.camera.position.x, y: SPKSaver.SPK.VIEWER.camera.position.y, z: SPKSaver.SPK.VIEWER.camera.position.z }
+      }
+      
+      if(dataToSubmit.description === "") {
+        alert("Please add a description.")
+        return;
+      }
+      
+      $(SPKSaver.HTML.form).find("textarea").val("");
+
+      $.post(SPKConfig.INSTAPI, dataToSubmit, function(data) {
+
+        SPKSaver.refreshList();
+
+      })
+
+    });
+
+    SPKSaver.refreshList();
+
+    SPKUiManager.addGroup(SPKSaver.HTML.wrapper, "saving-ui", "fa-comments", false);
+
+  }
+
+  SPKSaver.refreshList = function () {
+    
+    $(SPKSaver.HTML.list).html("");
+    
+    $.post(SPKConfig.INSTAPI, { type: "getsavedinstances", model: SPKSaver.SPK.GLOBALS.model}, function(data){
+   
+        data = data.reverse();
+   
+        if(data.length)
+   
+          for( var i = 0; i < data.length; i++ ) {
+   
+            SPKSaver.createInstance( data[i], i );
+   
+          }
+   
+        else 
+   
+          $(SPKSaver.HTML.list).append("<h3 class='text-center'> There are no saved configurations. Add one!</h3>")
+   
+    });
+  
+  }
+
+  SPKSaver.createInstance = function (instance, index) {
+    
+    $(SPKSaver.HTML.list).append( $("<div>", { id: "instance-" + index, class: "instance-element", html: "<p class='description'>" + instance.description + "</p>"}) );
+    
+    $( "#instance-" + index ).append( "<p class='key'>" + SPKSaver.parseKeyName( instance.key, index ) + "</p>");
+
+    $( "#instance-" + index ).attr( "spk-inst", instance.key );
+    
+    // behaviour
+    $( "#instance-" + index ).click( function () {
+
+      var myKey = $( this ).attr( "spk-inst" );
+
+      SPKSaver.SPK.loadInstanceForced(myKey);
+
+      $(".instance-element").removeClass("active");
+
+      $(this).addClass("active");
+      
+    });
+
+  }
+
+  SPKSaver.parseKeyName = function (key, index) {
+
+    var params = key.split(",");
+
+    var fullname = "";
+
+    for( var i = 0; i < params.length - 1; i++ ) {
+      
+      fullname += SPKSaver.SPK.GLOBALS.sliders[i].paramName;
+      
+      fullname += ": <strong>" + params[i] + "</strong> ";
+
+    }
+    
+    return fullname;
+
+  }
+
+}
+
+// make it unique across all instances
+module.exports = new SPKSaver();
+},{"./SPKConfig.js":8,"./SPKUiManager":15,"jquery":1}],14:[function(require,module,exports){
+
 var $           = require('jquery');
 
 var SPKSync = function () {
@@ -51029,4 +51200,109 @@ var SPKSync = function () {
 }
 
 module.exports = new SPKSync();
+},{"jquery":1}],15:[function(require,module,exports){
+
+var $               = require('jquery');
+
+var SPKUiManager = function () {
+  
+  var SPKUiManager = this;
+
+  SPKUiManager.controlGroups = [];
+
+  SPKUiManager.activeUi = null;
+
+  SPKUiManager.init = function () {
+
+    $(SPKUiManager.controlGroups[0].tag).addClass("active");
+    
+    // center the tags
+    var diff = window.innerHeight - $("#spk-ui-controls").height();
+ 
+    //$("#spk-ui-controls").css("top", diff/2-20 + "px");
+    //$("#spk-ui-controls").css("top", -20 + "px");
+
+    // center the wrappers
+    for( var i = 0; i < SPKUiManager.controlGroups.length; i++ ) {
+      
+      var myGroup =  SPKUiManager.controlGroups[i];
+
+      if( myGroup.center ) {
+        var wrpHeight = $(myGroup.html).height();
+        var sdbHeight = $(myGroup.html).parent().height();
+
+        var diff = sdbHeight - wrpHeight;
+        //$(myGroup.html).css("top", diff/2 + "px");
+      }
+    }
+
+  }
+
+  SPKUiManager.centerWrapper = function (groupName) {
+    for( var i = 0; i < SPKUiManager.controlGroups.length; i++ ) {
+          
+          var myGroup =  SPKUiManager.controlGroups[i];
+
+          if(myGroup.name === groupName ) {
+
+            var diff = $(myGroup.html).parent().height() - $(myGroup.html).height();
+            
+            $(myGroup.html).css("top", diff/2 + "px");
+
+          }
+        }
+  }
+  
+  SPKUiManager.sortOut = function () {
+    
+    var myName = $(this).attr("id").replace("tag-","");
+    
+    for( var i = 0; i < SPKUiManager.controlGroups.length; i++ ) {
+      
+      var myGroup =  SPKUiManager.controlGroups[i];
+      
+      if( myGroup.name === myName ) {
+        $(myGroup.tag).addClass("active");
+        $(myGroup.html).removeClass("hidden");
+      } else {
+        $(myGroup.tag).removeClass("active");
+        $(myGroup.html).addClass("hidden");
+      }
+
+    }
+
+  }
+
+  SPKUiManager.addGroup = function ( htmlwrapper, name, icon, center ) {
+    
+    var myGroup = {
+      html : htmlwrapper,
+      tag : "",
+      name : name,
+      groupicon : icon,
+      center: center
+    }
+
+    SPKUiManager.controlGroups.push( myGroup );
+
+    $("#spk-ui-controls").append(
+      $("<div>", { 
+        id: "tag-" + myGroup.name,
+        html: "<i class='fa " + icon + "'></i>",
+        class: "tag",
+        on: {
+          click: SPKUiManager.sortOut,
+        }
+      })
+    );
+
+    myGroup.tag = $("#tag-" + myGroup.name);
+
+  }
+
+
+}
+
+// he's global and unique
+module.exports = new SPKUiManager();
 },{"jquery":1}]},{},[9]);

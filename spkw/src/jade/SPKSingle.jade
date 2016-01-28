@@ -10,18 +10,37 @@ html
 body
 
   #spk-viewer
-    #spk-sidebar
+    
+    #spk-ui
+      #spk-metadata.text-centerx
+        h3 #[strong.model-name ]
+        p.model-meta.blue 
       
-      #spk-metadata.text-center
-        h2 #[i.fa.fa-sliders] #[strong.model-name ... ]
-        p.model-meta.blue ...
-      
-      #wrapper-params
-        #spk-sliders
+      #spk-ui-controls
+      #main-wrapper  
+        #wrapper-params.wrapper
+          #spk-sliders
+          br
 
-      #spk-footer.text-center
+          h2.text-center #[i.fa.fa-save]
+        
+        #wrapper-saver.wrapper.hidden
+          //form#save-instance
+            textarea(placeholder="To save a configuration, give it a description and click submit." rows=2)
+            button(type="submit" form="save-instance" value="Submit") Submit  
+          br
+          #instance-list
+
+        #wrapper-settings.wrapper.hidden
+          h3.text-centerx Toggle Grid 
+          h3.text-centerx Toggle Ground Plane 
+          h3.text-centerx Toggle Shadows
+          h3.text-centerx Zoom Extents
+      
+      #spk-footer
         p #[a.logo(href="/") Made With #[i.fa.fa-sliders] S]
     #spk-canvas
-  
+    
+ 
 
   

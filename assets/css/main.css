@@ -30,10 +30,12 @@ hr {
   align-items: center; }
 
 a {
-  color: #0000FF; }
+  transition: color 0.2s ease;
+  color: #0000FF;
+  text-decoration: none !important; }
 
 a:hover {
-  color: #A538BC; }
+  color: #C542E1; }
 
 a.logo {
   text-decoration: none; }

@@ -1,6 +1,11 @@
 
 @import 'app';
 
+$ui-width : 25%;
+$ui-min-width : 400px;
+
+$ui-padding : 10px;
+
 #spk-viewer {
   position: absolute;
   top: 0;
@@ -9,40 +14,203 @@
   height: 100%;
 }
 
-#spk-sidebar {
+#spk-ui {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 30%;
+  z-index: 9;
+  width: $ui-width;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
-  z-index: 2;
+  top: 0px;
+  left: 0px;
+  display: block;
+}
+
+#main-wrapper {
+  position: relative;
+  top: -1px;
+  background-color: #FF49F1;
+  height: 100%;
+}
+
+#spk-metadata {
+  width: 100%;
+  display: inline-block;
+  padding-bottom: 10px;
   box-sizing: border-box;
-  padding: 20px;
-  -webkit-box-shadow: 14px 0px 84px -12px rgba(0,0,0,0.25);
-  -moz-box-shadow: 14px 0px 84px -12px rgba(0,0,0,0.25);
-  box-shadow: 14px 0px 84px -12px rgba(0,0,0,0.25);
+  border: $ui-padding solid rgba(255,255,255,0);
+  background-color: #FFFFFF;
+  transition: background-color 0.4s ease;
+  box-shadow: 0px -2px 20px 0px rgba(0,0,0,0.15);
+}
+
+#spk-metadata:hover {
+  background-color: rgba(255,255,255,1);
+}
+
+#spk-ui-controls {
+
+  width: 100%;
+  display: inline-block;
+  background-color: #EDEDED;
+
+  .tag {
+    position: relative;
+    width: 20%;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    background-color:  #D0D0D0;
+    font-size: 14px;
+    display: inline-block;
+    float: left;
+    box-sizing: border-box;
+    border-top: 2px solid #D0D0D0;
+    z-index: 4;
+
+    transition: background-color 0.2s ease;
+  }
+
+  .tag:hover {
+    background-color: #F8F8F8;
+    border-top: 2px solid #F8F8F8;
+    cursor: pointer;
+  }
+
+  .tag.active {
+      background-color: white;
+      border-top: 2px solid $accentColour;
+      color: $accentColour;
+  }
+
+}
+
+#main-wrapper {
+  position: relative;
+  top: -1px;
+  background-color: white;
+}
+
+#wrapper-params {
+  width: 100%;
+  display: inline-block;
+  box-sizing: border-box;
+  border: $ui-padding solid white;
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+#wrapper-settings {
+  width: 100%;
+  display: inline-block;
+  box-sizing: border-box;
+  border: $ui-padding solid white;
 }
 
 #spk-footer {
-  position: absolute;
+  position: fixed;
   box-sizing: border-box;
   padding: 5px 0 10px;
   bottom: 0;
-  width: 100%;
+  right: 0;
 }
 
 #spk-canvas {
-  position: absolute;
+  position: fixed;
   top: 0;
-  left: 30%;
-  width: 70%;
+  left: 25%;
+  width: 75%;
   height: 100%;
   z-index: 1;
 }
 
-#wrapper-params {
-  position: absolute;
-  width: 90%;
+#wrapper-saver{
+  width: 100%;
+  display: inline-block;
   box-sizing: border-box;
+  border: $ui-padding solid white;
+  
+  button {
+    width: 100%;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 5px;
+    box-shadow: 14px 0px 84px -12px rgba(0,0,0,0.25);
+  }
+
+  button:hover {
+    color: $accentColour;
+    cursor: pointer;
+  }
+
+  textarea {
+    padding: 20px 0;
+    border: none;
+    border-bottom: dashed 1px #c9c9c9;
+    box-sizing: border-box;
+    width: 100%;
+
+    font-size: 18px;
+    font-family: $fontFamily;
+    line-height: 20px;
+    margin: 10px 0;
+    background-color: white;
+  }
+
+  textarea:hover {
+    border-bottom: solid 1px #969696;
+  }
+
+  textarea:focus {
+    outline: none;
+  }
+
+  #instance-list {
+
+  }
+
+  .instance-element {
+    width: 90%;
+    padding-left: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-top: 20px;
+    border-bottom: 2px solid #c9c9c9;
+    transition: left 0.3s ease;
+    position: relative;
+    left:0;
+    p.description {
+      margin-top: 0;
+      font-size: 14px;
+      line-height: 16px;
+    }
+  }
+
+  .instance-element:hover {
+    border-color: $accentColour;
+    cursor: pointer;
+    left: 10px;
+  }
+
+  .instance-element.active {
+    border-color: $accentColour;
+    cursor: pointer;
+    left: 10px;
+  }
+
 }
+
+.wrapper {
+  position: absolute;
+  transition: left 0.2s ease-in-out;
+  left: 0%;
+  width: 100%;
+  background-color: white;
+  z-index: 3;
+}
+
+.wrapper.hidden {
+  left: -120%;
+}
+
+
+
+

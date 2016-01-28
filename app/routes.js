@@ -46,20 +46,27 @@ module.exports = function(app, passport, express) {
 	 * Homepage route
 	 */
 	app.get("/", function(req, res) {
+
 	 	res.render("index.jade",  {
-	 		loggedIn : req.isAuthenticated(),
+	 	
+    	loggedIn : req.isAuthenticated(),
+    
       username : req.user != null ? req.user.nickname : "Anon"
-	 	});
-	});
+	 	
+    });
+	
+  });
 
 	/**
 	 *  User Profile
 	 */
 	app.get("/profile", isLoggedIn, function(req, res){
+
 	 	Model.findOwnerModels(req.user.id, function(err, models){
- 			//if(err) { res.end("Db error"); }
+
  			res.render("profile.jade", {
-	 			data : {
+	 			
+        data : {
 	 				user : req.user,
 	 				userTier : req.myUser.tier,
 	 				usedStorage : getBytesWithUnit(req.myUser.usedStorage),
@@ -67,9 +74,36 @@ module.exports = function(app, passport, express) {
 	 				userModels : models.reverse(),
           firstVisit : req.firstVisit
 	 			}
-	 		})		
-	 	});	 	
+
+	 		})	
+
+	 	});	 
+
 	});
+
+  // placeholder - just a quick json dump
+  app.get("/analytics/:m", isLoggedIn, function(req, res) {
+
+    var modelId = req.params.m;
+
+    Model.findOne({urlId : modelId}, function(err, model) {
+
+      if(req.user.id != model.ownerId) { 
+      
+        res.send("Nope. This is not your model.");
+      
+      } else {
+
+        Session.find({modelid: modelId}, function(err, sessions) {
+      
+          res.json(sessions);
+
+        });
+      }
+
+    });
+
+  });
 
   // *****************************************************
 	//	AUTH ROUTES
@@ -210,6 +244,10 @@ module.exports = function(app, passport, express) {
   app.get("/view/s/:m", isAuthorized, function(req, res) {
     res.sendfile(appDir + "/spkw/dist/SPKSingle.html");
   });
+
+  app.get("/view/d/:m", isAuthorized, function(req, res) {
+    res.sendfile(appDir + "/spkw/dist/SPKDouble.html");
+  });
   
   /**
    * Get model metadata
@@ -311,17 +349,54 @@ module.exports = function(app, passport, express) {
     }
         
   });
-
-
+  
   // *****************************************************
   //  SAVED INSTANCES MODEL ROUTES
   // *****************************************************
   
-  app.post("/api/model/metadata/saveinstance", function (req, res) {
+  app.post("/api/model/instances/", function (req, res) {
 
-    var a;
+    var type = req.body.type;
+    
+    
+    if(type === "addnew") {
+    
+      var modelKey = req.body.model;
+      var myKey = req.body.key;
+      var description = req.body.description;
+      var camerapos = req.body.camerapos;
+
+      Model.update(
+        { urlId : modelKey },     
+        { $push: {savedInstances : 
+          { key: myKey, 
+            description: description,
+            camerapos: camerapos,
+            requestip: req.ip
+          } } }, 
+        function(err) {
+          res.json("done")
+      });
+
+    }
+
+    if(type === "getsavedinstances") {
+
+      var modelKey = req.body.model;
+
+      Model.findOne({urlId: modelKey}, function(err, model) {
+        console.log(model.savedInstances);
+        res.json(model.savedInstances);
+
+      })
+
+    }
+    
+    //res.json({ allok : "notdone"});
 
   });
+
+
 
   /**
    * END OF MODULE.EXPORTS

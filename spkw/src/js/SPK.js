@@ -3,21 +3,23 @@
 // License: GNU GPL v3.0
 
 // general deps
-var $           = require('jquery');
-var THREE       = require('three');
-var OrbitCtrls  = require('three-orbit-controls')(THREE);
-var noUISlider  = require('nouislider');
-var TWEEN       = require('tween.js');
+var $               = require('jquery');
+var THREE           = require('three');
+var OrbitCtrls      = require('three-orbit-controls')(THREE);
+var noUISlider      = require('nouislider');
+var TWEEN           = require('tween.js');
 
 // SPK Libs
-var SPKLoader   = require('./SPKLoader.js');
-var SPKCache    = require('./SPKCache.js');
-var SPKMaker    = require('./SPKObjectMaker.js');
-var SPKSync     = require('./SPKSync.js');
-var SPKConfig   = require('./SPKConfig.js');
-var SPKLogger   = require('./SPKLogger.js');
+var SPKLoader       = require('./SPKLoader.js');
+var SPKCache        = require('./SPKCache.js');
+var SPKMaker        = require('./SPKObjectMaker.js');
+var SPKSync         = require('./SPKSync.js');
+var SPKConfig       = require('./SPKConfig.js');
+var SPKLogger       = require('./SPKLogger.js');
+var SPKSaver        = require('./SPKSaver.js');
+var SPKUiManager    = require('./SPKUiManager.js');
 
-var SPK = function (wrapper) {
+var SPK = function (wrapper, options) {
 
   /*************************************************
   /   SPK Global
@@ -33,6 +35,7 @@ var SPK = function (wrapper) {
     wrapper : "" , 
     canvas : "", 
     sidebar : "",
+    sliderwrapper : "",
     sliders : "", 
     meta : ""
   };
@@ -81,7 +84,7 @@ var SPK = function (wrapper) {
    * Main Init Function
    */
   
-  SPK.init = function(wrapper) {
+  SPK.init = function(wrapper, options) {
 
     if( wrapper === null ) {
 
@@ -91,11 +94,11 @@ var SPK = function (wrapper) {
     }
 
     // get those elements in place, you cunt
-    SPK.HMTL.wrapper = $(wrapper);
-    SPK.HMTL.canvas  = $(wrapper).find("#spk-canvas");
-    SPK.HMTL.sidebar = $(wrapper).find("#spk-sidebar");
-    SPK.HMTL.sliders = $(SPK.HMTL.sidebar).find("#spk-sliders");
-    SPK.HMTL.meta    = $(SPK.HMTL.sidebar).find("#spk-metadata");
+    SPK.HMTL.wrapper        = $(wrapper);
+    SPK.HMTL.canvas         = $(wrapper).find("#spk-canvas");
+    SPK.HMTL.sliderwrapper  = $(wrapper).find("#wrapper-params");
+    SPK.HMTL.sliders        = $(wrapper).find("#spk-sliders");
+    SPK.HMTL.meta           = $(SPK.HMTL.wrapper).find("#spk-metadata");
 
     // get the model url
     var href = window.location.pathname;
@@ -126,9 +129,21 @@ var SPK = function (wrapper) {
         
           SPK.render(); 
 
+          // add yourself to the Syncer
           SPKSync.addInstance(SPK);
 
-          SPKLogger.newSession(SPK.GLOBALS.model);
+          if(options.logger) 
+            SPKLogger.newSession(SPK.GLOBALS.model);
+          
+          if(options.saver)
+            SPKSaver.init(SPK);
+
+
+          SPKUiManager.addGroup($("#wrapper-settings"), "namedviews", "fa-eye", false);
+          SPKUiManager.addGroup("", "settings", "fa-cogs", false);
+          SPKUiManager.addGroup("", "extra", "fa-plus", false);
+
+          SPKUiManager.init();
 
         });      
 
@@ -143,10 +158,13 @@ var SPK = function (wrapper) {
     $.getJSON(SPKConfig.GEOMAPI + SPK.GLOBALS.model, function (data) {
     
       SPK.GLOBALS.metadata.paramsFile = data.paramsFile.replace("./uploads", "http://localhost:8000/uploads");
+      
       SPK.GLOBALS.metadata.staticGeoFile = data.staticGeoFile.replace("./uploads", "http://localhost:8000/uploads");
+      
       SPK.GLOBALS.metadata.rootFiles = SPK.GLOBALS.metadata.staticGeoFile.replace("/static.json", "/");
 
       $(".model-name").html(data.modelName);
+      
       $(".model-meta").html("Added on " + data.dateAdded + " by " + data.ownerName);
 
       callback();
@@ -171,7 +189,7 @@ var SPK = function (wrapper) {
         
         var sliderId = paramId + "_slider_" + i;
 
-        $( "#" + paramId ).append( $("<div>", { id: sliderId, class: "basic-slider" } ) );
+        $( "#" + paramId ).append( $( "<div>", { id: sliderId, class: "basic-slider" } ) );
 
         var myRange = {}, norm = 100 / (params[i].values.length-1);
 
@@ -207,10 +225,13 @@ var SPK = function (wrapper) {
         slider.on("change", SPK.addNewInstance);
 
         // add to master
-
+        slider.paramName = params[i].name;
         SPK.GLOBALS.sliders.push(slider);
       }
 
+
+      SPKUiManager.addGroup(SPK.HMTL.sliderwrapper, "params", "fa-sliders", false);
+            
       callback();
 
     });
@@ -352,19 +373,17 @@ var SPK = function (wrapper) {
     // 
     // make the scene + renderer
 
-    SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : false, alpha: true} );
+    SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : true, alpha: true} );
 
     SPK.VIEWER.renderer.setClearColor( 0xF2F2F2 ); 
 
-    SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );
+    SPK.VIEWER.renderer.setPixelRatio( 1 );  // change to window.devicePixelRatio 
     
     SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); 
 
     SPK.VIEWER.renderer.shadowMap.enabled = true;
     
     $(SPK.HMTL.canvas).append( SPK.VIEWER.renderer.domElement );
-
-    SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); 
 
     SPK.VIEWER.camera = new THREE.PerspectiveCamera( 40, $(SPK.HMTL.canvas).innerWidth() * 1 / $(SPK.HMTL.canvas).innerHeight(), 1, SPK.GLOBALS.boundingSphere.radius * 100 );
 
@@ -483,6 +502,26 @@ var SPK = function (wrapper) {
 
   }
 
+  SPK.loadInstanceForced = function(key) {
+
+    if( SPK.GLOBALS.currentKey === key) return;
+
+    SPK.removeCurrentInstance();
+
+    var params = key.split(",");
+    
+    for( var i = 0; i < params.length - 1; i++ ) {
+
+      SPK.GLOBALS.sliders[i].set(params[i]);
+
+    }
+
+    //SPK.GLOBALS.currentKey = key;
+
+    SPK.addNewInstance();
+
+  }
+
   SPK.render = function() {
 
     requestAnimationFrame( SPK.render );
@@ -516,11 +555,11 @@ var SPK = function (wrapper) {
 
     SPK.SCENE.grid = grid;
     SPK.SCENE.plane = plane;
+
   }
 
 
-
-/*************************************************
+  /*************************************************
   /   SPK Random functions that should probs go somewehere else
   *************************************************/
 
@@ -539,7 +578,9 @@ var SPK = function (wrapper) {
   }
 
   SPK.alignSliders = function () {
-
+    
+    return;
+    
     var containerHeight = $(SPK.HMTL.sidebar).innerHeight(); 
     
     var wrapperHeight = $(SPK.HMTL.sidebar).find("#wrapper-params").height(); 
@@ -547,7 +588,7 @@ var SPK = function (wrapper) {
     var diff = containerHeight - wrapperHeight;
 
     if( diff > 0 ) {
-      $(SPK.HMTL.sidebar).find("#wrapper-params").css("top", diff/2 + "px");
+      $(SPK.HMTL.sidebar).find("#wrapper-params").css("top", diff / 2 + "px");
     }
 
   }
@@ -563,7 +604,7 @@ var SPK = function (wrapper) {
   /   SPK INIT
   *************************************************/
     
-  SPK.init(wrapper);
+  SPK.init(wrapper, options);
 
 }
 

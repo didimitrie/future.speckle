@@ -39,7 +39,9 @@ hr {
 }
 
 a {
+  transition: color 0.2s ease;
   color : $accentColour;
+  text-decoration: none !important;
 }
 
 a:hover {
