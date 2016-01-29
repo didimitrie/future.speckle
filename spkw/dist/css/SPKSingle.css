@@ -461,8 +461,7 @@ p.parameter_name {
 #main-wrapper {
   position: relative;
   top: -1px;
-  background-color: #FF49F1;
-  height: 100%; }
+  background-color: #FF49F1; }
 
 #spk-metadata {
   width: 100%;

@@ -50040,9 +50040,9 @@ var SPK = function (wrapper, options) {
             SPKSaver.init(SPK);
 
 
-          SPKUiManager.addGroup($("#wrapper-settings"), "namedviews", "fa-eye", false);
-          SPKUiManager.addGroup("", "settings", "fa-cogs", false);
-          SPKUiManager.addGroup("", "extra", "fa-plus", false);
+          //SPKUiManager.addGroup($("#wrapper-settings"), "namedviews", "fa-eye", false);
+          SPKUiManager.addGroup("#wrapper-settings", "settings", "fa-cogs", false);
+          //SPKUiManager.addGroup("", "extra", "fa-plus", false);
 
           SPKUiManager.init();
 
