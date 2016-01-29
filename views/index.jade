@@ -75,12 +75,13 @@ block content
       .col-sm-12
         hr
         if(!loggedIn)
-          h1.strong.text-center #[a(href="#") Curious? Register for the beta!.]
+          h1.strong.text-center #[a(href="#" onclick="window.signin();") Curious? Register for the beta!]
+          p.text-center Service is provided as-is, without any guarantee. 
         else 
           h1.strong.text-center Welcome back, #{username}. #[a(href="/profile") Open your dashboard?]
         hr
 
-      .col-sm-12
+      .col-sm-12.text-center
         .row
           .col-sm-4
             h3.

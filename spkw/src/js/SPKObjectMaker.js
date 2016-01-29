@@ -110,7 +110,7 @@ var SPKObjectMaker = function() {
 
   SPKObjectMaker.makePolyline = function( data, key, callback ) {
 
-    var material = new THREE.LineBasicMaterial( { color : 0x0000FF } );
+    var material = new THREE.LineBasicMaterial( { color : 0x97C3FF } ); //#
     
     material.transparent = true;
 

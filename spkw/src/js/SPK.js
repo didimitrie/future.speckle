@@ -140,10 +140,12 @@ var SPK = function (wrapper, options) {
 
 
           //SPKUiManager.addGroup($("#wrapper-settings"), "namedviews", "fa-eye", false);
-          SPKUiManager.addGroup("#wrapper-settings", "settings", "fa-cogs", false);
+          //SPKUiManager.addGroup("#wrapper-settings", "settings", "fa-cogs", false);
           //SPKUiManager.addGroup("", "extra", "fa-plus", false);
 
           SPKUiManager.init();
+
+          SPK.zoomExtents();
 
         });      
 
@@ -230,7 +232,7 @@ var SPK = function (wrapper, options) {
       }
 
 
-      SPKUiManager.addGroup(SPK.HMTL.sliderwrapper, "params", "fa-sliders", false);
+      //SPKUiManager.addGroup(SPK.HMTL.sliderwrapper, "params", "fa-sliders", false);
             
       callback();
 
@@ -377,7 +379,7 @@ var SPK = function (wrapper, options) {
 
     SPK.VIEWER.renderer.setClearColor( 0xF2F2F2 ); 
 
-    SPK.VIEWER.renderer.setPixelRatio( 1 );  // change to window.devicePixelRatio 
+    SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );  // change to window.devicePixelRatio 
     
     SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); 
 
@@ -424,7 +426,7 @@ var SPK = function (wrapper, options) {
     
     SPK.VIEWER.scene.add( new THREE.AmbientLight( 0xD8D8D8 ) );
    
-    var flashlight = new THREE.PointLight( 0xffffff, 1, SPK.GLOBALS.boundingSphere.radius * 12, 1);
+    var flashlight = new THREE.PointLight( 0xffffff, 0.8, SPK.GLOBALS.boundingSphere.radius * 12, 1);
     
     SPK.VIEWER.camera.add( flashlight );
     

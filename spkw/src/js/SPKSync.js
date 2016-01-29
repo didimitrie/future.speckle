@@ -6,10 +6,16 @@ var SPKSync = function () {
   var SPKSync = this;
 
   SPKSync.instances = [];
+  SPKSync.pause = false;
 
   SPKSync.addInstance = function (instance) {
 
     SPKSync.instances.push(instance);
+
+    $(".toggle-grid").on("click", SPKSync.toggleGrid);
+    $(".toggle-plane").on("click", SPKSync.toggleGroundplane);
+    $(".toggle-shadows").on("click", SPKSync.toggleShadows);
+    $(".toggle-zoom").on("click", SPKSync.zoomExtents);
 
   }
 
@@ -89,6 +95,8 @@ var SPKSync = function () {
 
   $(document).keyup(function(e) {
 
+    if(SPKSync.pause) return;
+
     if(e.keyCode == 71) 
       SPKSync.toggleGrid();
 
@@ -102,6 +110,7 @@ var SPKSync = function () {
       SPKSync.zoomExtents();
 
   });
+
 
 
 }

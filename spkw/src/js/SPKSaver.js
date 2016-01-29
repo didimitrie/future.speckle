@@ -2,6 +2,7 @@
 var $               = require('jquery');
 var SPKUiManager    = require('./SPKUiManager');
 var SPKConfig       = require('./SPKConfig.js');
+var SPKSync       = require('./SPKSync.js');
 
 var SPKSaver = function (wrapper) {
   
@@ -24,6 +25,21 @@ var SPKSaver = function (wrapper) {
 
     SPKSaver.SPK = SPKInstance;
 
+    $(SPKSaver.HTML.form).find("textarea").focusin( function () {
+      SPKSync.pause = true;
+    }) 
+
+    $(SPKSaver.HTML.form).find("textarea").focusout( function () {
+      SPKSync.pause = false;
+    })
+
+    $(SPKSaver.HTML.form).find("textarea").keypress(function(event) {
+      if (event.which == 13) {
+          event.preventDefault();
+          $(SPKSaver.HTML.form).submit();
+      }
+    });
+
     $(SPKSaver.HTML.form).on("submit", function (e) {
 
       e.preventDefault();
@@ -37,7 +53,6 @@ var SPKSaver = function (wrapper) {
       }
       
       if(dataToSubmit.description === "") {
-        alert("Please add a description.")
         return;
       }
       
@@ -53,7 +68,7 @@ var SPKSaver = function (wrapper) {
 
     SPKSaver.refreshList();
 
-    SPKUiManager.addGroup(SPKSaver.HTML.wrapper, "saving-ui", "fa-comments", false);
+    //SPKUiManager.addGroup(SPKSaver.HTML.wrapper, "saving-ui", "fa-comments", false);
 
   }
 
@@ -62,21 +77,25 @@ var SPKSaver = function (wrapper) {
     $(SPKSaver.HTML.list).html("");
     
     $.post(SPKConfig.INSTAPI, { type: "getsavedinstances", model: SPKSaver.SPK.GLOBALS.model}, function(data){
-   
+        
         data = data.reverse();
    
-        if(data.length)
+        if(data.length) {
    
           for( var i = 0; i < data.length; i++ ) {
    
             SPKSaver.createInstance( data[i], i );
    
           }
-   
-        else 
+
+          $(".model-comments").text("There are " + data.length + " saved configurations.");
+          
+
+        } else {
    
           $(SPKSaver.HTML.list).append("<h3 class='text-center'> There are no saved configurations. Add one!</h3>")
-   
+        }
+
     });
   
   }
@@ -88,6 +107,7 @@ var SPKSaver = function (wrapper) {
     $( "#instance-" + index ).append( "<p class='key'>" + SPKSaver.parseKeyName( instance.key, index ) + "</p>");
 
     $( "#instance-" + index ).attr( "spk-inst", instance.key );
+    $( "#instance-" + index ).attr( "spk-inst-index", index );
     
     // behaviour
     $( "#instance-" + index ).click( function () {
@@ -96,7 +116,7 @@ var SPKSaver = function (wrapper) {
 
       SPKSaver.SPK.loadInstanceForced(myKey);
 
-      $(".instance-element").removeClass("active");
+      $(".instance-element.active").removeClass("active");
 
       $(this).addClass("active");
       

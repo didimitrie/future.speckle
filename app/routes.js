@@ -57,6 +57,18 @@ module.exports = function(app, passport, express) {
 	
   });
 
+  app.get("/beta", function(req, res){
+    res.render("beta.jade");
+  });
+
+  app.get("/terms", function(req, res){
+    res.render("terms.jade");
+  });
+
+  app.get("/cookies", function(req, res){
+    res.render("cookies.jade");
+  });
+
 	/**
 	 *  User Profile
 	 */

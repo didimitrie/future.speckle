@@ -11,34 +11,49 @@ body
 
   #spk-viewer
     
-    #spk-ui
-      #spk-metadata.text-centerx
-        h3 #[strong.model-name ]
-        p.model-meta.blue 
-      
-      #spk-ui-controls
+    #spk-left-ui
+      #spk-metadata.text-center
+        h2 #[strong.model-name ]
+        p.model-meta.blue
+        p.model-comments
       #main-wrapper  
         #wrapper-params.wrapper
           #spk-sliders
-          br
+    
 
-          h2.text-center #[i.fa.fa-save]
-        
-        #wrapper-saver.wrapper.hidden
-          //form#save-instance
-            textarea(placeholder="To save a configuration, give it a description and click submit." rows=2)
-            button(type="submit" form="save-instance" value="Submit") Submit  
-          br
-          #instance-list
+    #spk-save-controls.hide-right
+      i.fa.fa-copy 
+    #spk-save-ui.hide-right-ui
+      #wrapper-saver.wrapper
+        div.instance-element
+          form#save-instance
+            textarea(placeholder="To save a configuration, give it a description and hit enter." rows=3)
+        br
+        #instance-list
 
-        #wrapper-settings.wrapper.hidden
-          h3.text-centerx Toggle Grid 
-          h3.text-centerx Toggle Ground Plane 
-          h3.text-centerx Toggle Shadows
-          h3.text-centerx Zoom Extents
-      
-      #spk-footer
-        p #[a.logo(href="/") Made With #[i.fa.fa-sliders] S]
+    #spk-settings-controls.hide-right
+      i.fa.fa-cogs
+    #spk-settings-ui.hide-right-ui
+      #wrapper-saver.wrapper
+        #instance-list
+          div.instance-element.toggle-grid
+            p.description Toggle Grid 
+            p Keyboard shortcut: (g)
+          div.instance-element.toggle-plane
+            p.description Toggle Ground Plane
+            p Keyboard shortcut: (p)
+          div.instance-element.toggle-shadows
+            p.description Toggle Shadows
+            p Keyboard shortcut: (s)
+          div.instance-element.toggle-zoom
+            p.description Zoom All
+            p Keyboard shortcut: (e)
+          //div.instance-element.toggle-shadows
+            p.description TODOs
+            p Lights, object visibilities, etc.
+
+
+  
     #spk-canvas
     
  

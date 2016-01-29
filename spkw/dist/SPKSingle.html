@@ -8,33 +8,57 @@
 </html>
 <body>
   <div id="spk-viewer">
-    <div id="spk-ui">
-      <div id="spk-metadata" class="text-centerx">
-        <h3><strong class="model-name"> </strong></h3>
-        <p class="model-meta blue"> </p>
+    <div id="spk-left-ui">
+      <div id="spk-metadata" class="text-center">
+        <h2><strong class="model-name"> </strong></h2>
+        <p class="model-meta blue"></p>
+        <p class="model-comments"></p>
       </div>
-      <div id="spk-ui-controls"></div>
       <div id="main-wrapper"> 
         <div id="wrapper-params" class="wrapper">
-          <div id="spk-sliders"></div><br>
-          <h2 class="text-center"><i class="fa fa-save"></i></h2>
-        </div>
-        <div id="wrapper-saver" class="wrapper hidden">
-          <!--form#save-instance
-          textarea(placeholder="To save a configuration, give it a description and click submit." rows=2)
-          button(type="submit" form="save-instance" value="Submit") Submit  
-          --><br>
-          <div id="instance-list"></div>
-        </div>
-        <div id="wrapper-settings" class="wrapper hidden">
-          <h3 class="text-centerx">Toggle Grid </h3>
-          <h3 class="text-centerx">Toggle Ground Plane </h3>
-          <h3 class="text-centerx">Toggle Shadows</h3>
-          <h3 class="text-centerx">Zoom Extents</h3>
+          <div id="spk-sliders"></div>
         </div>
       </div>
-      <div id="spk-footer">
-        <p><a href="/" class="logo">Made With <i class="fa fa-sliders"></i> S</a></p>
+    </div>
+    <div id="spk-save-controls" class="hide-right"><i class="fa fa-copy"> </i></div>
+    <div id="spk-save-ui" class="hide-right-ui">
+      <div id="wrapper-saver" class="wrapper">
+        <div class="instance-element">
+          <form id="save-instance">
+            <textarea placeholder="To save a configuration, give it a description and hit enter." rows="3"></textarea>
+          </form>
+        </div><br>
+        <div id="instance-list"></div>
+      </div>
+    </div>
+    <div id="spk-settings-controls" class="hide-right"><i class="fa fa-cogs"></i></div>
+    <div id="spk-settings-ui" class="hide-right-ui">
+      <div id="wrapper-saver" class="wrapper">
+        <div id="instance-list">
+          <div class="instance-element toggle-grid">
+            <p class="description">Toggle Grid </p>
+            <p>Keyboard shortcut: (g)</p>
+          </div>
+          <div class="instance-element toggle-plane">
+            <p class="description">Toggle Ground Plane</p>
+            <p>Keyboard shortcut: (p)</p>
+          </div>
+          <div class="instance-element toggle-shadows">
+            <p class="description">Toggle Shadows</p>
+            <p>Keyboard shortcut: (s)</p>
+          </div>
+          <div class="instance-element toggle-zoom">
+            <p class="description">Zoom All</p>
+            <p>Keyboard shortcut: (e)</p>
+          </div>
+          <!--div.instance-element.toggle-shadows
+          p.description TODOs
+          p Lights, object visibilities, etc.
+          
+          
+          
+          -->
+        </div>
       </div>
     </div>
     <div id="spk-canvas"></div>
