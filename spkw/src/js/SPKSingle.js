@@ -16,7 +16,7 @@ $( function() {
   var mySPK  = new SPK( $( '#spk-viewer' ), {
     saver : true,
     settings : true,
-    logger : false
+    logger : true
   });
 
 });
