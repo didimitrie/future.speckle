@@ -50030,7 +50030,6 @@ var SPK = function (wrapper, options) {
         
           SPK.render(); 
 
-          // add yourself to the Syncer
           SPKSync.addInstance(SPK);
 
           if(options.logger) 
@@ -50039,12 +50038,9 @@ var SPK = function (wrapper, options) {
           if(options.saver)
             SPKSaver.init(SPK);
 
-
-          SPKUiManager.addGroup($("#wrapper-settings"), "namedviews", "fa-eye", false);
-          SPKUiManager.addGroup("", "settings", "fa-cogs", false);
-          SPKUiManager.addGroup("", "extra", "fa-plus", false);
-
           SPKUiManager.init();
+
+          SPK.zoomExtents();
 
         });      
 
@@ -50057,10 +50053,10 @@ var SPK = function (wrapper, options) {
   SPK.getModelMeta = function(callback) {
 
     $.getJSON(SPKConfig.GEOMAPI + SPK.GLOBALS.model, function (data) {
-    
-      SPK.GLOBALS.metadata.paramsFile = data.paramsFile.replace("./uploads", "http://localhost:8000/uploads");
       
-      SPK.GLOBALS.metadata.staticGeoFile = data.staticGeoFile.replace("./uploads", "http://localhost:8000/uploads");
+      SPK.GLOBALS.metadata.paramsFile = data.paramsFile.replace("./uploads", SPKConfig.UPLOADDIR);
+      
+      SPK.GLOBALS.metadata.staticGeoFile = data.staticGeoFile.replace("./uploads", SPKConfig.UPLOADDIR);
       
       SPK.GLOBALS.metadata.rootFiles = SPK.GLOBALS.metadata.staticGeoFile.replace("/static.json", "/");
 
@@ -50083,10 +50079,11 @@ var SPK = function (wrapper, options) {
       for( var i = 0; i < params.length; i++ ) {
         
         var paramId = $(SPK.HMTL.wrapper).attr("id") + "_parameter_" + i;
+        var paramName = params[i].name === "" ? "Unnamed Parameter" : params[i].name;
 
         $(SPK.HMTL.sliders).append( $( "<div>", { id: paramId, class: "parameter" } ) );
         
-        $( "#" + paramId ).append( "<p class='parameter_name'>" + params[i].name + "</p>" );
+        $( "#" + paramId ).append( "<p class='parameter_name'>" + paramName + "</p>" );
         
         var sliderId = paramId + "_slider_" + i;
 
@@ -50130,9 +50127,6 @@ var SPK = function (wrapper, options) {
         SPK.GLOBALS.sliders.push(slider);
       }
 
-
-      SPKUiManager.addGroup(SPK.HMTL.sliderwrapper, "params", "fa-sliders", false);
-            
       callback();
 
     });
@@ -50156,7 +50150,7 @@ var SPK = function (wrapper, options) {
   SPK.removeCurrentInstance = function () {
 
     var opacity = 1;
-    var duration = 1000;
+    var duration = 600;
     var out = [];
     
     for(var i = 0; i < SPK.VIEWER.scene.children.length; i++ ) {
@@ -50180,7 +50174,13 @@ var SPK = function (wrapper, options) {
 
       }
 
-      if( this.x == opacity * 0.5 ) console.log("Wow");
+      if(( this.x >= opacity * 0.5 ) && (this.calledNext===undefined))
+      {
+        /*
+        this.calledNext = true;
+        SPK.addNewInstance();
+        */
+      }
 
     })
     .onComplete( function() {
@@ -50201,14 +50201,17 @@ var SPK = function (wrapper, options) {
 
   }
 
+  SPK.purgeScene = function() {
+    // TODO 
+  }
+
   SPK.addNewInstance = function() {
 
     var key = SPK.getCurrentKey();
 
     if(SPK.GLOBALS.currentKey === key) {
     
-      console.warn("No key change needed");
-    
+      SPK.purgeScene();
       return;
     }
 
@@ -50231,7 +50234,7 @@ var SPK = function (wrapper, options) {
         }
       }
 
-      var duration = 600, opacity = 1;
+      var duration = 300, opacity = 1;
       var tweenIn = new TWEEN.Tween( { x : 0 } )
       .to( { x: opacity }, duration )
       .onUpdate( function() {
@@ -50278,7 +50281,7 @@ var SPK = function (wrapper, options) {
 
     SPK.VIEWER.renderer.setClearColor( 0xF2F2F2 ); 
 
-    SPK.VIEWER.renderer.setPixelRatio( 1 );  // change to window.devicePixelRatio 
+    SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );  // change to window.devicePixelRatio 
     
     SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); 
 
@@ -50325,7 +50328,7 @@ var SPK = function (wrapper, options) {
     
     SPK.VIEWER.scene.add( new THREE.AmbientLight( 0xD8D8D8 ) );
    
-    var flashlight = new THREE.PointLight( 0xffffff, 1, SPK.GLOBALS.boundingSphere.radius * 12, 1);
+    var flashlight = new THREE.PointLight( 0xffffff, 0.8, SPK.GLOBALS.boundingSphere.radius * 12, 1);
     
     SPK.VIEWER.camera.add( flashlight );
     
@@ -50549,9 +50552,21 @@ var SPKConfig = function () {
 
   var SPKConfig = this;
 
-  SPKConfig.GEOMAPI    = "http://localhost:8000/api/model/";
-  SPKConfig.METAAPI    = "http://localhost:8000/api/model/metadata/";
-  SPKConfig.INSTAPI    = "http://localhost:8000/api/model/instances/";
+  // deployment
+  /* 
+  SPKConfig.GEOMAPI    = "http://beta.speckle.xyz/api/model/";
+  SPKConfig.METAAPI    = "http://beta.speckle.xyz/api/model/metadata/";
+  SPKConfig.INSTAPI    = "http://beta.speckle.xyz/api/model/instances/";
+  SPKConfig.APPID      = "SPKWOfficial";
+   */
+  
+  // testing
+ 
+  SPKConfig.APPDIR     = "http://localhost:9009";
+  SPKConfig.UPLOADDIR  = "http://localhost:9009/uploads";
+  SPKConfig.GEOMAPI    = "http://localhost:9009/api/model/";
+  SPKConfig.METAAPI    = "http://localhost:9009/api/model/metadata/";
+  SPKConfig.INSTAPI    = "http://localhost:9009/api/model/instances/";
   SPKConfig.APPID      = "SPKWOfficial";
 
 }
@@ -50922,7 +50937,7 @@ var SPKObjectMaker = function() {
 
   SPKObjectMaker.makePolyline = function( data, key, callback ) {
 
-    var material = new THREE.LineBasicMaterial( { color : 0x0000FF } );
+    var material = new THREE.LineBasicMaterial( { color : 0x97C3FF } ); //#
     
     material.transparent = true;
 
@@ -50966,6 +50981,7 @@ module.exports = new SPKObjectMaker();
 var $               = require('jquery');
 var SPKUiManager    = require('./SPKUiManager');
 var SPKConfig       = require('./SPKConfig.js');
+var SPKSync       = require('./SPKSync.js');
 
 var SPKSaver = function (wrapper) {
   
@@ -50988,6 +51004,21 @@ var SPKSaver = function (wrapper) {
 
     SPKSaver.SPK = SPKInstance;
 
+    $(SPKSaver.HTML.form).find("textarea").focusin( function () {
+      SPKSync.pause = true;
+    }) 
+
+    $(SPKSaver.HTML.form).find("textarea").focusout( function () {
+      SPKSync.pause = false;
+    })
+
+    $(SPKSaver.HTML.form).find("textarea").keypress(function(event) {
+      if (event.which == 13) {
+          event.preventDefault();
+          $(SPKSaver.HTML.form).submit();
+      }
+    });
+
     $(SPKSaver.HTML.form).on("submit", function (e) {
 
       e.preventDefault();
@@ -51001,7 +51032,6 @@ var SPKSaver = function (wrapper) {
       }
       
       if(dataToSubmit.description === "") {
-        alert("Please add a description.")
         return;
       }
       
@@ -51017,7 +51047,7 @@ var SPKSaver = function (wrapper) {
 
     SPKSaver.refreshList();
 
-    SPKUiManager.addGroup(SPKSaver.HTML.wrapper, "saving-ui", "fa-comments", false);
+    //SPKUiManager.addGroup(SPKSaver.HTML.wrapper, "saving-ui", "fa-comments", false);
 
   }
 
@@ -51026,21 +51056,25 @@ var SPKSaver = function (wrapper) {
     $(SPKSaver.HTML.list).html("");
     
     $.post(SPKConfig.INSTAPI, { type: "getsavedinstances", model: SPKSaver.SPK.GLOBALS.model}, function(data){
-   
+        
         data = data.reverse();
    
-        if(data.length)
+        if(data.length) {
    
           for( var i = 0; i < data.length; i++ ) {
    
             SPKSaver.createInstance( data[i], i );
    
           }
-   
-        else 
+
+          $(".model-comments").text("There are " + data.length + " saved configurations.");
+          
+
+        } else {
    
           $(SPKSaver.HTML.list).append("<h3 class='text-center'> There are no saved configurations. Add one!</h3>")
-   
+        }
+
     });
   
   }
@@ -51052,6 +51086,7 @@ var SPKSaver = function (wrapper) {
     $( "#instance-" + index ).append( "<p class='key'>" + SPKSaver.parseKeyName( instance.key, index ) + "</p>");
 
     $( "#instance-" + index ).attr( "spk-inst", instance.key );
+    $( "#instance-" + index ).attr( "spk-inst-index", index );
     
     // behaviour
     $( "#instance-" + index ).click( function () {
@@ -51060,7 +51095,7 @@ var SPKSaver = function (wrapper) {
 
       SPKSaver.SPK.loadInstanceForced(myKey);
 
-      $(".instance-element").removeClass("active");
+      $(".instance-element.active").removeClass("active");
 
       $(this).addClass("active");
       
@@ -51090,7 +51125,7 @@ var SPKSaver = function (wrapper) {
 
 // make it unique across all instances
 module.exports = new SPKSaver();
-},{"./SPKConfig.js":8,"./SPKUiManager":15,"jquery":1}],14:[function(require,module,exports){
+},{"./SPKConfig.js":8,"./SPKSync.js":14,"./SPKUiManager":15,"jquery":1}],14:[function(require,module,exports){
 
 var $           = require('jquery');
 
@@ -51099,10 +51134,16 @@ var SPKSync = function () {
   var SPKSync = this;
 
   SPKSync.instances = [];
+  SPKSync.pause = false;
 
   SPKSync.addInstance = function (instance) {
 
     SPKSync.instances.push(instance);
+
+    $(".toggle-grid").on("click", SPKSync.toggleGrid);
+    $(".toggle-plane").on("click", SPKSync.toggleGroundplane);
+    $(".toggle-shadows").on("click", SPKSync.toggleShadows);
+    $(".toggle-zoom").on("click", SPKSync.zoomExtents);
 
   }
 
@@ -51182,6 +51223,8 @@ var SPKSync = function () {
 
   $(document).keyup(function(e) {
 
+    if(SPKSync.pause) return;
+
     if(e.keyCode == 71) 
       SPKSync.toggleGrid();
 
@@ -51195,6 +51238,7 @@ var SPKSync = function () {
       SPKSync.zoomExtents();
 
   });
+
 
 
 }
@@ -51213,93 +51257,37 @@ var SPKUiManager = function () {
   SPKUiManager.activeUi = null;
 
   SPKUiManager.init = function () {
-
-    $(SPKUiManager.controlGroups[0].tag).addClass("active");
     
-    // center the tags
-    var diff = window.innerHeight - $("#spk-ui-controls").height();
- 
-    //$("#spk-ui-controls").css("top", diff/2-20 + "px");
-    //$("#spk-ui-controls").css("top", -20 + "px");
-
-    // center the wrappers
-    for( var i = 0; i < SPKUiManager.controlGroups.length; i++ ) {
+    $("#spk-save-controls").on("click", function () {
       
-      var myGroup =  SPKUiManager.controlGroups[i];
-
-      if( myGroup.center ) {
-        var wrpHeight = $(myGroup.html).height();
-        var sdbHeight = $(myGroup.html).parent().height();
-
-        var diff = sdbHeight - wrpHeight;
-        //$(myGroup.html).css("top", diff/2 + "px");
-      }
-    }
-
-  }
-
-  SPKUiManager.centerWrapper = function (groupName) {
-    for( var i = 0; i < SPKUiManager.controlGroups.length; i++ ) {
-          
-          var myGroup =  SPKUiManager.controlGroups[i];
-
-          if(myGroup.name === groupName ) {
-
-            var diff = $(myGroup.html).parent().height() - $(myGroup.html).height();
-            
-            $(myGroup.html).css("top", diff/2 + "px");
-
-          }
-        }
-  }
-  
-  SPKUiManager.sortOut = function () {
-    
-    var myName = $(this).attr("id").replace("tag-","");
-    
-    for( var i = 0; i < SPKUiManager.controlGroups.length; i++ ) {
+      $("#spk-save-ui").toggleClass("hide-right-ui");
       
-      var myGroup =  SPKUiManager.controlGroups[i];
-      
-      if( myGroup.name === myName ) {
-        $(myGroup.tag).addClass("active");
-        $(myGroup.html).removeClass("hidden");
-      } else {
-        $(myGroup.tag).removeClass("active");
-        $(myGroup.html).addClass("hidden");
+      $(this).toggleClass("hide-right");
+
+      if($(this).hasClass("hide-right")) 
+        $(this).html("<i class='fa fa-copy'></i>")
+      else{
+        $(this).html("<i class='fa fa-angle-double-left'></i>")
+        $(".instance-element").removeClass("active");
       }
 
-    }
+    });
 
+    $("#spk-settings-controls").on("click", function () {
+      
+      $("#spk-settings-ui").toggleClass("hide-right-ui");
+      
+      $(this).toggleClass("hide-right");
+
+      if($(this).hasClass("hide-right")) 
+        $(this).html("<i class='fa fa-cogs'></i>")
+      else{
+        $(this).html("<i class='fa fa-angle-double-left'></i>")
+        $(".instance-element").removeClass("active");
+      }
+
+    });
   }
-
-  SPKUiManager.addGroup = function ( htmlwrapper, name, icon, center ) {
-    
-    var myGroup = {
-      html : htmlwrapper,
-      tag : "",
-      name : name,
-      groupicon : icon,
-      center: center
-    }
-
-    SPKUiManager.controlGroups.push( myGroup );
-
-    $("#spk-ui-controls").append(
-      $("<div>", { 
-        id: "tag-" + myGroup.name,
-        html: "<i class='fa " + icon + "'></i>",
-        class: "tag",
-        on: {
-          click: SPKUiManager.sortOut,
-        }
-      })
-    );
-
-    myGroup.tag = $("#tag-" + myGroup.name);
-
-  }
-
 
 }
 

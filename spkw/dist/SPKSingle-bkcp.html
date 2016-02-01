@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <title>Future.Speckle: Display and explore parametric models in your browser.  </title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/SPKSingle.css">
+  <script src="js/SPKSingle.js"></script>
+</html>
+<body>
+  <div id="spk-viewer">
+    <div id="spk-left-ui">
+      <div id="spk-metadata" class="text-center">
+        <h3><strong class="model-name"> </strong></h3>
+        <p class="model-meta blue"> </p>
+      </div>
+      <div id="main-wrapper"> 
+        <div id="wrapper-params" class="wrapper">
+          <div id="spk-sliders"></div><br>
+          <h2 class="text-center"><i class="fa fa-save"></i></h2>
+        </div>
+      </div>
+    </div>
+    <div id="spk-right-ui"> 
+      <div id="wrapper-saver" class="wrapper hidden">
+        <div class="instance-element">
+          <form id="save-instance">
+            <textarea placeholder="To save a configuration, give it a description and click submit." rows="2"></textarea>
+            <button type="submit" form="save-instance" value="Submit">Submit  </button>
+          </form>
+        </div><br>
+        <div id="instance-list"></div>
+      </div>
+      <div id="wrapper-settings" class="wrapper hidden">
+        <h3 class="text-centerx">Toggle Grid </h3>
+        <h3 class="text-centerx">Toggle Ground Plane </h3>
+        <h3 class="text-centerx">Toggle Shadows</h3>
+        <h3 class="text-centerx">Zoom Extents</h3>
+      </div>
+      <div id="spk-footer">
+        <p><a href="/" class="logo">Made With <i class="fa fa-sliders"></i> S</a></p>
+      </div>
+    </div>
+    <div id="spk-canvas"></div>
+  </div>
+</body>

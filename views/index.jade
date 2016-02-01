@@ -6,15 +6,15 @@ block content
   .container
     .row(style="margin-top:20px")
       .col-sm-12
-        .row.vertical-align
-          .col-sm-8
+        .row
+          .col-sm-12.text-center
             h1 #[a.logo(href="/") #[i.fa.fa-sliders] S ]
-          .col-sm-4
-            h4.pull-right.text-right
+          .col-sm-12
+            p.pull-right.text-right
               if(loggedIn)
-                a(href="/profile") Welcome back, #[strong #{username}]!
+                a.thin(href="/profile") Welcome back, #[strong #{username}]!
               else
-                #[strong #[a(href="#", onclick="window.signin();") Log in | Register ]]
+                #[a.thin(href="#", onclick="window.signin();") Beta Login ]
       hr(style="margin-top:3px; margin-bottom:3px")
            
       
@@ -25,8 +25,6 @@ block content
         br
         h2.text-justify.
           Share with your clients the full flexibility of your designs: #[strong display and explore #[span.blue parametric models] in your browser].  
-        //h2.text-center.
-          #[strong Display and explore #[span.blue parametric models] in your browser].  
         br
         br
         br
@@ -46,8 +44,6 @@ block content
           .col-sm-6.text-right
             img(src="/img/collaborative.svg" onerror="this.onerror=null; this.src='image.png'")
 
-            //h1.blue
-              i.fa.fa-circle-o.fa-1x
       .col-sm-12
         hr
       .col-sm-12
@@ -71,14 +67,14 @@ block content
           .col-sm-6
             img(src="/img/howitworks-3.svg" onerror="this.onerror=null; this.src='image.png'")
           .col-sm-6.text-justify
-            h3 #[strong Step 3:] Users can now explore the your design in their browser and can rate copy needed.          
+            h3 #[strong Step 3:] Users can now explore the your parametric model in their browser!          
       .col-sm-12
         hr
         if(!loggedIn)
-          h1.strong.text-center #[a(href="#" onclick="window.signin();") Curious? Register for the beta!]
+          h1.strong.text-center #[a(href="/beta") Curious? Join the private beta!]
           p.text-center Service is provided as-is, without any guarantee. 
         else 
-          h1.strong.text-center Welcome back, #{username}. #[a(href="/profile") Open your dashboard?]
+          h1.strong.text-center Welcome back, #[span.thin #{username}]. #[a(href="/profile") Open your dashboard?]
         hr
 
       .col-sm-12.text-center
@@ -101,27 +97,27 @@ block content
       .clearfix
       .col-sm-12
         hr
-        .row.vertical-alignx
-          .col-sm-4
+        .row
+          .col-sm-4.text-right
             h3.
-              #[i.fa.fa-angle-right] Quickstart
+              Quickstart
             p. 
-              1. Register as a user. This will enable you to upload and share models. #[br]
+              1. #[a(href="/beta") Register] as a user. #[br]
               2. Download the GH component & install it. #[br]
               3. Export a model from GH.#[br]
               4. Upload it & enjoy!#[br]
-          .col-sm-4.text-centerx
-            h3
-              #[i.fa.fa-angle-right] Contribute
-            p.
-              The Speckle Parametric Model Viewer and the GH export component are open source. If you want to contribute or file a bug, head over to our Github page. 
+          .col-sm-4.text-center
+            h3.
+               Contribute
+            h2
+              i.fa.fa-github
           .col-sm-4
-            h3
-              #[i.fa.fa-angle-right] Supported Software
+            h3.
+              Supported Software
             p.
               Right now we only support Grasshopper/Rhino3d. 
             p.
-              We would really like it if you would want to write an exporter for Dynamo/Sketchup/Catia/GC/etc. The F.S format is rather basic - so check it out! 
+              We would really like it if you would want to write an exporter for Dynamo/Sketchup/Catia/GC/etc. #[a(href="mailto:d.stefanescu@ucl.ac.uk") Get in touch! ]
       .clearfix
 
       
@@ -131,10 +127,10 @@ block content
            
         script(src='https://cdn.auth0.com/js/lock-7.12.min.js')   
         script(type='text/javascript').
-          var lock = new Auth0Lock('BBXzV7vyE6KnrAbPkRM8ynf62WOqQTr2', 'dim.eu.auth0.com');
+          var lock = new Auth0Lock('xM4C16GZAbufm5citF6nJvj6wpAeYKlK', 'dim.eu.auth0.com');
           function signin() {
-            lock.show({
-            callbackURL: 'http://localhost:8000/callback'
+            lock.showSignin({
+            callbackURL: 'http://localhost:9009/callback'
             , responseType: 'code'
             , authParams: {
             scope: 'openid profile'

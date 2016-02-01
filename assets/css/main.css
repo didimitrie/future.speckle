@@ -16,6 +16,21 @@ h1 {
 .strong {
   font-weight: 700; }
 
+.thin {
+  font-weight: 400; }
+
+input {
+  font-size: 20px;
+  border: 0;
+  border-bottom: 1px dashed gray;
+  width: 80%;
+  padding: 10px;
+  box-sizing: border-box; }
+
+input:focus {
+  outline: none;
+  border-bottom: 1px solid #0000FF; }
+
 hr {
   border: 0;
   border-bottom: 1px dashed #CCCCCC; }

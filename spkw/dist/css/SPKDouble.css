@@ -93,9 +93,10 @@ table {
   height: 20px;
   left: -11px;
   top: -5px;
-  -webkit-box-shadow: 0px 0px 22px 1px rgba(50, 50, 50, 0.33);
-  -moz-box-shadow: 0px 0px 22px 1px rgba(50, 50, 50, 0.33);
-  box-shadow: 0px 0px 22px 1px rgba(50, 50, 50, 0.33); }
+  box-shadow: 0px 0px 2px 1px rgba(50, 50, 50, 0.33); }
+
+.noUi-handle:hover {
+  cursor: pointer; }
 
 .noUi-vertical {
   width: 18px; }

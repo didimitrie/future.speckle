@@ -4,10 +4,84 @@ block content
   .container
     .row(style="margin-top:20px")
       .col-sm-12
-        .row.vertical-align
+        .row
           .col-sm-12
             h1.text-center #[a.logo(href="/") #[i.fa.fa-sliders] S ]
-            h2.text-center Beta Registration
+            h2.text-center Beta
           
-      hr(style="margin-top:3px; margin-bottom:3px")
+        hr(style="margin-top:3px; margin-bottom:3px")
+        br
+        br
+        br
+      #form-wrapper
+        .col-sm-6.xxxcol-sm-offset-3.text-center
+          h2.strong I have a beta key:
+          form#beta
+            input.text-center(placeholder="secret key goes here")
+        .col-sm-6.xxxcol-sm-offset-3.text-center
+          h2.strong I want to get a beta key: 
+          form#waitlist
+            input.text-center(placeholder="your@real.email")
+
+        .col-sm-6.col-sm-offset-3.text-center
+          br
+          br
+          br
+          br
+          h2.strong Already have an account? #[a(href="/login") Login! ]
+          p The reason acess is limited right now is because a) we want to create a hype and b) we have no clue regarding how the usage will affect our server. 
+          p We do uphold the standard no spam pledge. 
+
+  script.
+    $(function() {
+
+      $("#beta").find("input").keypress(function(event) {
+        if (event.which == 13) {
+          event.preventDefault();
+          $("#beta").submit();
+        }
+      });
+
+      $("#beta").on("submit", function (e) {
+        console.log($("#beta").find("input").val())
+        e.preventDefault();
+        
+        $.post("/beta", {key: $("#beta").find("input").val()}, function(data) {
+
+          if(data === "proceed") {
+            window.location.href = "/signup";
+          }
+          if(data === "expired") {
+            alert("The key expired (it's already used up by a lot of people). Sorry!");
+          }
+          if(data === "nokey") {
+            alert("Wrong key, maybe a typo?");
+          }
+
+        });
+
+      });
+
+      $("#waitlist").find("input").keypress(function(event) {
+        if (event.which == 13) {
+          event.preventDefault();
+          $("#waitlist").submit();
+        }
+      });
+
+      $("#waitlist").on("submit", function (e) {
+        console.log($("#waitlist").find("input").val())
+        e.preventDefault();
+        
+        $.post("/waitinglist", {email: $("#waitlist").find("input").val()}, function(data) {
+
+          $("#form-wrapper").html("<h2>Thanks! You are <span class='blue'>#" + data.count + "</span> in the waiting list. You will receive an email with an invite code soon!</h2>");
+
+        });
+
+      });
+
+
+
+    })
            

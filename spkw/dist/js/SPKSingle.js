@@ -50030,7 +50030,6 @@ var SPK = function (wrapper, options) {
         
           SPK.render(); 
 
-          // add yourself to the Syncer
           SPKSync.addInstance(SPK);
 
           if(options.logger) 
@@ -50038,11 +50037,6 @@ var SPK = function (wrapper, options) {
           
           if(options.saver)
             SPKSaver.init(SPK);
-
-
-          //SPKUiManager.addGroup($("#wrapper-settings"), "namedviews", "fa-eye", false);
-          //SPKUiManager.addGroup("#wrapper-settings", "settings", "fa-cogs", false);
-          //SPKUiManager.addGroup("", "extra", "fa-plus", false);
 
           SPKUiManager.init();
 
@@ -50059,10 +50053,10 @@ var SPK = function (wrapper, options) {
   SPK.getModelMeta = function(callback) {
 
     $.getJSON(SPKConfig.GEOMAPI + SPK.GLOBALS.model, function (data) {
-    
-      SPK.GLOBALS.metadata.paramsFile = data.paramsFile.replace("./uploads", "http://localhost:8000/uploads");
       
-      SPK.GLOBALS.metadata.staticGeoFile = data.staticGeoFile.replace("./uploads", "http://localhost:8000/uploads");
+      SPK.GLOBALS.metadata.paramsFile = data.paramsFile.replace("./uploads", SPKConfig.UPLOADDIR);
+      
+      SPK.GLOBALS.metadata.staticGeoFile = data.staticGeoFile.replace("./uploads", SPKConfig.UPLOADDIR);
       
       SPK.GLOBALS.metadata.rootFiles = SPK.GLOBALS.metadata.staticGeoFile.replace("/static.json", "/");
 
@@ -50085,10 +50079,11 @@ var SPK = function (wrapper, options) {
       for( var i = 0; i < params.length; i++ ) {
         
         var paramId = $(SPK.HMTL.wrapper).attr("id") + "_parameter_" + i;
+        var paramName = params[i].name === "" ? "Unnamed Parameter" : params[i].name;
 
         $(SPK.HMTL.sliders).append( $( "<div>", { id: paramId, class: "parameter" } ) );
         
-        $( "#" + paramId ).append( "<p class='parameter_name'>" + params[i].name + "</p>" );
+        $( "#" + paramId ).append( "<p class='parameter_name'>" + paramName + "</p>" );
         
         var sliderId = paramId + "_slider_" + i;
 
@@ -50132,9 +50127,6 @@ var SPK = function (wrapper, options) {
         SPK.GLOBALS.sliders.push(slider);
       }
 
-
-      //SPKUiManager.addGroup(SPK.HMTL.sliderwrapper, "params", "fa-sliders", false);
-            
       callback();
 
     });
@@ -50158,7 +50150,7 @@ var SPK = function (wrapper, options) {
   SPK.removeCurrentInstance = function () {
 
     var opacity = 1;
-    var duration = 1000;
+    var duration = 600;
     var out = [];
     
     for(var i = 0; i < SPK.VIEWER.scene.children.length; i++ ) {
@@ -50182,7 +50174,13 @@ var SPK = function (wrapper, options) {
 
       }
 
-      if( this.x == opacity * 0.5 ) console.log("Wow");
+      if(( this.x >= opacity * 0.5 ) && (this.calledNext===undefined))
+      {
+        /*
+        this.calledNext = true;
+        SPK.addNewInstance();
+        */
+      }
 
     })
     .onComplete( function() {
@@ -50203,14 +50201,17 @@ var SPK = function (wrapper, options) {
 
   }
 
+  SPK.purgeScene = function() {
+    // TODO 
+  }
+
   SPK.addNewInstance = function() {
 
     var key = SPK.getCurrentKey();
 
     if(SPK.GLOBALS.currentKey === key) {
     
-      console.warn("No key change needed");
-    
+      SPK.purgeScene();
       return;
     }
 
@@ -50233,7 +50234,7 @@ var SPK = function (wrapper, options) {
         }
       }
 
-      var duration = 600, opacity = 1;
+      var duration = 300, opacity = 1;
       var tweenIn = new TWEEN.Tween( { x : 0 } )
       .to( { x: opacity }, duration )
       .onUpdate( function() {
@@ -50551,9 +50552,21 @@ var SPKConfig = function () {
 
   var SPKConfig = this;
 
+  // deployment
+  /* 
   SPKConfig.GEOMAPI    = "http://beta.speckle.xyz/api/model/";
   SPKConfig.METAAPI    = "http://beta.speckle.xyz/api/model/metadata/";
   SPKConfig.INSTAPI    = "http://beta.speckle.xyz/api/model/instances/";
+  SPKConfig.APPID      = "SPKWOfficial";
+   */
+  
+  // testing
+ 
+  SPKConfig.APPDIR     = "http://localhost:9009";
+  SPKConfig.UPLOADDIR  = "http://localhost:9009/uploads";
+  SPKConfig.GEOMAPI    = "http://localhost:9009/api/model/";
+  SPKConfig.METAAPI    = "http://localhost:9009/api/model/metadata/";
+  SPKConfig.INSTAPI    = "http://localhost:9009/api/model/instances/";
   SPKConfig.APPID      = "SPKWOfficial";
 
 }
