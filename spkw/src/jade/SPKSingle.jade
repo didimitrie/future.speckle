@@ -13,17 +13,21 @@ body
     
     #spk-left-ui
       #spk-metadata.text-center
+       
         h2 #[strong.model-name ]
         p.model-meta.blue
         p.model-comments
-      #main-wrapper  
-        #wrapper-params.wrapper
+      #main-wrapper
+        #wrapper-params.text-center
           #spk-sliders
+          
+          p #[a(href="http://beta.speckle.xyz") beta.speckle.xyz]
     
 
-    #spk-save-controls.hide-right
+    #spk-save-controls.hide-right.controls
       i.fa.fa-copy 
-    #spk-save-ui.hide-right-ui
+    #spk-save-ui.hide-right-ui.add-shadow
+
       #wrapper-saver.wrapper
         div.instance-element
           form#save-instance
@@ -31,9 +35,17 @@ body
         br
         #instance-list
 
-    #spk-settings-controls.hide-right
+    #spk-measures-controls.hide-right.controls
+      i.fa.fa-area-chart
+    #spk-measures-ui.hide-right-ui.add-shadow
+      #main-wrapper.wraper.wrapper-measures
+        #wrapper-measures
+           //h3.text-center
+            i.fa.fa-area-chart
+
+    #spk-settings-controls.hide-right.controls
       i.fa.fa-cogs
-    #spk-settings-ui.hide-right-ui
+    #spk-settings-ui.hide-right-ui.add-shadow
       #wrapper-saver.wrapper
         #instance-list
           div.instance-element.toggle-grid
@@ -48,10 +60,6 @@ body
           div.instance-element.toggle-zoom
             p.description Zoom All
             p Keyboard shortcut: (e)
-          //div.instance-element.toggle-shadows
-            p.description TODOs
-            p Lights, object visibilities, etc.
-
 
   
     #spk-canvas

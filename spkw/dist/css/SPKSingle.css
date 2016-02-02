@@ -160,7 +160,7 @@ table {
   left: -19px;
   text-align: center;
   width: 50px;
-  XXXborder: 1px solid black; }
+  transition: background-color 0.2s ease; }
 
 .noUi-handle-lower .noUi-tooltip {
   bottom: -20px; }
@@ -260,6 +260,30 @@ table {
 
 .noUi-marker-vertical.noUi-marker-large {
   width: 15px; }
+
+/**
+ * DIM's Late evning DRACONES // stay away and refactor
+ * later
+ * not now xxx
+ */
+.measure-slider {
+  background-color: #CFCFCF !important;
+  height: 1px !important; }
+  .measure-slider .noUi-handle {
+    background-color: #000000 !important;
+    width: 0px;
+    height: 0px;
+    left: -11px;
+    top: -5px;
+    box-shadow: 0; }
+  .measure-slider .noUi-tooltip {
+    bottom: -12px;
+    background-color: #E5E5E5;
+    color: black; }
+
+.measure:hover .noUi-tooltip {
+  background-color: #0000FF;
+  color: white; }
 
 /*! Typebase.less v0.1.0 | MIT License */
 /* Setup */
@@ -446,6 +470,12 @@ p.parameter_name {
 .blue {
   color: #0000FF; }
 
+.clear {
+  clear: both; }
+
+.add-shadow {
+  box-shadow: 0px -2px 7px 0px rgba(0, 0, 0, 0.15); }
+
 #spk-viewer {
   position: absolute;
   top: 0;
@@ -458,8 +488,8 @@ p.parameter_name {
   top: 0;
   left: 40%;
   width: 50px;
-  height: 50px;
-  line-height: 50px;
+  height: 70px;
+  line-height: 70px;
   font-size: 15px;
   text-align: center;
   background-color: white;
@@ -472,13 +502,47 @@ p.parameter_name {
   cursor: pointer;
   box-shadow: 5px 0px 8px -3px rgba(0, 0, 0, 0.3); }
 
-#spk-settings-controls {
+#spk-measures-controls {
   position: absolute;
-  top: 50px;
+  top: 70px;
   left: 40%;
   width: 50px;
-  height: 50px;
-  line-height: 50px;
+  height: 70px;
+  line-height: 70px;
+  font-size: 15px;
+  text-align: center;
+  background-color: white;
+  z-index: 8;
+  box-shadow: 5px 0px 8px -3px rgba(0, 0, 0, 0.25);
+  transition: left 0.3s ease-in-out; }
+
+.measure {
+  width: 80% !important;
+  position: relative;
+  left: 10%; }
+
+#spk-measures-controls:hover {
+  cursor: pointer;
+  box-shadow: 5px 0px 8px -3px rgba(0, 0, 0, 0.3); }
+
+#spk-measures-ui {
+  position: absolute;
+  z-index: 9;
+  width: 18%;
+  height: 100%;
+  top: 0px;
+  left: 22%;
+  background-color: white;
+  overflow: hidden;
+  transition: left 0.4s ease-out; }
+
+#spk-settings-controls {
+  position: absolute;
+  top: 140px;
+  left: 40%;
+  width: 50px;
+  height: 70px;
+  line-height: 70px;
   font-size: 15px;
   text-align: center;
   background-color: white;
@@ -534,13 +598,18 @@ p.parameter_name {
   height: 100%;
   width: 100%;
   display: flex;
-  align-items: center; }
+  align-items: center;
+  z-index: 12; }
+
+#wrapper-measures {
+  width: 100%; }
 
 #spk-metadata {
   width: 100%;
   padding-bottom: 10px;
   box-sizing: border-box;
-  border: 10px solid rgba(255, 255, 255, 0); }
+  border: 10px solid rgba(255, 255, 255, 0);
+  z-index: 100; }
 
 #wrapper-params {
   width: 100%;
@@ -596,7 +665,7 @@ p.parameter_name {
     height: 100%; }
   #wrapper-saver .instance-element {
     width: 90%;
-    padding-left: 10px;
+    padding-left: 5%;
     padding-top: 20px;
     padding-bottom: 20px;
     margin-top: 20px;
@@ -608,16 +677,21 @@ p.parameter_name {
       margin-top: 0;
       font-size: 14px;
       line-height: 16px; }
+    #wrapper-saver .instance-element .spk-saver-half {
+      padding: 2px;
+      display: inline-block;
+      width: 50%;
+      float: left;
+      box-sizing: border-box; }
   #wrapper-saver .instance-element:hover {
     cursor: pointer;
     left: 4px;
     box-shadow: 0px -2px 20px 0px rgba(0, 0, 0, 0.1); }
   #wrapper-saver .instance-element.active {
-    border-color: #0000FF;
     cursor: pointer;
     left: 8px;
     box-shadow: 0px -2px 20px 0px rgba(0, 0, 0, 0.1); }
-    #wrapper-saver .instance-element.active p {
+    #wrapper-saver .instance-element.active p, #wrapper-saver .instance-element.active .spk-saver-half p {
       color: #0000FF; }
 
 /*

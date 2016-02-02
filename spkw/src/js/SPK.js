@@ -18,6 +18,7 @@ var SPKConfig       = require('./SPKConfig.js');
 var SPKLogger       = require('./SPKLogger.js');
 var SPKSaver        = require('./SPKSaver.js');
 var SPKUiManager    = require('./SPKUiManager.js');
+var SPKMeasures     = require('./SPKMeasures');
 
 var SPK = function (wrapper, options) {
 
@@ -27,6 +28,7 @@ var SPK = function (wrapper, options) {
   
   var SPK = this;
   
+  SPK.Options = null;
   /*************************************************
   /   SPK SPK.HMTLs
   *************************************************/
@@ -92,6 +94,8 @@ var SPK = function (wrapper, options) {
 
       return;
     }
+
+    SPK.Options = options;
 
     // get those elements in place, you cunt
     SPK.HMTL.wrapper        = $(wrapper);
@@ -172,8 +176,10 @@ var SPK = function (wrapper, options) {
   SPK.loadParameters = function(callback) {
 
     $.getJSON(SPK.GLOBALS.metadata.paramsFile, function(data) {
-      
+
       var params = data.parameters;
+
+      SPKMeasures.init(data.properties, data.kvpairs, data.propNames);
       
       for( var i = 0; i < params.length; i++ ) {
         
@@ -313,6 +319,8 @@ var SPK = function (wrapper, options) {
       SPK.purgeScene();
       return;
     }
+
+    SPKMeasures.setKey(key);
 
     SPK.GLOBALS.currentKey = key;
     SPK.loadInstance( key, function() {

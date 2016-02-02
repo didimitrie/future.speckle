@@ -2,7 +2,8 @@
 var $               = require('jquery');
 var SPKUiManager    = require('./SPKUiManager');
 var SPKConfig       = require('./SPKConfig.js');
-var SPKSync       = require('./SPKSync.js');
+var SPKSync         = require('./SPKSync.js');
+var SPKMeasures     = require('./SPKMeasures');
 
 var SPKSaver = function (wrapper) {
   
@@ -68,8 +69,6 @@ var SPKSaver = function (wrapper) {
 
     SPKSaver.refreshList();
 
-    //SPKUiManager.addGroup(SPKSaver.HTML.wrapper, "saving-ui", "fa-comments", false);
-
   }
 
   SPKSaver.refreshList = function () {
@@ -128,17 +127,35 @@ var SPKSaver = function (wrapper) {
 
     var params = key.split(",");
 
-    var fullname = "";
+    var fullname = "<div class='spk-saver-half'><p><strong>Input parameters:</strong></p><p>";
 
     for( var i = 0; i < params.length - 1; i++ ) {
       
-      fullname += SPKSaver.SPK.GLOBALS.sliders[i].paramName;
+      if(SPKSaver.SPK.GLOBALS.sliders[i].paramName != "") fullname += SPKSaver.SPK.GLOBALS.sliders[i].paramName;
+      else fullname += "Unnamed parameter";
       
-      fullname += ": <strong>" + params[i] + "</strong> ";
+      fullname += ": <strong>" + params[i] + "</strong><br> ";
 
     }
-    
-    return fullname;
+      
+
+    var measures = SPKMeasures.getValuesForKey(key);
+
+    var splitmeausres = measures.measure.split(",");
+
+    fullname += " </p></div> <div class='spk-saver-half'><p><strong>Performance measures:</strong></p><p>"
+
+    for( var i = 0; i < splitmeausres.length - 1; i++ ) {
+      
+      fullname += measures.names[i]
+      
+      fullname += ": <strong>" + splitmeausres[i] + "</strong><br> ";
+
+    }
+
+    fullname += "</p></div><div class='clear'></div>"
+
+    return fullname;  
 
   }
 

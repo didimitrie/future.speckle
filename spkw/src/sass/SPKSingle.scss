@@ -5,6 +5,18 @@ $ui-left-width : 22%;
 $ui-right-width: 18%;
 $ui-padding : 10px;
 
+$control-btn-height : 70px;
+
+.clear { clear: both; }
+
+.wrapper {
+
+}
+
+.add-shadow {
+  box-shadow: 0px -2px 7px 0px rgba(0, 0, 0, 0.15);
+}
+
 #spk-viewer {
   position: absolute;
   top: 0;
@@ -18,8 +30,8 @@ $ui-padding : 10px;
   top: 0;
   left: $ui-left-width + $ui-right-width;
   width: 50px;
-  height: 50px;
-  line-height: 50px;
+  height: $control-btn-height;
+  line-height: $control-btn-height;
   font-size: 15px;
   text-align: center;
   background-color: white;
@@ -34,13 +46,54 @@ $ui-padding : 10px;
   box-shadow:5px 0px 8px -3px rgba(0, 0, 0, 0.30);
 }
 
-#spk-settings-controls {
+#spk-measures-controls {
   position: absolute;
-  top: 50px;
+  top: $control-btn-height;
   left: $ui-left-width + $ui-right-width;
   width: 50px;
-  height: 50px;
-  line-height: 50px;
+  height: $control-btn-height;
+  line-height: $control-btn-height;
+  font-size: 15px;
+  text-align: center;
+  background-color: white;
+  z-index: 8;
+  box-shadow:5px 0px 8px -3px rgba(0, 0, 0, 0.25);
+  transition: left 0.3s ease-in-out;
+}
+
+.measure {
+  width: 80% !important;
+  position: relative;
+  left: 10%;
+}
+
+#spk-measures-controls:hover {
+  cursor: pointer;
+  box-shadow:5px 0px 8px -3px rgba(0, 0, 0, 0.30);
+}
+
+
+#spk-measures-ui {
+  position: absolute;
+  z-index: 9;
+  width: $ui-right-width;
+  height: 100%;
+  top: 0px;
+  left: $ui-left-width;
+  background-color: white;  
+  overflow: hidden;
+  transition: left 0.4s ease-out;
+}
+
+
+
+#spk-settings-controls {
+  position: absolute;
+  top: $control-btn-height*2;
+  left: $ui-left-width + $ui-right-width;
+  width: 50px;
+  height: $control-btn-height;
+  line-height: $control-btn-height;
   font-size: 15px;
   text-align: center;
   background-color: white;
@@ -64,9 +117,6 @@ $ui-padding : 10px;
   background-color: white;  
   overflow: hidden;
   transition: left 0.4s ease-out;
-
-
-
 }
 
 #spk-save-ui {
@@ -109,6 +159,18 @@ $ui-padding : 10px;
   
   display: flex;
   align-items: center;
+  z-index: 12;
+
+}
+
+#wrapper-measures {
+  //position: absolute;
+  //top: 0;
+  ///height: 100%;
+  width: 100%;
+  
+  //display: flex;
+  //align-items: center; 
 }
 
 #spk-metadata {
@@ -116,6 +178,7 @@ $ui-padding : 10px;
   padding-bottom: 10px;
   box-sizing: border-box;
   border: $ui-padding solid rgba(255,255,255,0);
+  z-index: 100;
 }
 
 #wrapper-params {
@@ -186,7 +249,7 @@ $ui-padding : 10px;
 
   .instance-element {
     width: 90%;
-    padding-left: 10px;
+    padding-left: 5%;
     padding-top: 20px;
     padding-bottom: 20px;
     margin-top: 20px;
@@ -194,12 +257,23 @@ $ui-padding : 10px;
     position: relative;
     left:0;
     background-color: white;
+    
 
     p.description {
       margin-top: 0;
       font-size: 14px;
       line-height: 16px;
     }
+
+    .spk-saver-half {
+      padding: 2px; 
+      display: inline-block;
+      width: 50%;
+      float: left;
+      box-sizing: border-box;
+
+    }
+
   }
 
   .instance-element:hover {
@@ -209,11 +283,10 @@ $ui-padding : 10px;
   }
 
   .instance-element.active {
-    border-color: $accentColour;
     cursor: pointer;
     left: 8px;
     box-shadow:  0px -2px 20px 0px rgba(0,0,0,0.10);
-    p{
+    p, .spk-saver-half p{
       color: $accentColour;
     }
   }

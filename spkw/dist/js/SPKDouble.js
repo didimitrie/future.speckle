@@ -49919,6 +49919,7 @@ var SPKConfig       = require('./SPKConfig.js');
 var SPKLogger       = require('./SPKLogger.js');
 var SPKSaver        = require('./SPKSaver.js');
 var SPKUiManager    = require('./SPKUiManager.js');
+var SPKMeasures     = require('./SPKMeasures');
 
 var SPK = function (wrapper, options) {
 
@@ -49928,6 +49929,7 @@ var SPK = function (wrapper, options) {
   
   var SPK = this;
   
+  SPK.Options = null;
   /*************************************************
   /   SPK SPK.HMTLs
   *************************************************/
@@ -49993,6 +49995,8 @@ var SPK = function (wrapper, options) {
 
       return;
     }
+
+    SPK.Options = options;
 
     // get those elements in place, you cunt
     SPK.HMTL.wrapper        = $(wrapper);
@@ -50073,8 +50077,10 @@ var SPK = function (wrapper, options) {
   SPK.loadParameters = function(callback) {
 
     $.getJSON(SPK.GLOBALS.metadata.paramsFile, function(data) {
-      
+
       var params = data.parameters;
+
+      SPKMeasures.init(data.properties, data.kvpairs, data.propNames);
       
       for( var i = 0; i < params.length; i++ ) {
         
@@ -50214,6 +50220,8 @@ var SPK = function (wrapper, options) {
       SPK.purgeScene();
       return;
     }
+
+    SPKMeasures.setKey(key);
 
     SPK.GLOBALS.currentKey = key;
     SPK.loadInstance( key, function() {
@@ -50515,7 +50523,7 @@ var SPK = function (wrapper, options) {
 module.exports = SPK;
 
 
-},{"./SPKCache.js":7,"./SPKConfig.js":8,"./SPKLoader.js":10,"./SPKLogger.js":11,"./SPKObjectMaker.js":12,"./SPKSaver.js":13,"./SPKSync.js":14,"./SPKUiManager.js":15,"jquery":1,"nouislider":2,"three":4,"three-orbit-controls":3,"tween.js":5}],7:[function(require,module,exports){
+},{"./SPKCache.js":7,"./SPKConfig.js":8,"./SPKLoader.js":10,"./SPKLogger.js":11,"./SPKMeasures":12,"./SPKObjectMaker.js":13,"./SPKSaver.js":14,"./SPKSync.js":15,"./SPKUiManager.js":16,"jquery":1,"nouislider":2,"three":4,"three-orbit-controls":3,"tween.js":5}],7:[function(require,module,exports){
 
 var SPKCache = function() {
   
@@ -50826,6 +50834,119 @@ var SPKLogger = function () {
 module.exports = new SPKLogger();
 },{"./SPKConfig.js":8,"jquery":1}],12:[function(require,module,exports){
 
+var $               = require('jquery');
+var noUISlider      = require('nouislider');
+
+var SPKMeasures = function () {
+
+  var SPKMeasures = this;
+
+  SPKMeasures.data = null;
+  SPKMeasures.kvpairs = null;
+  SPKMeasures.names = null;
+
+  SPKMeasures.mySliders = [];
+
+
+  SPKMeasures.init = function(parametersdata, keyvaluepairs, propNames) {
+
+    SPKMeasures.data = parametersdata;
+    SPKMeasures.kvpairs = keyvaluepairs;
+    SPKMeasures.names = propNames;
+
+    console.log(SPKMeasures.kvpairs);
+
+    for( var i = 0; i < SPKMeasures.data.length; i++ ) {
+      SPKMeasures.createSlider(SPKMeasures.data[i], i);
+    }
+
+  }
+
+  SPKMeasures.createSlider = function(param, index) {
+
+    var myRange = param.values;
+    myRange.sort(function(a,b) { return a-b});
+    console.log(myRange);
+
+    var sliderRange = {
+      "min" : Number(myRange[0]),
+      "max" : Number(myRange[myRange.length-1])
+    }
+
+
+    var container = $("#spk-measures-ui").find("#wrapper-measures");
+
+    var myMeasureWrapper = $(container).append( $("<div>", {id:"measure-wrapper-" + index, class:"measure parameter"}) );
+
+    var finalFuckingName = "<p>" + param.name  + "</p><p> <span class='pull-left'>(MIN) " + myRange[0] + "</span> " + " <span class='pull-right'>" + myRange[myRange.length-1] + " (MAX)</span></p>";
+
+    $("#measure-wrapper-" + index).append($("<p>", {class:"measure-name parameter-name text-center", html: finalFuckingName }));
+
+    var sliderId = "measure-" + index;
+
+    $("#measure-wrapper-" + index).append( $("<div>", {id: sliderId, class: "basic-slider measure-slider" }));
+    
+  
+    var slider = noUISlider.create( $("#"+sliderId)[0], {
+          start : [0],
+          conect : true,
+          tooltips : true,
+          snap : false,
+          range: sliderRange,
+          disable: true,
+          
+    });
+
+    $("#"+sliderId)[0].setAttribute('disabled', true);
+
+    SPKMeasures.mySliders.push(slider);
+
+  }
+
+  SPKMeasures.setKey = function(key) {
+    
+    console.log(key);
+
+    var mymeasures = "";
+    var found = false;
+    for(var i =0; i< SPKMeasures.kvpairs.length && !found; i++) {
+      if(SPKMeasures.kvpairs[i].key === key) {
+        mymeasures = SPKMeasures.kvpairs[i].values;
+        found = true
+      }
+    }
+  
+
+    var mysplits = mymeasures.split(",");
+
+
+    for( var i = 0; i < SPKMeasures.mySliders.length; i++ ) {
+
+      SPKMeasures.mySliders[i].set(Number(mysplits[i]));
+    }
+  }
+
+  SPKMeasures.getValuesForKey = function(key) {
+    
+    var mymeasures = null;
+    var found = false;
+
+    for(var i =0; i< SPKMeasures.kvpairs.length && !found; i++) {
+    
+      if(SPKMeasures.kvpairs[i].key === key) {
+    
+        mymeasures = SPKMeasures.kvpairs[i].values;
+        found = true;
+    
+      }
+    }
+    return { measure: mymeasures, names : SPKMeasures.names } ;
+  }
+}
+
+module.exports =  new SPKMeasures();
+},{"jquery":1,"nouislider":2}],13:[function(require,module,exports){
+
 /*
   Makes THREE objects from THREE geometry, adding some sugar in between
  */
@@ -50976,12 +51097,13 @@ var SPKObjectMaker = function() {
 }
 
 module.exports = new SPKObjectMaker();
-},{"three":4}],13:[function(require,module,exports){
+},{"three":4}],14:[function(require,module,exports){
 
 var $               = require('jquery');
 var SPKUiManager    = require('./SPKUiManager');
 var SPKConfig       = require('./SPKConfig.js');
-var SPKSync       = require('./SPKSync.js');
+var SPKSync         = require('./SPKSync.js');
+var SPKMeasures     = require('./SPKMeasures');
 
 var SPKSaver = function (wrapper) {
   
@@ -51047,8 +51169,6 @@ var SPKSaver = function (wrapper) {
 
     SPKSaver.refreshList();
 
-    //SPKUiManager.addGroup(SPKSaver.HTML.wrapper, "saving-ui", "fa-comments", false);
-
   }
 
   SPKSaver.refreshList = function () {
@@ -51107,17 +51227,35 @@ var SPKSaver = function (wrapper) {
 
     var params = key.split(",");
 
-    var fullname = "";
+    var fullname = "<div class='spk-saver-half'><p><strong>Input parameters:</strong></p><p>";
 
     for( var i = 0; i < params.length - 1; i++ ) {
       
-      fullname += SPKSaver.SPK.GLOBALS.sliders[i].paramName;
+      if(SPKSaver.SPK.GLOBALS.sliders[i].paramName != "") fullname += SPKSaver.SPK.GLOBALS.sliders[i].paramName;
+      else fullname += "Unnamed parameter";
       
-      fullname += ": <strong>" + params[i] + "</strong> ";
+      fullname += ": <strong>" + params[i] + "</strong><br> ";
 
     }
-    
-    return fullname;
+      
+
+    var measures = SPKMeasures.getValuesForKey(key);
+
+    var splitmeausres = measures.measure.split(",");
+
+    fullname += " </p></div> <div class='spk-saver-half'><p><strong>Performance measures:</strong></p><p>"
+
+    for( var i = 0; i < splitmeausres.length - 1; i++ ) {
+      
+      fullname += measures.names[i]
+      
+      fullname += ": <strong>" + splitmeausres[i] + "</strong><br> ";
+
+    }
+
+    fullname += "</p></div><div class='clear'></div>"
+
+    return fullname;  
 
   }
 
@@ -51125,7 +51263,7 @@ var SPKSaver = function (wrapper) {
 
 // make it unique across all instances
 module.exports = new SPKSaver();
-},{"./SPKConfig.js":8,"./SPKSync.js":14,"./SPKUiManager":15,"jquery":1}],14:[function(require,module,exports){
+},{"./SPKConfig.js":8,"./SPKMeasures":12,"./SPKSync.js":15,"./SPKUiManager":16,"jquery":1}],15:[function(require,module,exports){
 
 var $           = require('jquery');
 
@@ -51244,7 +51382,13 @@ var SPKSync = function () {
 }
 
 module.exports = new SPKSync();
-},{"jquery":1}],15:[function(require,module,exports){
+},{"jquery":1}],16:[function(require,module,exports){
+//
+//
+//  THIS IS A CODE DUMP NEEDS PROPER THINKIN ABOOT
+//
+//
+
 
 var $               = require('jquery');
 
@@ -51257,15 +51401,35 @@ var SPKUiManager = function () {
   SPKUiManager.activeUi = null;
 
   SPKUiManager.init = function () {
-    
+    /**
+     * SAVE CONTROLS
+     */
     $("#spk-save-controls").on("click", function () {
       
       $("#spk-save-ui").toggleClass("hide-right-ui");
       
       $(this).toggleClass("hide-right");
 
-      if($(this).hasClass("hide-right")) 
+      if($(this).hasClass("hide-right")) {
         $(this).html("<i class='fa fa-copy'></i>")
+
+      }
+      else{
+        $(this).html("<i class='fa fa-angle-double-left'></i>")
+        $(".instance-element").removeClass("active");
+        
+      }
+
+    });
+
+    $("#spk-measures-controls").on("click", function () {
+      
+      $("#spk-measures-ui").toggleClass("hide-right-ui");
+      
+      $(this).toggleClass("hide-right");
+
+      if($(this).hasClass("hide-right")) 
+        $(this).html("<i class='fa fa-area-chart'></i>")
       else{
         $(this).html("<i class='fa fa-angle-double-left'></i>")
         $(".instance-element").removeClass("active");
@@ -51273,6 +51437,10 @@ var SPKUiManager = function () {
 
     });
 
+    /**
+     * SETTINGS CONTROLS
+     */
+    
     $("#spk-settings-controls").on("click", function () {
       
       $("#spk-settings-ui").toggleClass("hide-right-ui");
