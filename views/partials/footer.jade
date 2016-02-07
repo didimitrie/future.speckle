@@ -18,17 +18,20 @@ footer.footer
           br
           |#[a(href="/") Home]
           br
-          | Login/Register
+          | #[a(href="/beta") Join Beta]
           br
-          | Guide
+          if(!loggedIn)
+            | #[a(href="/login") Login]
+          else 
+            | #[a(href="/profile") Your profile]
           br
-          | Contribute
+          | #[a(href="/about") About]
       .col-sm-4
         p
           | Meta:
           br
-          | #[a(href="#") Terms of Service ]
+          | #[a(href="/terms") Terms of Service ]
           br
-          | #[a(href="#") Cookie Policy ]
+          | #[a(href="/cookies") Cookie Policy ]
         
         

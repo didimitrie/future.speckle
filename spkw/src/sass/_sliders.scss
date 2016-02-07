@@ -65,10 +65,13 @@
   left: -11px;
   top: -5px;
 
-  -webkit-box-shadow: 0px 0px 22px 1px rgba(50,50,50,0.33);
-  -moz-box-shadow: 0px 0px 22px 1px rgba(50,50,50,0.33);
-  box-shadow: 0px 0px 22px 1px rgba(50,50,50,0.33);
+  box-shadow: 0px 0px 2px 1px rgba(50,50,50,0.33);
 }
+
+.noUi-handle:hover {
+  cursor: pointer;
+}
+
 .noUi-vertical {
   width: 18px;
 }
@@ -150,7 +153,7 @@
   left: -19px;
   text-align: center;
   width: 50px;
-  XXXborder: 1px solid black;
+  transition: background-color 0.2s ease;
 }
 
 .noUi-handle-lower .noUi-tooltip {
@@ -182,7 +185,7 @@
   width: 40px;
   position: absolute;
   text-align: center;
-  color:$txtColour;
+  color: $txtColour;
   font-size: x-small;
 }
 .noUi-value-sub {
@@ -261,4 +264,43 @@
 .noUi-marker-vertical.noUi-marker-large {
   width: 15px;
 }
+
+
+/**
+ * DIM's Late evning DRACONES // stay away and refactor
+ * later
+ * not now xxx
+ */
+
+
+
+.measure-slider {
+    background-color: #CFCFCF !important;
+    height: 1px !important;
+
+    .noUi-handle {
+      background-color: #000000 !important;
+      width:0px;
+      height: 0px;
+      left: -11px;
+      top: -5px;
+      box-shadow: 0;
+    }
+
+    .noUi-tooltip {
+      bottom: -12px;
+      background-color: #E5E5E5;
+      color: black;
+    }
+}
+
+.measure:hover{
+  .noUi-tooltip {
+    background-color: $accentColour;
+    color: white;
+  }
+}
+
+
+
 

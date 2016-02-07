@@ -1,3 +1,28 @@
+/*
+ * Beta.Speckle Parametric Model Viewer
+ * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+//
+//
+//  THIS IS A CODE DUMP NEEDS PROPER THINKIN ABOOT
+//
+//
+
 
 var $               = require('jquery');
 
@@ -10,93 +35,61 @@ var SPKUiManager = function () {
   SPKUiManager.activeUi = null;
 
   SPKUiManager.init = function () {
-
-    $(SPKUiManager.controlGroups[0].tag).addClass("active");
-    
-    // center the tags
-    var diff = window.innerHeight - $("#spk-ui-controls").height();
- 
-    //$("#spk-ui-controls").css("top", diff/2-20 + "px");
-    //$("#spk-ui-controls").css("top", -20 + "px");
-
-    // center the wrappers
-    for( var i = 0; i < SPKUiManager.controlGroups.length; i++ ) {
+    /**
+     * SAVE CONTROLS
+     */
+    $("#spk-save-controls").on("click", function () {
       
-      var myGroup =  SPKUiManager.controlGroups[i];
+      $("#spk-save-ui").toggleClass("hide-right-ui");
+      
+      $(this).toggleClass("hide-right");
 
-      if( myGroup.center ) {
-        var wrpHeight = $(myGroup.html).height();
-        var sdbHeight = $(myGroup.html).parent().height();
+      if($(this).hasClass("hide-right")) {
+        $(this).html("<i class='fa fa-copy'></i>")
 
-        var diff = sdbHeight - wrpHeight;
-        //$(myGroup.html).css("top", diff/2 + "px");
       }
-    }
-
-  }
-
-  SPKUiManager.centerWrapper = function (groupName) {
-    for( var i = 0; i < SPKUiManager.controlGroups.length; i++ ) {
-          
-          var myGroup =  SPKUiManager.controlGroups[i];
-
-          if(myGroup.name === groupName ) {
-
-            var diff = $(myGroup.html).parent().height() - $(myGroup.html).height();
-            
-            $(myGroup.html).css("top", diff/2 + "px");
-
-          }
-        }
-  }
-  
-  SPKUiManager.sortOut = function () {
-    
-    var myName = $(this).attr("id").replace("tag-","");
-    
-    for( var i = 0; i < SPKUiManager.controlGroups.length; i++ ) {
-      
-      var myGroup =  SPKUiManager.controlGroups[i];
-      
-      if( myGroup.name === myName ) {
-        $(myGroup.tag).addClass("active");
-        $(myGroup.html).removeClass("hidden");
-      } else {
-        $(myGroup.tag).removeClass("active");
-        $(myGroup.html).addClass("hidden");
+      else{
+        $(this).html("<i class='fa fa-angle-double-left'></i>")
+        $(".instance-element").removeClass("active");
+        
       }
 
-    }
+    });
 
-  }
+    $("#spk-measures-controls").on("click", function () {
+      
+      $("#spk-measures-ui").toggleClass("hide-right-ui");
+      
+      $(this).toggleClass("hide-right");
 
-  SPKUiManager.addGroup = function ( htmlwrapper, name, icon, center ) {
+      if($(this).hasClass("hide-right")) 
+        $(this).html("<i class='fa fa-area-chart'></i>")
+      else{
+        $(this).html("<i class='fa fa-angle-double-left'></i>")
+        $(".instance-element").removeClass("active");
+      }
+
+    });
+
+    /**
+     * SETTINGS CONTROLS
+     */
     
-    var myGroup = {
-      html : htmlwrapper,
-      tag : "",
-      name : name,
-      groupicon : icon,
-      center: center
-    }
+    $("#spk-settings-controls").on("click", function () {
+      
+      $("#spk-settings-ui").toggleClass("hide-right-ui");
+      
+      $(this).toggleClass("hide-right");
 
-    SPKUiManager.controlGroups.push( myGroup );
+      if($(this).hasClass("hide-right")) 
+        $(this).html("<i class='fa fa-cogs'></i>")
+      else{
+        $(this).html("<i class='fa fa-angle-double-left'></i>")
+        $(".instance-element").removeClass("active");
+      }
 
-    $("#spk-ui-controls").append(
-      $("<div>", { 
-        id: "tag-" + myGroup.name,
-        html: "<i class='fa " + icon + "'></i>",
-        class: "tag",
-        on: {
-          click: SPKUiManager.sortOut,
-        }
-      })
-    );
-
-    myGroup.tag = $("#tag-" + myGroup.name);
-
+    });
   }
-
 
 }
 

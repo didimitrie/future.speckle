@@ -1,6 +1,6 @@
 var express  = require('express');
 var app      = express();
-var port     = process.env.PORT || 8000;
+var port     = process.env.PORT || 9009;
 var mongoose = require('mongoose');
 var passport = require('passport');
 var flash    = require('connect-flash');
@@ -54,6 +54,7 @@ app.use(session({ secret: 'shhhhhhh' })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
+
 
 // routes ======================================================================
 //app.use('/assets', express.static('assets'));

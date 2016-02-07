@@ -1,6 +1,8 @@
 var Model = require('../app/models/models');
 var User = require('../app/models/user');
 var Session = require('../app/models/session');
+var BetaKey = require('../app/models/betakeys');
+var WaitingList = require('../app/models/waitinglist');
 
 var DecompressZip = require('decompress-zip');
 var shortid = require('shortid');
@@ -24,7 +26,7 @@ var storage = multer.diskStorage({
 
 	filename : function(req, file, callback) {
 
-		callback(null, file.fieldname + '-' + Date.now() + '-' + req.user.id);
+		callback(null, Date.now() + '-' + req.user.id.replace("auth0|", "") + '-' + shortid.generate() );
 
 	}
 
@@ -55,6 +57,73 @@ module.exports = function(app, passport, express) {
 	 	
     });
 	
+  });
+
+  app.get("/beta", function(req, res){
+    res.render("beta.jade");
+  });
+
+  app.post("/beta", function(req, res) {
+    var key = req.body.key;
+
+    BetaKey.findOne({key : key}, function(err, data) {
+      console.log(data);
+
+      if(data === null) {
+      
+        res.send("nokey");
+      
+      } else {
+
+        if(data.max >= data.used) {
+
+          res.send("proceed");
+          req.session.allowsignup = true;
+
+          data.used = data.used + 1;
+          data.save();
+        }
+
+        if(data.max < data.used ) {
+          console.log("expired key " + key);
+          res.send("expired");
+        }
+
+      }
+    });
+
+  });
+
+  app.post("/waitinglist", function(req, res) {
+    var email = req.body.email;
+    var myWait = new WaitingList();
+    myWait.email = email;
+    myWait.save(function(err) {
+      WaitingList.count({}, function (err, c){
+        res.json({count: c});
+      });
+    });
+  });
+
+  app.get("/signup", function(req, res) {
+    res.render("signup.jade", {
+      allowsignup : req.session.allowsignup
+    })
+  });
+
+  // normal login BUT NO SIGNUP route
+  app.get("/login", function(req, res) {
+    res.render("login.jade", {});
+  });
+
+
+
+  app.get("/terms", function(req, res){
+    res.render("terms.jade");
+  });
+
+  app.get("/cookies", function(req, res){
+    res.render("cookies.jade");
   });
 
 	/**
@@ -180,9 +249,6 @@ module.exports = function(app, passport, express) {
           path: extractionPath
         });
 
-        unzipper.on('progress', function (fileIndex, fileCount) {
-          //console.log('Extracted file ' + (fileIndex + 1) + ' of ' + fileCount);
-        });
 
         unzipper.on('extract', function (log) {
           // delete the original upload after we have extracted stuff
@@ -191,15 +257,17 @@ module.exports = function(app, passport, express) {
 
         // create a new model entry
         var myModel = new Model();
-        var name = req.file.originalname.split(".");
+        
+        var name = req.file.path.split("-");
+
         myModel.ownerId = req.user.id;
-        myModel.name = name[0];
+        myModel.name = req.file.originalname.replace(".zip", "");
         myModel.fileLocation = req.file.path.replace("uploads/","");
         myModel.deflateLocation = extractionPath;
         myModel.fileSize = req.file.size;
         myModel.formatedFileSize = getBytesWithUnit(req.file.size);
         myModel.dateAdded = getFormatedDate();
-        myModel.urlId = shortid.generate();
+        myModel.urlId = name[2]; // short id is generated in the multer file upload, so i just get it from the filename - disaster will strike
 
         // save the file in our db.
         myModel.save(function(err){
@@ -265,8 +333,8 @@ module.exports = function(app, passport, express) {
       User.findOne({ auth0id: myModel.ownerId}, function(err, myUser) {
 
         var response = { 
-          paramsFile : myModel.deflateLocation + "/" + myModel.name + "/params.json",
-          staticGeoFile : myModel.deflateLocation + "/" + myModel.name + "/static.json",
+          paramsFile : myModel.deflateLocation + "/" + "/params.json",
+          staticGeoFile : myModel.deflateLocation + "/" + "/static.json",
           modelName : myModel.name,
           dateAdded : myModel.dateAdded,
           ownerName : myUser.username

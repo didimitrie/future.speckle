@@ -1,3 +1,22 @@
+/*
+ * Beta.Speckle Parametric Model Viewer
+ * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 
 var $           = require('jquery');
 
@@ -6,10 +25,15 @@ var SPKSync = function () {
   var SPKSync = this;
 
   SPKSync.instances = [];
+  SPKSync.pause = false;
 
   SPKSync.addInstance = function (instance) {
 
     SPKSync.instances.push(instance);
+
+    $(".toggle-grid").on("click", SPKSync.toggleGrid);
+    $(".toggle-ground-shadows").on("click", SPKSync.toggleGroundShadows);
+    $(".toggle-zoom").on("click", SPKSync.zoomExtents);
 
   }
 
@@ -45,6 +69,11 @@ var SPKSync = function () {
     }
 
   }  
+
+  SPKSync.toggleGroundShadows = function() {
+    SPKSync.toggleShadows();
+    SPKSync.toggleGroundplane();
+  }
 
   SPKSync.toggleShadows = function() {
     
@@ -89,19 +118,19 @@ var SPKSync = function () {
 
   $(document).keyup(function(e) {
 
+    if(SPKSync.pause) return;
+
     if(e.keyCode == 71) 
       SPKSync.toggleGrid();
 
-    if(e.keyCode == 80)
-      SPKSync.toggleGroundplane();
-
     if(e.keyCode == 83)
-      SPKSync.toggleShadows();
+      {SPKSync.toggleShadows();SPKSync.toggleGroundplane();}
 
     if(e.keyCode == 32) 
       SPKSync.zoomExtents();
 
   });
+
 
 
 }

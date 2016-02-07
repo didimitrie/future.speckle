@@ -1,0 +1,34 @@
+extends ./layout.jade
+block header
+  link(rel="stylesheet", href="/css/auth0lock.css")
+block content
+  .container
+    .row(style="margin-top:20px")
+      .col-sm-12
+        .row
+          .col-sm-12
+            h1.text-center #[a.logo(href="/") #[i.fa.fa-sliders] S ]
+          
+     
+        .col-sm-6.col-sm-offset-3.text-center
+          #root.text-center(style='width: 320px; margin: 40px auto; padding: 10px;')
+          h3 No account yet? #[a(href="/beta") Register for the beta!]
+          script(src='https://cdn.auth0.com/js/lock-8.2.min.js')
+          script.
+
+            var lock = new Auth0Lock('xM4C16GZAbufm5citF6nJvj6wpAeYKlK', 'dim.eu.auth0.com');
+            lock.showSignin({
+            container: 'root'
+            , primaryColor: "#0000FF"
+            , icon: "http://localhost:9009/img/SPKLogo.svg"
+            , callbackURL: 'http://localhost:9009/callback'
+            , responseType: 'code'
+            , authParams: {
+              scope: 'openid profile'
+            }
+            });
+            var options = {
+              disableSignupAction: false,
+              disableResetAction: false
+            };
+

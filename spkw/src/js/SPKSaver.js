@@ -1,7 +1,26 @@
+/*
+ * Beta.Speckle Parametric Model Viewer
+ * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 var $               = require('jquery');
 var SPKUiManager    = require('./SPKUiManager');
 var SPKConfig       = require('./SPKConfig.js');
+var SPKSync         = require('./SPKSync.js');
+var SPKMeasures     = require('./SPKMeasures');
 
 var SPKSaver = function (wrapper) {
   
@@ -24,6 +43,21 @@ var SPKSaver = function (wrapper) {
 
     SPKSaver.SPK = SPKInstance;
 
+    $(SPKSaver.HTML.form).find("textarea").focusin( function () {
+      SPKSync.pause = true;
+    }) 
+
+    $(SPKSaver.HTML.form).find("textarea").focusout( function () {
+      SPKSync.pause = false;
+    })
+
+    $(SPKSaver.HTML.form).find("textarea").keypress(function(event) {
+      if (event.which == 13) {
+          event.preventDefault();
+          $(SPKSaver.HTML.form).submit();
+      }
+    });
+
     $(SPKSaver.HTML.form).on("submit", function (e) {
 
       e.preventDefault();
@@ -37,7 +71,6 @@ var SPKSaver = function (wrapper) {
       }
       
       if(dataToSubmit.description === "") {
-        alert("Please add a description.")
         return;
       }
       
@@ -53,8 +86,6 @@ var SPKSaver = function (wrapper) {
 
     SPKSaver.refreshList();
 
-    SPKUiManager.addGroup(SPKSaver.HTML.wrapper, "saving-ui", "fa-comments", false);
-
   }
 
   SPKSaver.refreshList = function () {
@@ -62,21 +93,25 @@ var SPKSaver = function (wrapper) {
     $(SPKSaver.HTML.list).html("");
     
     $.post(SPKConfig.INSTAPI, { type: "getsavedinstances", model: SPKSaver.SPK.GLOBALS.model}, function(data){
-   
+        
         data = data.reverse();
    
-        if(data.length)
+        if(data.length) {
    
           for( var i = 0; i < data.length; i++ ) {
    
             SPKSaver.createInstance( data[i], i );
    
           }
-   
-        else 
+
+          $(".model-comments").text("There are " + data.length + " saved configurations.");
+          
+
+        } else {
    
           $(SPKSaver.HTML.list).append("<h3 class='text-center'> There are no saved configurations. Add one!</h3>")
-   
+        }
+
     });
   
   }
@@ -88,6 +123,7 @@ var SPKSaver = function (wrapper) {
     $( "#instance-" + index ).append( "<p class='key'>" + SPKSaver.parseKeyName( instance.key, index ) + "</p>");
 
     $( "#instance-" + index ).attr( "spk-inst", instance.key );
+    $( "#instance-" + index ).attr( "spk-inst-index", index );
     
     // behaviour
     $( "#instance-" + index ).click( function () {
@@ -96,7 +132,7 @@ var SPKSaver = function (wrapper) {
 
       SPKSaver.SPK.loadInstanceForced(myKey);
 
-      $(".instance-element").removeClass("active");
+      $(".instance-element.active").removeClass("active");
 
       $(this).addClass("active");
       
@@ -108,17 +144,35 @@ var SPKSaver = function (wrapper) {
 
     var params = key.split(",");
 
-    var fullname = "";
+    var fullname = "<div class='spk-saver-half'><p><strong>Input parameters:</strong></p><p>";
 
     for( var i = 0; i < params.length - 1; i++ ) {
       
-      fullname += SPKSaver.SPK.GLOBALS.sliders[i].paramName;
+      if(SPKSaver.SPK.GLOBALS.sliders[i].paramName != "") fullname += SPKSaver.SPK.GLOBALS.sliders[i].paramName;
+      else fullname += "Unnamed parameter";
       
-      fullname += ": <strong>" + params[i] + "</strong> ";
+      fullname += ": <strong>" + params[i] + "</strong><br> ";
 
     }
-    
-    return fullname;
+      
+
+    var measures = SPKMeasures.getValuesForKey(key);
+
+    var splitmeausres = measures.measure.split(",");
+
+    fullname += " </p></div> <div class='spk-saver-half'><p><strong>Performance measures:</strong></p><p>"
+
+    for( var i = 0; i < splitmeausres.length - 1; i++ ) {
+      
+      fullname += measures.names[i]
+      
+      fullname += ": <strong>" + splitmeausres[i] + "</strong><br> ";
+
+    }
+
+    fullname += "</p></div><div class='clear'></div>"
+
+    return fullname;  
 
   }
 

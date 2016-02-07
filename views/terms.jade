@@ -1,0 +1,34 @@
+extends ./layout.jade
+
+block content
+  .container
+    .row(style="margin-top:20px")
+      .col-sm-12
+        .row.vertical-align
+          .col-sm-6.col-sm-offset-3
+            h1.text-center #[a.logo(href="/") #[i.fa.fa-sliders] S ]
+            h2.text-center Terms of Service
+    hr(style="margin-top:3px; margin-bottom:3px")
+    .row(style="margin-top:20px")
+      .col-sm-12
+        .row.vertical-align
+          .col-sm-6.col-sm-offset-3
+    
+            h3.text-justify.strong This service is provided as is, without any guarantee of any sort.
+            h3.text-justify You fully retain all rights and responsabilites regarding the material you upload.
+            h4.text-justify beta.speckle.xyz anonymously collects the following data for #[span.strong research purposes ]:
+            p 1. Usage statistics of the service
+            p 2. Uploaded material statistics (size, number, etc.)
+            p 3. Usage statistics of the uploaded models (number of views, number of saved configurations, etc.). This will be shared with the content authors.
+            hr
+            p.text-center Long story short, this is a very early release. Please be aware what this entails: 
+            ul.text-center
+              li Backwards compatibility is not guaranteed. 
+              li Service outages might be frequent. There's no uptime guarantee. 
+              li Anything that can go wrong will go wrong. 
+            h3.text-center
+              i.fa.fa-heart-o
+
+
+      
+           

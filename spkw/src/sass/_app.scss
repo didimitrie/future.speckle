@@ -11,6 +11,7 @@ body {
   position: absolute;
   width: 100%; height: 100%;
   font-family: $fontFamily;
+  overflow: hidden; 
 }
 
 strong {
@@ -37,9 +38,23 @@ hr {
 }
 
 p.parameter_name {
-  display: inline-block;
-  width: 25%;
+  display: relative;
+  width: 100%;
   float: left;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: white;
+  text-align: center;
+}
+
+.parameter {
+  margin-bottom: 30px;
+}
+
+.basic-slider {
+  width: 90%;
+  margin-left: 5%;
+  display: inline-block;
   margin-top: 10px;
 }
 
@@ -51,18 +66,10 @@ p.parameter_name {
   color : $accentColour;
 }
 
-.basic-slider {
-  width: 72%;
-  display: inline-block;
-}
 
-.parameter {
-  margin-bottom: 30px;
-}
 
-.basic-slider {
-  margin-top: 10px;
-}
+
+
 
 input {
   @extend %form-reset-input;
