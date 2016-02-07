@@ -8,11 +8,13 @@
   "scripts": {
     
     "watch-sass": "sass --watch src/sass/SPKSingle.scss:dist/css/SPKSingle.css src/sass/SPKDouble.scss:dist/css/SPKDouble.css",
+    "build-sass": "sass --style compressed src/sass/SPKSingle.scss | cleancss -o dist/css/SPKSingle.css",
     
     "watch-jade": "jade --watch src/jade/*.jade -o dist/ -P",
-    
+    "build-jade": "jade src/jade/*.jade -o dist/",
+
+    "build-js-single-uglify": "browserify src/js/SPKSingle.js | uglifyjs -c -m -o dist/js/SPKSingle.min.js",
     "build-js-single": "browserify src/js/SPKSingle.js -o dist/js/SPKSingle.js",
-    "build-js-double": "browserify src/js/SPKDouble.js -o dist/js/SPKDouble.js",
     
     "watch-js": "nodemon -e js -w src/js -x 'npm run build-js-single' & nodemon -e js -w src/js -x 'npm run build-js-double'",
     "watch-js-single" : "nodemon -e js -w src/js -x 'npm run build-js-single'",
@@ -20,8 +22,7 @@
     "serve-local": "http-server -p 1337 -c-1",
     
     "watch": "npm run watch-sass & npm run watch-jade & npm run watch-js & npm run serve-local",
-    "watch-remote": "npm run watch-sass & npm run watch-jade & npm run watch-js",
-    "watch-remote-single": "npm run watch-sass & npm run watch-jade & npm run watch-js-single"
+    "watch-remote": "npm run watch-sass & npm run watch-jade & npm run watch-js-single"
   },
   "dependencies": {
     "jade": "^1.11.0",

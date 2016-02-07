@@ -50059,10 +50059,15 @@ var SPK = function (wrapper, options) {
     $.getJSON(SPKConfig.GEOMAPI + SPK.GLOBALS.model, function (data) {
       
       SPK.GLOBALS.metadata.paramsFile = data.paramsFile.replace("./uploads", SPKConfig.UPLOADDIR);
-      
+      SPK.GLOBALS.metadata.paramsFile = SPK.GLOBALS.metadata.paramsFile.replace("//p", "/p");
+
       SPK.GLOBALS.metadata.staticGeoFile = data.staticGeoFile.replace("./uploads", SPKConfig.UPLOADDIR);
-      
+      SPK.GLOBALS.metadata.staticGeoFile =  SPK.GLOBALS.metadata.staticGeoFile.replace("//s", "/s");
+
       SPK.GLOBALS.metadata.rootFiles = SPK.GLOBALS.metadata.staticGeoFile.replace("/static.json", "/");
+
+      console.log(data);
+      console.log(SPK.GLOBALS.metadata);
 
       $(".model-name").html(data.modelName);
       
@@ -50561,22 +50566,22 @@ var SPKConfig = function () {
   var SPKConfig = this;
 
   // deployment
-  /* 
+  SPKConfig.APPDIR     = "http://beta.speckle.xyz";
+  SPKConfig.UPLOADDIR  = "http://beta.speckle.xyz/uploads";
   SPKConfig.GEOMAPI    = "http://beta.speckle.xyz/api/model/";
   SPKConfig.METAAPI    = "http://beta.speckle.xyz/api/model/metadata/";
   SPKConfig.INSTAPI    = "http://beta.speckle.xyz/api/model/instances/";
-  SPKConfig.APPID      = "SPKWOfficial";
-   */
+   
   
   // testing
  
+
   SPKConfig.APPDIR     = "http://localhost:9009";
   SPKConfig.UPLOADDIR  = "http://localhost:9009/uploads";
   SPKConfig.GEOMAPI    = "http://localhost:9009/api/model/";
   SPKConfig.METAAPI    = "http://localhost:9009/api/model/metadata/";
   SPKConfig.INSTAPI    = "http://localhost:9009/api/model/instances/";
-  SPKConfig.APPID      = "SPKWOfficial";
-
+ 
 }
 
 module.exports = new SPKConfig();

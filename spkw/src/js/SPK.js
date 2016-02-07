@@ -1,6 +1,21 @@
+/*
+ * Beta.Speckle Parametric Model Viewer
+ * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-// (C) 2016 Dimitrie A. Stefanescu
-// License: GNU GPL v3.0
 
 // general deps
 var $               = require('jquery');
@@ -158,9 +173,11 @@ var SPK = function (wrapper, options) {
     $.getJSON(SPKConfig.GEOMAPI + SPK.GLOBALS.model, function (data) {
       
       SPK.GLOBALS.metadata.paramsFile = data.paramsFile.replace("./uploads", SPKConfig.UPLOADDIR);
-      
+      SPK.GLOBALS.metadata.paramsFile = SPK.GLOBALS.metadata.paramsFile.replace("//p", "/p");
+
       SPK.GLOBALS.metadata.staticGeoFile = data.staticGeoFile.replace("./uploads", SPKConfig.UPLOADDIR);
-      
+      SPK.GLOBALS.metadata.staticGeoFile =  SPK.GLOBALS.metadata.staticGeoFile.replace("//s", "/s");
+
       SPK.GLOBALS.metadata.rootFiles = SPK.GLOBALS.metadata.staticGeoFile.replace("/static.json", "/");
 
       $(".model-name").html(data.modelName);
@@ -227,6 +244,8 @@ var SPK = function (wrapper, options) {
 
         slider.on("change", SPK.addNewInstance);
 
+        slider.on("end", SPK.purgeScene);
+
         // add to master
         slider.paramName = params[i].name;
         SPK.GLOBALS.sliders.push(slider);
@@ -281,10 +300,10 @@ var SPK = function (wrapper, options) {
 
       if(( this.x >= opacity * 0.5 ) && (this.calledNext===undefined))
       {
-        /*
+        
         this.calledNext = true;
         SPK.addNewInstance();
-        */
+        
       }
 
     })
@@ -298,7 +317,7 @@ var SPK = function (wrapper, options) {
 
       }
 
-      SPK.addNewInstance();
+      //SPK.addNewInstance(); // off because called have way through in the opacity out 
 
     })  ;
 
@@ -307,7 +326,57 @@ var SPK = function (wrapper, options) {
   }
 
   SPK.purgeScene = function() {
-    // TODO 
+    
+    // theoretically should do nothing; but we do have cases when we have overlapping instances
+    // due to "quickness" of slider drag, and the way we handle object loading. yoop. 
+
+    var opacity = 1;
+    var duration = 200;
+    var out = [];
+    
+    for(var i = 0; i < SPK.VIEWER.scene.children.length; i++ ) {
+
+      var myObj = SPK.VIEWER.scene.children[i];
+      
+      if( (myObj.removable) && (myObj.instance != SPK.GLOBALS.currentKey) ) {
+
+          out.push(myObj);
+
+      }
+    }
+
+    var tweenOut = new TWEEN.Tween( { x: opacity } )
+    .to( {x: 0}, duration )
+    .onUpdate( function() {
+
+      for( var i = 0; i < out.length; i++ ) {
+
+        out[i].material.opacity = this.x;
+
+      }
+
+      if(( this.x >= opacity * 0.5 ) && (this.calledNext===undefined))
+      {
+        
+        this.calledNext = true;
+        
+      }
+
+    })
+    .onComplete( function() {
+
+      for( var i = 0; i < out.length; i++ ) {
+
+        SPK.VIEWER.scene.remove(out[i]);
+        out[i].geometry.dispose();
+        out[i].material.dispose();
+
+      }
+
+    })  ;
+
+    tweenOut.start();
+
   }
 
   SPK.addNewInstance = function() {
@@ -342,6 +411,7 @@ var SPK = function (wrapper, options) {
       }
 
       var duration = 300, opacity = 1;
+      
       var tweenIn = new TWEEN.Tween( { x : 0 } )
       .to( { x: opacity }, duration )
       .onUpdate( function() {
@@ -370,6 +440,7 @@ var SPK = function (wrapper, options) {
       
       }
     }
+
 
     geometry.computeBoundingSphere();
 
@@ -555,17 +626,26 @@ var SPK = function (wrapper, options) {
     plane.position.set(SPK.GLOBALS.boundingSphere.center.x, -0.1, SPK.GLOBALS.boundingSphere.center.z );
     plane.visible = false;
 
-    grid = new THREE.GridHelper( SPK.GLOBALS.boundingSphere.radius * multiplier, SPK.GLOBALS.boundingSphere.radius*multiplier/30);
-    grid.material.opacity = 0.15;
-    grid.material.transparent = true;
-    grid.position.set(SPK.GLOBALS.boundingSphere.center.x, -0.1, SPK.GLOBALS.boundingSphere.center.z );
-    grid.setColors( 0x0000ff, 0x808080 ); 
-
     SPK.VIEWER.scene.add( plane );
-    SPK.VIEWER.scene.add( grid );
-
-    SPK.SCENE.grid = grid;
     SPK.SCENE.plane = plane;
+
+    if(SPK.GLOBALS.boundingSphere.radius === 0) {
+      console.error("ERR: Failed to calculate bounding sphere. This is a known bug and it happens when there's no valid geometry in the scene.");
+      //$(".model-name").append(
+      $(SPK.HMTL.sliders).html(
+      "<br><p style='color: red'>Failed to load model. <strong>Check the console for details (if you feel like a hacker), and send a shout over to <a href='mailto:contact@dimitrie.org?subject=Model " + SPK.GLOBALS.model + " failed to load'>contact@dimitrie.org.</a> so we can look into it. Thanks!</p>")
+    } else {
+      grid = new THREE.GridHelper( SPK.GLOBALS.boundingSphere.radius * multiplier, SPK.GLOBALS.boundingSphere.radius*multiplier/30);
+      grid.material.opacity = 0.15;
+      grid.material.transparent = true;
+      grid.position.set(SPK.GLOBALS.boundingSphere.center.x, -0.1, SPK.GLOBALS.boundingSphere.center.z );
+      grid.setColors( 0x0000ff, 0x808080 ); 
+      SPK.VIEWER.scene.add( grid );
+      SPK.SCENE.grid = grid;
+   }
+   
+   
+    
 
   }
 
