@@ -7,10 +7,11 @@ block content
     .row(style="margin-top:20px")
       .col-sm-12
         .row
-          .col-sm-12.text-center
+          .col-sm-6.col-sm-offset-3.text-center
             h1 #[a.logo(href="/") #[i.fa.fa-sliders] S ]
-          .col-sm-12
+          .col-sm-3
             p.pull-right.text-right
+              br
               if(loggedIn)
                 a.thin(href="/profile") Welcome back, #[strong #{username}]!
               else
