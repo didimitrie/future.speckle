@@ -78,7 +78,6 @@ var SPKSync = function () {
   SPKSync.toggleShadows = function() {
     
     for( var  i = 0; i < SPKSync.instances.length; i++ ) {
-      console.log(i + " / " + SPKSync.instances[i].SCENE.shadows);
       if( SPKSync.instances[i].SCENE.shadows ) {
         SPKSync.instances[i].SCENE.shadowlight.shadowDarkness = 0;
         SPKSync.instances[i].SCENE.shadows = false;
