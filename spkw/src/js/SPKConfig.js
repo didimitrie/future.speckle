@@ -29,12 +29,15 @@ var SPKConfig = function () {
    
   
   // testing
+  /*
+  
   SPKConfig.APPDIR     = "http://localhost:9009";
   SPKConfig.UPLOADDIR  = "http://localhost:9009/uploads";
   SPKConfig.GEOMAPI    = "http://localhost:9009/api/model/";
   SPKConfig.METAAPI    = "http://localhost:9009/api/model/metadata/";
   SPKConfig.INSTAPI    = "http://localhost:9009/api/model/instances/";
- 
+  
+  */
 }
 
 module.exports = new SPKConfig();

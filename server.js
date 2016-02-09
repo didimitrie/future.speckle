@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var flash    = require('connect-flash');
 var bodyParser = require("body-parser");
+var favicon = require('serve-favicon');
 
 var path     = require('path');
 var appDir   = path.dirname(require.main.filename);
@@ -26,6 +27,9 @@ var configDB = require('./config/database.js');
 mongoose.connect(configDB.url); 
 
 require('./config/passport'); 
+
+// favicons <3
+app.use(favicon("assets/img/favicon.ico"));
 
 // set up our express application
 app.use(morgan('dev')); // log every request to the console

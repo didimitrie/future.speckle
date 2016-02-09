@@ -50202,8 +50202,8 @@ var SPK = function (wrapper, options) {
       if(( this.x >= opacity * 0.5 ) && (this.calledNext===undefined))
       {
         
-        this.calledNext = true;
-        SPK.addNewInstance();
+        //this.calledNext = true;
+        //SPK.addNewInstance();
         
       }
 
@@ -50218,7 +50218,7 @@ var SPK = function (wrapper, options) {
 
       }
 
-      //SPK.addNewInstance(); // off because called have way through in the opacity out 
+      SPK.addNewInstance(); // on  because we didnt' call half way through in the opacity out 
 
     })  ;
 
@@ -50426,8 +50426,6 @@ var SPK = function (wrapper, options) {
       SPK.VIEWER.camera.aspect = ($(SPK.HMTL.canvas).innerWidth()-1) / ($(SPK.HMTL.canvas).innerHeight()-5);
       
       SPK.VIEWER.camera.updateProjectionMatrix();
-
-      SPK.alignSliders();
     
     } );
 
@@ -50572,16 +50570,6 @@ var SPK = function (wrapper, options) {
   SPK.alignSliders = function () {
     
     return;
-    
-    var containerHeight = $(SPK.HMTL.sidebar).innerHeight(); 
-    
-    var wrapperHeight = $(SPK.HMTL.sidebar).find("#wrapper-params").height(); 
-
-    var diff = containerHeight - wrapperHeight;
-
-    if( diff > 0 ) {
-      $(SPK.HMTL.sidebar).find("#wrapper-params").css("top", diff / 2 + "px");
-    }
 
   }
 
@@ -50684,12 +50672,15 @@ var SPKConfig = function () {
    
   
   // testing
+  /*
+  
   SPKConfig.APPDIR     = "http://localhost:9009";
   SPKConfig.UPLOADDIR  = "http://localhost:9009/uploads";
   SPKConfig.GEOMAPI    = "http://localhost:9009/api/model/";
   SPKConfig.METAAPI    = "http://localhost:9009/api/model/metadata/";
   SPKConfig.INSTAPI    = "http://localhost:9009/api/model/instances/";
- 
+  
+  */
 }
 
 module.exports = new SPKConfig();

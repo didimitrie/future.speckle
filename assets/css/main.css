@@ -16,8 +16,14 @@ h1 {
 .strong {
   font-weight: 700; }
 
+.xsmall {
+  font-size: 9px; }
+
 .thin {
   font-weight: 400; }
+
+a:hover img {
+  border-bottom: 2px solid blue; }
 
 input {
   font-size: 20px;
@@ -50,7 +56,7 @@ a {
   text-decoration: none !important; }
 
 a:hover {
-  color: #C542E1; }
+  color: #00CBB8; }
 
 a.logo {
   text-decoration: none; }

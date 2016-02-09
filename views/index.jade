@@ -7,10 +7,11 @@ block content
     .row(style="margin-top:20px")
       .col-sm-12
         .row
-          .col-sm-12.text-center
+          .col-sm-6.col-sm-offset-3.text-center
             h1 #[a.logo(href="/") #[i.fa.fa-sliders] S ]
-          .col-sm-12
+          .col-sm-3
             p.pull-right.text-right
+              br
               if(loggedIn)
                 a.thin(href="/profile") Welcome back, #[strong #{username}]!
               else
@@ -42,7 +43,7 @@ block content
               #[span.blue Parametric models can go beyond aesthetic and technical exploration: they can tell a story and they can be the base of collaborative decision making. ]
             br
           .col-sm-6.text-right
-            img(src="/img/collaborative.svg" onerror="this.onerror=null; this.src='image.png'")
+            img(src="/img/collaborative.svg")
 
       .col-sm-12
         hr
@@ -53,7 +54,7 @@ block content
               How does it work?
         .row.vertical-align
           .col-sm-6
-            img(src="/img/howitworks.svg" onerror="this.onerror=null; this.src='image.png'")
+            img(src="/img/howitworks.svg")
           .col-sm-6.text-justify
             h3 #[strong Step 1:] Speckle exports the solution & performance space you define inside Grasshopper in a special file. 
          
@@ -61,11 +62,11 @@ block content
           .col-sm-6.text-justify
             h3 #[strong Step 2:] You upload the #[span.blue file] to future.speckle. Now anyone who you share the link with can view it online!
           .col-sm-6
-            img(src="/img/howitworks-2.svg" onerror="this.onerror=null; this.src='image.png'")
+            img(src="/img/howitworks-2.svg")
         
         .row.vertical-align
           .col-sm-6
-            img(src="/img/howitworks-3.svg" onerror="this.onerror=null; this.src='image.png'")
+            img(src="/img/howitworks-3.svg")
           .col-sm-6.text-justify
             h3 #[strong Step 3:] Users can now explore the your parametric model in their browser!          
       .col-sm-12
@@ -78,53 +79,42 @@ block content
         hr
 
       .col-sm-12.text-center
+        h2 Examples!
         .row
           .col-sm-4
-            h3.
-              Example 1
             p.
-              #[a(href="#") View ] | #[a(href="#") Download ]
+              Example 1: Coloured Meshes
+            #[a(href="#") #[img.img-responsive(src="/img/example01.png")] ]
           .col-sm-4
-            h3.
-              Example 2
             p.
-              #[a(href="#") View ] | #[a(href="#") Download ]
+              Example 2: Basic Canopy Structure
+            p.
+              #[a(href="#") #[img.img-responsive(src="/img/example02.png")] ]
           .col-sm-4
-            h3.
-              Example 3
             p.
-              #[a(href="#") View ] | #[a(href="#") Download ] 
+              Example 3: Torsion Tower
+            #[a(href="#") #[img.img-responsive(src="/img/example03.png")] ]
       .clearfix
+      .col-sm-12.text-center
+        p.xsmall If you want your design featured here, #[a(href="mailto:d.stefanescu@ucl.ac.uk?subject=beta example feature request") let me know! ]
       .col-sm-12
         hr
         .row
-          .col-sm-4.text-right
-            h3.
-              Quickstart
-            p. 
-              1. #[a(href="/beta") Register] as a user. #[br]
-              2. Download the GH component & install it. #[br]
-              3. Export a model from GH.#[br]
-              4. Upload it & enjoy!#[br]
-          .col-sm-4.text-center
-            h3.
-               Contribute
+          .col-sm-12.text-center
             h2
               i.fa.fa-github
-          .col-sm-4
-            h3.
-              Supported Software
             p.
-              Right now we only support Grasshopper/Rhino3d. 
-            p.
-              We would really like it if you would want to write an exporter for Dynamo/Sketchup/Catia/GC/etc. #[a(href="mailto:d.stefanescu@ucl.ac.uk") Get in touch! ]
-      .clearfix
+              The #[a(href="https://github.com/didimitrie/viewer.speckle") #[i.fa.fa-github] Speckle Online Viewer ] and the #[a(href="https://github.com/didimitrie/speckle.exporter") #[i.fa.fa-github] Speckle GH Component ] are Open Source on Github. Contrbutions are more than welcome: you can shape the future development.
+            h2
+              a.github-button(href='https://github.com/didimitrie/viewer.speckle/fork', data-icon='octicon-repo-forked', data-style='mega', aria-label='Fork didimitrie/viewer.speckle on GitHub') Speckle Online Viewer 
+              &nbsp;&nbsp;
+              a.github-button(href='https://github.com/didimitrie/speckle.exporter/fork', data-icon='octicon-repo-forked', data-style='mega', aria-label='Fork didimitrie/speckle.exporter on GitHub') Speckle GH Component
 
-      
-      .clearfix
-      .col-sm-12
-      
-           
+
+
+      .clearfix      
+
+        script#github-bjs(async='', defer='', src='https://buttons.github.io/buttons.js')   
         script(src='https://cdn.auth0.com/js/lock-7.12.min.js')   
         script(type='text/javascript').
           var lock = new Auth0Lock('xM4C16GZAbufm5citF6nJvj6wpAeYKlK', 'dim.eu.auth0.com');

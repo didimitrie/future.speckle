@@ -10,7 +10,7 @@
     "watch-sass": "sass --watch src/sass/SPKSingle.scss:dist/css/SPKSingle.css src/sass/SPKDouble.scss:dist/css/SPKDouble.css",
     "build-sass": "sass --style compressed src/sass/SPKSingle.scss | cleancss -o dist/css/SPKSingle.css",
     
-    "watch-jade": "jade --watch src/jade/*.jade -o dist/ -P",
+    "watch-jade": "jade --watch src/jade/*.jade -o dist/",
     "build-jade": "jade src/jade/*.jade -o dist/",
 
     "build-js-single-uglify": "browserify src/js/SPKSingle.js | uglifyjs -c -m -o dist/js/SPKSingle.min.js",

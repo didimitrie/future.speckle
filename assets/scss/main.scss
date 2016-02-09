@@ -22,8 +22,19 @@ h1 {
   font-weight: 700;
 }
 
+.xsmall {
+  font-size: 9px;
+}
+
 .thin {
   font-weight: 400;
+}
+
+a:hover {
+  img {
+    
+    border-bottom: 2px solid blue;
+  }
 }
 
 input {

@@ -1,5 +1,6 @@
 doctype html
 html
+  include ./partials/headercomment.html
   head
   title Future.Speckle: Display and explore parametric models in your browser.
   link(rel='stylesheet', href='//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css')
@@ -11,6 +12,11 @@ html
   link(rel="stylesheet", href="/css/main.css")
   
   script(src="https://code.jquery.com/jquery-2.1.4.min.js")
+
+  include ./partials/metatags.html
+
+  script 
+      include ./partials/analytics.js
     
   block header
 
