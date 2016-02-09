@@ -50360,7 +50360,8 @@ var SPK = function (wrapper, options) {
 
     SPK.VIEWER.renderer.setClearColor( 0xF2F2F2 ); 
 
-    SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );  // change to window.devicePixelRatio 
+    SPK.VIEWER.renderer.setPixelRatio( 1 );  // change to window.devicePixelRatio 
+    //SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );  // change to window.devicePixelRatio 
     
     SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); 
 
@@ -50684,8 +50685,11 @@ var SPKConfig = function () {
    
   
   // testing
+<<<<<<< HEAD
   /*
   
+=======
+>>>>>>> origin/master
   SPKConfig.APPDIR     = "http://localhost:9009";
   SPKConfig.UPLOADDIR  = "http://localhost:9009/uploads";
   SPKConfig.GEOMAPI    = "http://localhost:9009/api/model/";
@@ -51554,7 +51558,6 @@ var SPKSync = function () {
   SPKSync.toggleShadows = function() {
     
     for( var  i = 0; i < SPKSync.instances.length; i++ ) {
-      console.log(i + " / " + SPKSync.instances[i].SCENE.shadows);
       if( SPKSync.instances[i].SCENE.shadows ) {
         SPKSync.instances[i].SCENE.shadowlight.shadowDarkness = 0;
         SPKSync.instances[i].SCENE.shadows = false;

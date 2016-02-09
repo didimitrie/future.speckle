@@ -459,7 +459,8 @@ var SPK = function (wrapper, options) {
 
     SPK.VIEWER.renderer.setClearColor( 0xF2F2F2 ); 
 
-    SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );  // change to window.devicePixelRatio 
+    SPK.VIEWER.renderer.setPixelRatio( 1 );  // change to window.devicePixelRatio 
+    //SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );  // change to window.devicePixelRatio 
     
     SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); 
 
