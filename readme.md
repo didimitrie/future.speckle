@@ -1,6 +1,6 @@
-#Future.Speckle
+# [Future.Speckle](http://beta.speckle.xyz)
 
-#### About
+#### About 
 
 #### The Parts
 
@@ -10,15 +10,34 @@ There are two main parts:
 
 The SPK viewer is located in the /spkw and has, for now, its own build system. 
 
+#### Getting started
+
+npm install
+npm run watch-simple
+
 #### Running Locally
 
-#### 
+#### Deploying on your own server
+
+If you want to deploy this to your own server (for various reasons), go ahead! Create a copy of the `config.local` folder, rename it `config` and pop in the details to your mongodb instance & auth0 app account. 
+
+
+
+#### Contributing
+
+The `master` branch is the release branch. Whatever is there is online and running. 
+The `dev` branch is where active development happens. 
+Each feature should go in a fork of the `dev` branch, ie. `dev\my-new-super-feature`.
 
 #### Credits
 
-Started off & currently maintained by @idid. 
+Started off & currently maintained by [@idid](http://twitter.com/idid/). 
 
 *Add yourself here if you contribute!*
+
+[The Bartlett, UCL](http://www.bartlett.ucl.ac.uk/) [Innochain](http://innochain.net/)
+
+This project has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Sklodowska-Curie grant agreement No 642877. 
 
 #### GNU General Public License v2.0
 Future.Speckle
