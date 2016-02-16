@@ -60,69 +60,6 @@ module.exports = function(app, passport, express) {
 	
   });
 
-  app.get("/beta", function(req, res){
-    res.render("beta.jade", {
-      authdata : {
-        'clientId' : AuthDetails.clientId,
-        'domain' : AuthDetails.domain,
-        'clientSecret' : AuthDetails.clientSecret,
-        'baseUrl' : AuthDetails.baseUrl
-      }
-    });
-  });
-
-  app.post("/beta", function(req, res) {
-    var key = req.body.key;
-
-    BetaKey.findOne({key : key}, function(err, data) {
-      console.log(data);
-
-      if(data === null) {
-      
-        res.send("nokey");
-      
-      } else {
-
-        if(data.max >= data.used) {
-
-          res.send("proceed");
-          req.session.allowsignup = true;
-
-          data.used = data.used + 1;
-          data.save();
-        }
-
-        if(data.max < data.used ) {
-          console.log("expired key " + key);
-          res.send("expired");
-        }
-
-      }
-    });
-
-  });
-
-  app.post("/waitinglist", function(req, res) {
-    var email = req.body.email;
-    var myWait = new WaitingList();
-    myWait.email = email;
-    myWait.save(function(err) {
-      WaitingList.count({}, function (err, c){
-        res.json({count: c});
-      });
-    });
-  });
-
-  app.get("/signup", function(req, res) {
-    res.render("signup.jade", {
-      allowsignup : req.session.allowsignup,
-      authdata : {
-        'clientId' : AuthDetails.clientId,
-        'domain' : AuthDetails.domain,
-        'clientSecret' : AuthDetails.clientSecret,
-        'baseUrl' : AuthDetails.baseUrl
-    }});
-  });
 
   // normal login BUT NO SIGNUP route
   app.get("/login", function(req, res) {
@@ -135,8 +72,6 @@ module.exports = function(app, passport, express) {
       }
     });
   });
-
-
 
   app.get("/terms", function(req, res){
     res.render("terms.jade");

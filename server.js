@@ -23,9 +23,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 var session      = require('express-session');
 
-
+// connect mongoose up
 var configDB = require('./config.local/database.js');
-
 mongoose.connect(configDB.url); 
 
 // favicons <3
@@ -61,7 +60,7 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 
 
 // routes ======================================================================
-//app.use('/assets', express.static('assets'));
+// get the static routes up - i have a feel this is somewhat stupidly done
 app.use(express.static('assets'));
 app.use('/uploads', express.static('uploads'));
 app.use('/view/s/css', express.static('spkw/dist/css'));
@@ -69,8 +68,9 @@ app.use('/view/d/css', express.static('spkw/dist/css'));
 app.use('/view/s/js', express.static('spkw/dist/js'));
 app.use('/view/d/js', express.static('spkw/dist/js'));
 
+// dynamic routes come later
 require('./app/routes.js')(app, passport, express); // load our routes and pass in our app and fully configured passport
 
 // launch ======================================================================
 app.listen(port);
-console.log('Bouncing bytes and beats on port ' + port + ". We are actually having fun!");
+console.log('Bouncing bytes and beats on port ' + port + ".");
