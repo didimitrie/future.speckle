@@ -1,6 +1,8 @@
 var express  = require('express');
 var app      = express();
 var port     = process.env.PORT || 9009;
+//TODO
+// var configDir = process.env.CFG || "./config.local"
 var mongoose = require('mongoose');
 var passport = require('passport');
 var flash    = require('connect-flash');
@@ -14,7 +16,7 @@ var sass     = require('node-sass');
 var sassMiddleware = require('node-sass-middleware');
 
 var passport = require("passport");
-var strategy = require("./config/passport")
+var strategy = require("./config.local/passport")
 
 var morgan       = require('morgan');
 var cookieParser = require('cookie-parser');
@@ -22,11 +24,9 @@ var bodyParser   = require('body-parser');
 var session      = require('express-session');
 
 
-var configDB = require('./config/database.js');
+var configDB = require('./config.local/database.js');
 
 mongoose.connect(configDB.url); 
-
-require('./config/passport'); 
 
 // favicons <3
 app.use(favicon("assets/img/favicon.ico"));

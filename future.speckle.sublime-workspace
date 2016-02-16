@@ -1,0 +1,1297 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"Aut",
+				"AuthDetails"
+			],
+			[
+				"mess",
+				"messages"
+			],
+			[
+				"geom",
+				"geometries"
+			],
+			[
+				"boundi",
+				"boundingSphere"
+			],
+			[
+				"di",
+				"display"
+			],
+			[
+				"paddin",
+				"padding"
+			],
+			[
+				"fu",
+				"fullname"
+			],
+			[
+				"reu",
+				"return"
+			],
+			[
+				"my",
+				"mymeasures"
+			],
+			[
+				"key",
+				"keyvaluepairs"
+			],
+			[
+				"para",
+				"parameters"
+			],
+			[
+				"call",
+				"calledNext"
+			],
+			[
+				"model",
+				"modelKey"
+			],
+			[
+				"border",
+				"border-box"
+			],
+			[
+				"font",
+				"font-size"
+			],
+			[
+				"tag",
+				"tagHeight"
+			],
+			[
+				"win",
+				"winHeight"
+			],
+			[
+				"wra",
+				"wrapperHeight"
+			],
+			[
+				"add",
+				"addClass"
+			],
+			[
+				"icon",
+				"iconhtml"
+			],
+			[
+				"SPK",
+				"SPKUiManager"
+			],
+			[
+				"slider",
+				"sliderwrapper"
+			],
+			[
+				"hmtl",
+				"htmlwrapper"
+			],
+			[
+				"wrapper",
+				"wrapper-params"
+			],
+			[
+				"text",
+				"text-align"
+			],
+			[
+				"se",
+				"sessions"
+			],
+			[
+				"sess",
+				"session"
+			],
+			[
+				"post",
+				"postUpdate"
+			],
+			[
+				"session",
+				"sessionid"
+			],
+			[
+				"modl",
+				"modelid"
+			],
+			[
+				"time",
+				"timestamp"
+			],
+			[
+				"pla",
+				"plainInstanceSchema"
+			],
+			[
+				"log",
+				"loginstance"
+			],
+			[
+				"ins",
+				"instance"
+			],
+			[
+				"shadow",
+				"shadowlight"
+			],
+			[
+				"wi",
+				"width"
+			],
+			[
+				"toggle",
+				"toggleGroundplane"
+			],
+			[
+				"find",
+				"findOne"
+			],
+			[
+				"stat",
+				"staticFile"
+			],
+			[
+				"Glo",
+				"GLOBALS"
+			],
+			[
+				"mode",
+				"modelname"
+			],
+			[
+				"load",
+				"loadInstance"
+			],
+			[
+				"margin",
+				"margin-top"
+			],
+			[
+				"padding",
+				"padding-top"
+			],
+			[
+				"inlin",
+				"inline-block"
+			],
+			[
+				"cam",
+				"camToSync"
+			],
+			[
+				"in",
+				"instances"
+			],
+			[
+				"i",
+				"instances"
+			],
+			[
+				"build-js",
+				"build-js-double"
+			],
+			[
+				"t",
+				"tweenIn"
+			],
+			[
+				"tw",
+				"tweenOut"
+			],
+			[
+				"make",
+				"makeContext"
+			],
+			[
+				"bound",
+				"boundingSphere"
+			],
+			[
+				"G",
+				"GLOBALS"
+			],
+			[
+				"comp",
+				"computeBoundingBox"
+			],
+			[
+				"S",
+				"SPK"
+			],
+			[
+				"get",
+				"getCurrentKey"
+			],
+			[
+				"test",
+				"testGeo"
+			],
+			[
+				"render",
+				"renderer"
+			],
+			[
+				"ca",
+				"camera"
+			],
+			[
+				"ren",
+				"render"
+			],
+			[
+				"makePo",
+				"makePoint"
+			],
+			[
+				"SP",
+				"SPKLType"
+			],
+			[
+				"tr",
+				"transparent"
+			],
+			[
+				"geome",
+				"geometries"
+			],
+			[
+				"pro",
+				"properties"
+			],
+			[
+				"on",
+				"onProgress"
+			],
+			[
+				"setup",
+				"setupEnvironment"
+			],
+			[
+				"mar",
+				"margin-bottom"
+			],
+			[
+				"param",
+				"parameters"
+			],
+			[
+				"re",
+				"response"
+			],
+			[
+				"backgr",
+				"background-color"
+			],
+			[
+				"bac",
+				"background-color"
+			],
+			[
+				"start",
+				"start-nd"
+			],
+			[
+				"sta",
+				"start-nd"
+			],
+			[
+				"nanoba",
+				"nanobarholder"
+			],
+			[
+				"nano",
+				"nanobarholder"
+			],
+			[
+				"su",
+				"submitForm"
+			],
+			[
+				"first",
+				"firstVisit"
+			],
+			[
+				"for",
+				"formattedDate"
+			],
+			[
+				"fil",
+				"fileSize"
+			],
+			[
+				"de",
+				"deflateLocation"
+			],
+			[
+				"extra",
+				"extractionPath"
+			],
+			[
+				"ba",
+				"background-color"
+			],
+			[
+				"user",
+				"username"
+			],
+			[
+				"use",
+				"usedStorage"
+			],
+			[
+				"auth",
+				"auth0id"
+			],
+			[
+				"pr",
+				"profile"
+			],
+			[
+				"usr",
+				"userModels"
+			],
+			[
+				"fail",
+				"failureRedirect"
+			],
+			[
+				"is",
+				"isLoggedIn"
+			],
+			[
+				"font-",
+				"font-weight"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "config/database.js",
+			"settings":
+			{
+				"buffer_size": 307,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "config.local/auth-config.js",
+			"settings":
+			{
+				"buffer_size": 386,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/routes.js",
+			"settings":
+			{
+				"buffer_size": 13892,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "views/index.jade",
+			"settings":
+			{
+				"buffer_size": 5108,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "views/layout.jade",
+			"settings":
+			{
+				"buffer_size": 742,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "views/partials/footer.jade",
+			"settings":
+			{
+				"buffer_size": 1449,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "server.js",
+			"settings":
+			{
+				"buffer_size": 2576,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 155.0,
+		"last_filter": "install",
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"pacak",
+				"Package Control: Install Package"
+			],
+			[
+				"packa",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 457.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/app",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config.local",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/uploads/deflated",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views"
+	],
+	"file_history":
+	[
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/login.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/signup.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config.local/passport.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/profile.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/package.json",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config.local/database.js",
+		"/Volumes/Feral/www/research.dimitrie.org/public_html/index.html",
+		"/Volumes/Feral/www/research.dimitrie.org/public_html/index.js",
+		"/Volumes/Feral/.nginx/conf.d/speckle.xyz.conf",
+		"/Volumes/Feral/.nginx/conf.d/research.dimitrie.org.conf",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/device.orientations/index.html",
+		"/Users/Bender/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/dist/js/SPKDouble.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKConfig.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/assets/scss/_variables.scss",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/partials/footer.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/partials/analytics.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/jade/SPKSingle.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/server.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/package.json",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/jade/hc.html",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/terms.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/assets/scss/main.scss",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/jade/headercomment.html",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/layout.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/index.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKSync.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPK.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKSaver.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKObjectMaker.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKMeasures.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKLogger.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKLoader.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKDouble.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKCache.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/readme.md",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKUiManager.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKSingle.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/dist/js/SPKSingle.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/sass/_sliders.scss",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/sass/SPKSingle.scss",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/cookies.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/app/routes.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/sass/_app.scss",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/sass/_typebase.scss",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/.gitmodules",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/src/jade/SPKDouble.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/.gitignore",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/package.json",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/src/js/SPK-Single.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/readme.md",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/LICENSE",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/viewer_online/static/js/speckleLoader.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/viewer_online/static/js/geometryLoaders.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/viewer_online/views/viewer/modelViewer.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/viewer_online/static/js/viewer.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/src/js/SPKSwapper.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/src/js/SPKObjectMaker.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/viewer_online/static/js/instanceManager.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/src/jade/index-split.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/src/jade/index.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/src/sass/app.scss",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/licence",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/viewer_online/static/css/style-viewer.css",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/src/sass/_variables.scss",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/src/sass/_sliders.scss",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/viewer_online/static/css/style-viewer-dist.css",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/src/sass/_reset.scss",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/src/js/SPKLoader.js",
+		"/Users/Bender/Downloads/localhost-1453467107651.log",
+		"/Users/Bender/Downloads/localhost-1453467263827.log",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/src/js/SPKCache.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/viewer_online/static/css/nouislider.css",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/license.txt",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/readme.md",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/uploads/deflated/userModel-1452799030864-auth0|567a821443f64d5619edff31/CustomFileInputs/fonts/codropsicons/license.txt",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/licence.txt",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/assets/css/main.css",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/bin/build-css",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/bin/watch-css",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/src/scss/main.scss",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/gulpfile.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config/database.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/modelviewer/test.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/app/models/models.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/app/models/user.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/modelviewer/index.html",
+		"/Users/Bender/Library/Application Support/Sublime Text 3/Packages/User/Default (OSX).sublime-keymap",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/.gitignore",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/scripts/helpers.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/scripts/custom-file-input.js",
+		"/Users/Bender/Desktop/Sublime Text/Red.icns",
+		"/Users/Bender/Downloads/CustomFileInputs/index.html",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/profile.ejs",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/login.ejs",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/aut0-test/app/routes.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/aut0-test/server.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/aut0-test/views/profile.ejs",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/aut0-test/config/passport.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/aut0-test/app/models/models.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/auth-test-simple/config/passport.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/auth-test-simple/package.json",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/auth-test-simple/config/database.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/auth-test-simple/app/routes.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/super-rentals/app/routes/index.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/super-rentals/app/styles/app.css",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/super-rentals/app/templates/index.hbs",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/super-rentals/app/models/rental.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/super-rentals/app/mirage/config.js",
+		"/Users/Bender/Desktop/uninstallnode.sh",
+		"/usr/local/lib/dtrace/node.d",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/super-rentals/app/templates/application.hbs",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/super-rentals/bower.json",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/super-rentals/app/templates/about.hbs",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/super-rentals/app/templates/contact.hbs",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/super-rentals/app/router.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/05 Auth Test/views/profile.ejs",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/05 Auth Test/views/index.ejs"
+	],
+	"find":
+	{
+		"height": 50.0
+	},
+	"find_in_files":
+	{
+		"height": 112.0,
+		"where_history":
+		[
+			"<current file>"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"login",
+			"\"",
+			"gamma",
+			"script",
+			"\",",
+			"\"email\"",
+			"email",
+			", ",
+			":",
+			"\"",
+			"email",
+			"\"email\"",
+			"}",
+			"SPK",
+			"alignSliders",
+			"An easy way to share 3d models generated by grasshopper/rhino.",
+			"SpeckleXYZ - Online 3d Viewer for Grasshopper",
+			"dashed",
+			"h3",
+			"onerror=\"this.onerror=null; this.src='image.png'\"",
+			"onerror=",
+			"onerror",
+			"p ",
+			"li",
+			"responsive",
+			"&nbsp",
+			"metadata",
+			"geometry",
+			"boundingSphere",
+			"console.log",
+			"staticGeoFile",
+			"localhost:9009",
+			"box-shadow",
+			"pk-saver-half",
+			"\"",
+			"saver",
+			"keyvaluepairs",
+			"splitmeausres",
+			"params",
+			"SPKConfig",
+			"black",
+			"addNewInstance",
+			"myMeasureWrapper",
+			"true",
+			"slider",
+			"SPKConfig",
+			"save",
+			"SAVE",
+			"settings-controls",
+			"console",
+			"paramName",
+			");\n",
+			"modelName",
+			"beta.speckle.xyz",
+			"localhost:8000",
+			"text-center",
+			"terms",
+			"beta",
+			"#F8F8F8",
+			"white",
+			"input",
+			"yupii",
+			"sliders",
+			"SPKLogger",
+			"p",
+			"editable",
+			"SPKLogger",
+			"SPKUiManager",
+			"= r",
+			"wrappers",
+			"name",
+			"Vk_cVx1Fe",
+			"analytics",
+			"get",
+			"nothing",
+			"/api/model/metadata/update/",
+			"key",
+			"bcrypt",
+			"SPK.GLOBALS.model",
+			"Config",
+			"SPKConfig",
+			"appDir",
+			"path",
+			"fs",
+			"bcrypt",
+			"plainInstance",
+			"name",
+			"simple",
+			"savedInstance",
+			"toggleShadows",
+			"2048",
+			"light",
+			"boundingSphere",
+			"controls",
+			"myBoundingSphere",
+			"toggleGrid",
+			".text-center",
+			"grid",
+			"alignSliders",
+			"dist",
+			"src",
+			"assets",
+			"view",
+			"viewer",
+			"assets",
+			"swap",
+			"swapInstances",
+			"updateInstances",
+			"swapInstances",
+			"addNewInstance",
+			"updateInstances",
+			"swapInstances",
+			"33",
+			"50",
+			"_w",
+			"x",
+			"(\"///////////////////////////////////////\")\n",
+			"instances",
+			"sliderId",
+			"SPKSingle",
+			"app",
+			"top",
+			"p>",
+			"<p",
+			"GLOBALS",
+			"SPKL",
+			"in",
+			"log"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"  ",
+			" ",
+			"",
+			"SPK.VIEWER",
+			"SPK.GLOBALS",
+			"SPK.HMTL"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "config/database.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 307,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								108,
+								108
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "config.local/auth-config.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 386,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								137,
+								137
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "app/routes.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13892,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								183,
+								183
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "views/index.jade",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5108,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2556,
+								2556
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Theme - Cyanide/Cyanide/file_types/Jade.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1387.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "views/layout.jade",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 742,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								17,
+								17
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Theme - Cyanide/Cyanide/file_types/Jade.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "views/partials/footer.jade",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1449,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								155,
+								155
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Theme - Cyanide/Cyanide/file_types/Jade.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "server.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2576,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								534,
+								534
+							]
+						],
+						"settings":
+						{
+							"history_list_is_closing": true,
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 46.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.661832272016,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "future.speckle.sublime-project",
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"sign",
+				"views/signup.jade"
+			],
+			[
+				"server",
+				"server.js"
+			],
+			[
+				"spkmeas",
+				"spkw/src/js/SPKMeasures.js"
+			],
+			[
+				"pac",
+				"package.json"
+			],
+			[
+				"pacak",
+				"package.json"
+			],
+			[
+				"pag",
+				"package.json"
+			],
+			[
+				"pc",
+				"package.json"
+			],
+			[
+				"spksave",
+				"src/js/SPKSaver.js"
+			],
+			[
+				"slider",
+				"src/sass/_sliders.scss"
+			],
+			[
+				"spkui",
+				"src/js/SPKUiManager.js"
+			],
+			[
+				"terms",
+				"views/terms.jade"
+			],
+			[
+				"ser",
+				"server.js"
+			],
+			[
+				"_app",
+				"spkw/src/sass/_app.scss"
+			],
+			[
+				"spkc",
+				"spkw/src/js/SPKConfig.js"
+			],
+			[
+				"spk",
+				"src/js/SPKObjectMaker.js"
+			],
+			[
+				"aca",
+				"package.json"
+			],
+			[
+				"lice",
+				"licence"
+			],
+			[
+				"paca",
+				"package.json"
+			],
+			[
+				"app",
+				"src/sass/app.scss"
+			],
+			[
+				"inde",
+				"src/jade/index.jade"
+			],
+			[
+				"index",
+				"src/jade/index.jade"
+			],
+			[
+				"_slider.",
+				"src/sass/_sliders.scss"
+			],
+			[
+				"var",
+				"src/sass/_variables.scss"
+			],
+			[
+				"app.scss",
+				"src/sass/app.scss"
+			],
+			[
+				"reset",
+				"src/sass/_reset.scss"
+			],
+			[
+				".git",
+				".gitignore"
+			],
+			[
+				".scss",
+				"assets/scss/main.scss"
+			],
+			[
+				"licen",
+				"license.txt"
+			],
+			[
+				"model",
+				"app/models/models.js"
+			],
+			[
+				"route",
+				"app/routes.js"
+			],
+			[
+				"footer",
+				"views/partials/footer.jade"
+			],
+			[
+				"v",
+				"assets/scss/_variables.scss"
+			],
+			[
+				"la",
+				"views/layout.jade"
+			],
+			[
+				"wat",
+				"bin/watch-css"
+			],
+			[
+				"gul",
+				"gulpfile.js"
+			],
+			[
+				"data",
+				"config/database.js"
+			],
+			[
+				"te",
+				"modelviewer/test.jade"
+			],
+			[
+				"pa",
+				"package.json"
+			],
+			[
+				"rea",
+				"readme.md"
+			],
+			[
+				"serv",
+				"server.js"
+			],
+			[
+				"user",
+				"app/models/user.js"
+			],
+			[
+				"git",
+				".gitignore"
+			],
+			[
+				"routes",
+				"app/routes.js"
+			],
+			[
+				"c",
+				"views/scripts/custom-file-input.js"
+			],
+			[
+				"cu",
+				"views/scripts/custom-file-input.js"
+			],
+			[
+				"prof",
+				"views/profile.ejs"
+			],
+			[
+				"",
+				"app/models/models.js"
+			],
+			[
+				"pro",
+				"views/profile.ejs"
+			],
+			[
+				"index.",
+				"src/index.js"
+			],
+			[
+				"conf",
+				"config/passport.js"
+			],
+			[
+				"login",
+				"views/login.ejs"
+			],
+			[
+				"dat",
+				"config/database.js"
+			],
+			[
+				"bower",
+				"bower.json"
+			],
+			[
+				"contatc",
+				"app/templates/contact.hbs"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 400.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 640.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 234.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

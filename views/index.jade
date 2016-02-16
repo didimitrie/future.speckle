@@ -71,8 +71,9 @@ block content
             h3 #[strong Step 3:] Users can now explore the your parametric model in their browser!          
       .col-sm-12
         hr
+        // no more closed beta
         if(!loggedIn)
-          h1.strong.text-center #[a(href="/beta") Curious? Join the private beta!]
+          h1.strong.text-center #[a(href="/login") Curious? Join the beta run!]
           p.text-center Service is provided as-is, without any guarantee. 
         else 
           h1.strong.text-center Welcome back, #[span.thin #{username}]. #[a(href="/profile") Open your dashboard?]

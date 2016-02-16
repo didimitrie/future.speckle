@@ -4,12 +4,13 @@ var Session = require('../app/models/session');
 var BetaKey = require('../app/models/betakeys');
 var WaitingList = require('../app/models/waitinglist');
 
+var AuthDetails = require('../config.local/auth-config')
+
 var DecompressZip = require('decompress-zip');
 var shortid = require('shortid');
 var fs = require('fs');
 var path = require('path');
 var appDir = path.dirname(require.main.filename);
-
 
 // *****************************************************
 //	MULTER UPLOAD STUFF
@@ -60,7 +61,14 @@ module.exports = function(app, passport, express) {
   });
 
   app.get("/beta", function(req, res){
-    res.render("beta.jade");
+    res.render("beta.jade", {
+      authdata : {
+        'clientId' : AuthDetails.clientId,
+        'domain' : AuthDetails.domain,
+        'clientSecret' : AuthDetails.clientSecret,
+        'baseUrl' : AuthDetails.baseUrl
+      }
+    });
   });
 
   app.post("/beta", function(req, res) {
@@ -107,13 +115,25 @@ module.exports = function(app, passport, express) {
 
   app.get("/signup", function(req, res) {
     res.render("signup.jade", {
-      allowsignup : req.session.allowsignup
-    })
+      allowsignup : req.session.allowsignup,
+      authdata : {
+        'clientId' : AuthDetails.clientId,
+        'domain' : AuthDetails.domain,
+        'clientSecret' : AuthDetails.clientSecret,
+        'baseUrl' : AuthDetails.baseUrl
+    }});
   });
 
   // normal login BUT NO SIGNUP route
   app.get("/login", function(req, res) {
-    res.render("login.jade", {});
+    res.render("login.jade", {
+      authdata : {
+        'clientId' : AuthDetails.clientId,
+        'domain' : AuthDetails.domain,
+        'clientSecret' : AuthDetails.clientSecret,
+        'baseUrl' : AuthDetails.baseUrl
+      }
+    });
   });
 
 

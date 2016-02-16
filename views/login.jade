@@ -12,16 +12,16 @@ block content
      
         .col-sm-6.col-sm-offset-3.text-center
           #root.text-center(style='width: 320px; margin: 40px auto; padding: 10px;')
-          h3 No account yet? #[a(href="/beta") Register for the beta!]
+          
           script(src='https://cdn.auth0.com/js/lock-8.2.min.js')
+          
           script.
-
-            var lock = new Auth0Lock('xM4C16GZAbufm5citF6nJvj6wpAeYKlK', 'dim.eu.auth0.com');
-            lock.showSignin({
+            var lock = new Auth0Lock('#{authdata.clientId}', '#{authdata.domain}');
+            lock.show({
             container: 'root'
             , primaryColor: "#0000FF"
-            , icon: "http://localhost:9009/img/SPKLogo.svg"
-            , callbackURL: 'http://localhost:9009/callback'
+            , icon: "#{authdata.baseUrl}/img/SPKLogo.svg"
+            , callbackURL: '#{authdata.baseUrl}/callback'
             , responseType: 'code'
             , authParams: {
               scope: 'openid profile'

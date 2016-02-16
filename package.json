@@ -2,7 +2,7 @@
   "name": "Future.Speckle",
   "main": "server.js",
   "author": "Dimitrie A. Stefanescu / www.dimitrie.org",
-  "licence": "CC BY-NC 3.0",
+  "licence": "GNU GPL V2",
   "dependencies": {
     "bcrypt-nodejs": "latest",
     "body-parser": "^1.0.2",
