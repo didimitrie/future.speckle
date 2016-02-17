@@ -1,9 +1,8 @@
 var Model = require('../app/models/models');
 var User = require('../app/models/user');
 var Session = require('../app/models/session');
-var BetaKey = require('../app/models/betakeys');
-var WaitingList = require('../app/models/waitinglist');
 
+// change this to '../config/auth-config' for deployment
 var AuthDetails = require('../config.local/auth-config')
 
 var DecompressZip = require('decompress-zip');
@@ -49,27 +48,9 @@ module.exports = function(app, passport, express) {
 	 * Homepage route
 	 */
 	app.get("/", function(req, res) {
-
 	 	res.render("index.jade",  {
-	 	
     	loggedIn : req.isAuthenticated(),
-    
       username : req.user != null ? req.user.nickname : "Anon"
-	 	
-    });
-	
-  });
-
-
-  // normal login BUT NO SIGNUP route
-  app.get("/login", function(req, res) {
-    res.render("login.jade", {
-      authdata : {
-        'clientId' : AuthDetails.clientId,
-        'domain' : AuthDetails.domain,
-        'clientSecret' : AuthDetails.clientSecret,
-        'baseUrl' : AuthDetails.baseUrl
-      }
     });
   });
 
@@ -79,6 +60,17 @@ module.exports = function(app, passport, express) {
 
   app.get("/cookies", function(req, res){
     res.render("cookies.jade");
+  });
+
+  app.get("/login", function(req, res) {
+    res.render("login.jade", {
+      authdata : {
+        'clientId' : AuthDetails.clientId,
+        'domain' : AuthDetails.domain,
+        'clientSecret' : AuthDetails.clientSecret,
+        'baseUrl' : AuthDetails.baseUrl
+      }
+    });
   });
 
 	/**
@@ -136,45 +128,34 @@ module.exports = function(app, passport, express) {
 	/**
 	 *  Passport Auth0
 	 */	 
-	app.get("/callback", passport.authenticate('auth0', { failureRedirect: '/url-if-something-fails' }),
-  	function(req, res) {
-		  if (!req.user) {
-	      throw new Error('user null');
-	    }
-	    
-      User.saveUnique(req.user, function(save) {
-	    	if(save) {
-          var myUser = new User();
-          myUser.auth0id = req.user.id;
-          myUser.username = req.user.nickname;
-          myUser.tier = "Amazing Alpha Tester";
-          myUser.usedStorage = 0;
-          myUser.save();
-
-          // add stuff to req, needed
-          req.myUser = myUser;
-          req.firstVisit = true;
-          console.log("setting first visit to TRUE from callback");
-        }
-        else {
-          req.myUser = myUser;
-          req.firstVisit = false;
-          console.log("setting first visit to false from callback");
-        }
-	      res.redirect("/profile");        
-	    });
-      
+	app.get( "/callback", passport.authenticate( 'auth0', { failureRedirect: '/url-if-something-fails' } ), function( req, res ) {
+    if ( !req.user ) 
+      throw new Error('user null');
+    User.saveUnique( req.user, function( save ) {
+    	if( save ) {
+        var myUser = new User();
+        myUser.auth0id = req.user.id;
+        myUser.username = req.user.nickname;
+        myUser.tier = "Amazing Alpha Tester";
+        myUser.usedStorage = 0;
+        myUser.save();
+        req.myUser = myUser;
+        req.firstVisit = true;
+      }
+      else {
+        req.myUser = myUser;
+        req.firstVisit = false;
+      }
+      res.redirect("/profile");        
+    });
   });
 
 	/**
 	 * Logout 
 	 */
 	app.get("/logout", function(req, res) {
-	 	
     req.logout();
-
 	 	res.redirect("/");
-
 	});
 
 	// *****************************************************
@@ -261,7 +242,7 @@ module.exports = function(app, passport, express) {
   // *****************************************************
 
   /**
-   * Main viewer route; simple as f££££
+   * Main viewer route
    */
   
   app.get("/view/s/:m", isAuthorized, function(req, res) {
@@ -431,7 +412,6 @@ module.exports = function(app, passport, express) {
 // *****************************************************
 
 function isAuthorized(req, res, next) {
-  // for now everything is authorized - YAY
   return next();
 }
 
@@ -440,7 +420,6 @@ function isLoggedIn(req, res, next) {
 		User.findOne({auth0id : req.user.id}, function(err, user){
 			if(err) res.redirect("/");
 			req.myUser = user;
-      if(req.firstVisit === null) { req.firstVisit = false; console.log("setting first visit to false from isloggedin"); } else {req.firstVisit = true;}
 			return next();
 		});
 	} else 
@@ -464,27 +443,16 @@ function getBytesWithUnit( bytes ) {
   return bytes + units[i];
 }
 
-function getQouta(usedStorage)
-{
+function getQouta(usedStorage) {
 	var maxStorage = 1073741824; // 1 GB
 	return (usedStorage/maxStorage * 100);
 }
 
-function getFormatedDate()
-{
-  var date = new Date();
-
-  var year = date.getUTCFullYear();
-  var month = date.getUTCMonth();
-  var day = date.getUTCDate();
-
-  //month 2 digits
+function getFormatedDate() {
+  var date = new Date();           var year = date.getUTCFullYear();
+  var month = date.getUTCMonth();  var day = date.getUTCDate();
   month = ("0" + (month + 1)).slice(-2);
-
-  //year 2 digits
   year = year.toString().substr(2,2);
-
   var formattedDate = day + '/' + month + "/" + year;
-
   return formattedDate;
 }
