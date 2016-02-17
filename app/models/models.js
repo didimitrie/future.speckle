@@ -13,6 +13,7 @@ var modelSchema = mongoose.Schema({
   fileLocation : String, 
   deflateLocation : String,
   dateAdded : String,
+  timestamp : { type: Date, default: Date.now},
   urlId : String,
   savedInstances : [ { 
     key: String, 
@@ -25,7 +26,8 @@ var modelSchema = mongoose.Schema({
 
 
 modelSchema.statics.findOwnerModels = function(myOwnerId, callback) {
-  this.find({ownerId : {$in: [myOwnerId]}}, function(err, model){
+  // .sort('-date').exec(function(err, docs) {
+  this.find({ownerId : {$in: [myOwnerId]}}).sort('timestamp').exec( function(err, model){
       callback(err, model);
     });
 }
