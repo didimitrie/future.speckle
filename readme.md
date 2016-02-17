@@ -36,13 +36,9 @@ The SPK viewer is located in the /spkw and has, for now, its own build system :/
 
 #### Getting started
 
-`npm install` then `npm run watch-simple`
+Should be simple as `npm install` then `npm run watch-simple`. 
 
-
-#### Running Locally
-
-To run locally you need to tell the app to use the `config.local` folder. Deployment uses `config` which is, for obvious reasons, gitignored.
-
+Point your browser to `localhost:9009` and you should be good to go. 
 
 #### Deploying on your own server
 
@@ -57,9 +53,9 @@ Please give us a heads up if you do this :bow:
 
 The `master` branch is the release branch. Whatever is there is online and running. 
 
-The `dev` branch is where active development happens. For dev new reasons, always fork from `/dev`
+The `dev` branch is where active development happens. Always fork from `/dev` for new features. 
 
-Each feature should go in a fork of the `dev` branch, ie. `dev/my-new-super-feature`.
+Each new feature should go in a fork of the `dev` branch, ie. `dev/my-new-super-feature`. Once ready, submit a PR.
 
 Ideally, we would follow [these guidelines](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) (thanks @philipbelesky).
 

@@ -19,25 +19,15 @@
 var SPKConfig = function () {
 
   var SPKConfig = this;
+  
+  if (!location.origin) location.origin = location.protocol + "//" + location.host;
+  SPKConfig.ORIGIN = location.origin;
 
-  // deployment
-  SPKConfig.APPDIR     = "http://beta.speckle.xyz";
-  SPKConfig.UPLOADDIR  = "http://beta.speckle.xyz/uploads";
-  SPKConfig.GEOMAPI    = "http://beta.speckle.xyz/api/model/";
-  SPKConfig.METAAPI    = "http://beta.speckle.xyz/api/model/metadata/";
-  SPKConfig.INSTAPI    = "http://beta.speckle.xyz/api/model/instances/";
-   
-  
-  // testing
-  /*
-  
-  SPKConfig.APPDIR     = "http://localhost:9009";
-  SPKConfig.UPLOADDIR  = "http://localhost:9009/uploads";
-  SPKConfig.GEOMAPI    = "http://localhost:9009/api/model/";
-  SPKConfig.METAAPI    = "http://localhost:9009/api/model/metadata/";
-  SPKConfig.INSTAPI    = "http://localhost:9009/api/model/instances/";
-  
-  */
+  SPKConfig.APPDIR     = location.origin;
+  SPKConfig.UPLOADDIR  = location.origin + "/uploads";
+  SPKConfig.GEOMAPI    = location.origin + "/api/model/";
+  SPKConfig.METAAPI    = location.origin + "/api/model/metadata/";
+  SPKConfig.INSTAPI    = location.origin + "/api/model/instances/"; 
 }
 
 module.exports = new SPKConfig();

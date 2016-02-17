@@ -48,19 +48,19 @@ module.exports = function( app, passport, express ) {
       break
       
       case "updateViewport":
-        Session.findByIdAndUpdate( sessionid, { $set : {viewportsize: req.body.viewportsize }}, { safe: true }, cb( err, session ));
+        Session.findByIdAndUpdate( sessionid, { $set : {viewportsize: req.body.viewportsize }}, { safe: true }, cb);
       break
       
       case "addInstance":
-        Session.findByIdAndUpdate( sessionid, { $push : { "usedinstances" : { key: req.body.key } } }, { safe: true }, cb( err, session ));
+        Session.findByIdAndUpdate( sessionid, { $push : { "usedinstances" : { key: req.body.key } } }, { safe: true }, cb);
       break
       
       case "addMouseClick":
-        Session.findByIdAndUpdate( sessionid, { $push : { "mouseclicks" : { location: req.body.mouseloc}}}, { safe: true }, cb( err, session ));
+        Session.findByIdAndUpdate( sessionid, { $push : { "mouseclicks" : { location: req.body.mouseloc}}}, { safe: true }, cb);
       break
 
       case "sessionend":
-        Session.findByIdAndUpdate( sessionid, {$set : {exittime: Date.now() }},  {safe: true}, cb( err, session ) );
+        Session.findByIdAndUpdate( sessionid, {$set : {exittime: Date.now() }},  {safe: true}, cb );
       break
 
       default:

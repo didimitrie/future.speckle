@@ -50073,13 +50073,11 @@ var SPK = function (wrapper, options) {
 
     $.getJSON(SPKConfig.GEOMAPI + SPK.GLOBALS.model, function (data) {
       
-      SPK.GLOBALS.metadata.paramsFile = data.paramsFile.replace("./uploads", SPKConfig.UPLOADDIR);
-      SPK.GLOBALS.metadata.paramsFile = SPK.GLOBALS.metadata.paramsFile.replace("//p", "/p");
-
-      SPK.GLOBALS.metadata.staticGeoFile = data.staticGeoFile.replace("./uploads", SPKConfig.UPLOADDIR);
-      SPK.GLOBALS.metadata.staticGeoFile =  SPK.GLOBALS.metadata.staticGeoFile.replace("//s", "/s");
-
-      SPK.GLOBALS.metadata.rootFiles = SPK.GLOBALS.metadata.staticGeoFile.replace("/static.json", "/");
+      data.deflateLocation = data.deflateLocation.replace("./", "/");
+      
+      SPK.GLOBALS.metadata.paramsFile = SPKConfig.APPDIR + data.deflateLocation + "/params.json"
+      SPK.GLOBALS.metadata.staticGeoFile = SPKConfig.APPDIR + data.deflateLocation + "/static.json"
+      SPK.GLOBALS.metadata.rootFiles = SPKConfig.APPDIR + data.deflateLocation + "/";
 
       $(".model-name").html(data.modelName);
       
@@ -50430,6 +50428,7 @@ var SPK = function (wrapper, options) {
     
     } );
 
+    window.scene = SPK.VIEWER.scene;
   }
 
   SPK.loadInstance = function(key, callback) {
@@ -50663,25 +50662,15 @@ module.exports = new SPKCache();
 var SPKConfig = function () {
 
   var SPKConfig = this;
+  
+  if (!location.origin) location.origin = location.protocol + "//" + location.host;
+  SPKConfig.ORIGIN = location.origin;
 
-  // deployment
-  SPKConfig.APPDIR     = "http://beta.speckle.xyz";
-  SPKConfig.UPLOADDIR  = "http://beta.speckle.xyz/uploads";
-  SPKConfig.GEOMAPI    = "http://beta.speckle.xyz/api/model/";
-  SPKConfig.METAAPI    = "http://beta.speckle.xyz/api/model/metadata/";
-  SPKConfig.INSTAPI    = "http://beta.speckle.xyz/api/model/instances/";
-   
-  
-  // testing
-  /*
-  
-  SPKConfig.APPDIR     = "http://localhost:9009";
-  SPKConfig.UPLOADDIR  = "http://localhost:9009/uploads";
-  SPKConfig.GEOMAPI    = "http://localhost:9009/api/model/";
-  SPKConfig.METAAPI    = "http://localhost:9009/api/model/metadata/";
-  SPKConfig.INSTAPI    = "http://localhost:9009/api/model/instances/";
-  
-  */
+  SPKConfig.APPDIR     = location.origin;
+  SPKConfig.UPLOADDIR  = location.origin + "/uploads";
+  SPKConfig.GEOMAPI    = location.origin + "/api/model/";
+  SPKConfig.METAAPI    = location.origin + "/api/model/metadata/";
+  SPKConfig.INSTAPI    = location.origin + "/api/model/instances/"; 
 }
 
 module.exports = new SPKConfig();

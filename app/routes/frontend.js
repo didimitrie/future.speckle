@@ -15,7 +15,7 @@
 
 
 var User = require('../../app/models/user');
-var AuthDetails = require('../../config.local/auth-config')
+var AuthDetails = require('../../config/auth-config')
 
 module.exports = function( app, passport, express ) {
 

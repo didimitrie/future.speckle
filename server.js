@@ -1,51 +1,38 @@
-var express  = require('express');
-var app      = express();
+var express         = require('express');
+var app             = express();
+var port            = process.env.PORT || 9009;
+var mongoose        = require('mongoose');
+var passport        = require('passport');
+var bodyParser      = require("body-parser");
+var favicon         = require('serve-favicon');
+var path            = require('path');
+var appDir          = path.dirname(require.main.filename);
 
-var port     = process.env.PORT || 9009;
+var sass            = require('node-sass');
+var sassMiddleware  = require('node-sass-middleware');
 
-// change this to "./config" for deployment
-var configDir= "./config.local";
+var passport        = require("passport");
+var strategy        = require("./config/passport")
 
-var mongoose = require('mongoose');
-var passport = require('passport');
-var flash    = require('connect-flash');
-var bodyParser = require("body-parser");
-var favicon = require('serve-favicon');
-
-var path     = require('path');
-var appDir   = path.dirname(require.main.filename);
-
-var sass     = require('node-sass');
-var sassMiddleware = require('node-sass-middleware');
-
-var passport = require("passport");
-var strategy = require("./config.local/passport")
-
-var morgan       = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser   = require('body-parser');
-var session      = require('express-session');
+var morgan          = require('morgan');
+var cookieParser    = require('cookie-parser');
+var bodyParser      = require('body-parser');
+var session         = require('express-session');
 
 // connect mongoose up
-var configDB = require('./config.local/database.js');
+var configDB        = require('./config/database.js');
 mongoose.connect(configDB.url); 
 
-// favicons <3
 app.use(favicon("assets/img/favicon.ico"));
+app.use(morgan('dev')); 
+app.use(bodyParser.urlencoded({ extended: true })); 
+app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(bodyParser());
 
-// set up our express application
-app.use(morgan('dev')); // log every request to the console
+app.set('view engine', 'jade'); 
 
-app.use(bodyParser.urlencoded({ extended: true })); // parse post
-app.use(bodyParser.json()); // parse post
-
-app.use(cookieParser()); // read cookies (needed for auth)
-
-app.use(bodyParser()); // get information from html forms
-
-app.set('view engine', 'jade'); // after some whitespace fighthing, we start to like... jade
-
-// set up express to use the sass middleware (compiling scss)
+// sass =========================================================================
 app.use(
   sassMiddleware({
     src: './assets/scss',
@@ -55,11 +42,10 @@ app.use(
   })
 );
 
-// required for passport
-app.use(session({ secret: 'shhhhhhh' })); // session secret
+// passport ====================================================================
+app.use(session({ secret: 'shhhhhhh' }));
 app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
-app.use(flash()); // use connect-flash for flash messages stored in session
+app.use(passport.session());
 
 
 // routes ======================================================================
@@ -71,12 +57,12 @@ app.use('/view/d/css', express.static('spkw/dist/css'));
 app.use('/view/s/js', express.static('spkw/dist/js'));
 app.use('/view/d/js', express.static('spkw/dist/js'));
 
-// dynamic routes come later
-//require('./app/routes.js')(app, passport, express); // load our routes and pass in our app and fully configured passport
-require('./app/routes/frontend.js')(app, passport, express); // load our routes and pass in our app and fully configured passport
-require('./app/routes/modelmanager.js')(app, passport, express); // load our routes and pass in our app and fully configured passport
-require('./app/routes/viewer.js')(app, passport, express); // load our routes and pass in our app and fully configured passport
-require('./app/routes/modelapi.js')(app, passport, express); // load our routes and pass in our app and fully configured passport
+// dynamic routes come here, after static ones
+// there was some trouble with this before
+require('./app/routes/frontend.js')(app, passport, express); 
+require('./app/routes/modelmanager.js')(app, passport, express); 
+require('./app/routes/viewer.js')(app, passport, express); 
+require('./app/routes/modelapi.js')(app, passport, express); 
 
 // launch ======================================================================
 app.listen(port);
