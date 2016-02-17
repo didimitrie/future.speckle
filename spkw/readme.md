@@ -10,4 +10,4 @@ Local testing (without server) instructions should be coming soon.
 
 ### TODO:
 
-All the docs. Yay! 
+Documentation & clear architecture re MVC.See  [#15](https://github.com/didimitrie/future.speckle/issues/15)
