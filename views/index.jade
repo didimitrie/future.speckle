@@ -15,7 +15,7 @@ block content
               if(loggedIn)
                 a.thin(href="/profile") Welcome back, #[strong #{username}]!
               else
-                #[a.thin(href="/login") Beta Login ]
+                #[a.thin(href="/login") Login/Signup ]
       hr(style="margin-top:3px; margin-bottom:3px")
            
       
@@ -24,8 +24,8 @@ block content
         br
         br
         br
-        h2.text-justify.
-          Share with your clients the full flexibility of your designs: #[strong display and explore #[span.blue parametric models] in your browser].  
+        h2.text-center.
+          Share with your clients the full flexibility of your designs: #[strong display and explore #[span.bluex parametric models] in your browser]. #[br] #[a.blue(href="/login") #[i.fa.fa-angle-double-right] Join the open beta #[i.fa.fa-angle-double-left]]
         br
         br
         br
@@ -73,7 +73,7 @@ block content
         hr
         // no more closed beta
         if(!loggedIn)
-          h1.strong.text-center #[a(href="/login") Curious? Join the beta run!]
+          h1.strong.text-center #[a(href="/login") Curious? Join the open beta!]
           p.text-center Service is provided as-is, without any guarantee. 
         else 
           h1.strong.text-center Welcome back, #[span.thin #{username}]. #[a(href="/profile") Open your dashboard?]
@@ -102,18 +102,22 @@ block content
         hr
         .row
           .col-sm-12.text-center
-            h2
+            h1
               i.fa.fa-github
+          .col-sm-8.col-sm-offset-2.text-center
+            h3 Beta.Speckle is an open source project in its early development stages. We're welcoming contributors that want to get involved in a creative way!
+          .clearfix
+          .col-sm-12.text-center
             p.
-              The #[a(href="https://github.com/didimitrie/viewer.speckle") #[i.fa.fa-github] Speckle Online Viewer ] and the #[a(href="https://github.com/didimitrie/speckle.exporter") #[i.fa.fa-github] Speckle GH Component ] are Open Source on Github. Contrbutions are more than welcome: you can shape the future development.
-            h2
-              a.github-button(href='https://github.com/didimitrie/viewer.speckle/fork', data-icon='octicon-repo-forked', data-style='mega', aria-label='Fork didimitrie/viewer.speckle on GitHub') Speckle Online Viewer 
+              The #[a(href="https://github.com/didimitrie/future.speckle") #[i.fa.fa-github] Speckle Project ] and the #[a(href="https://github.com/didimitrie/speckle.exporter") #[i.fa.fa-github] Speckle GH Component ] are licensed under GPL V2 and are available on GitHub.
+            
+            h1
+              a.github-button(href='https://github.com/didimitrie/future.speckle/', data-style='mega', aria-label='Fork didimitrie/future.speckle on GitHub') Speckle Project
               &nbsp;&nbsp;
-              a.github-button(href='https://github.com/didimitrie/speckle.exporter/fork', data-icon='octicon-repo-forked', data-style='mega', aria-label='Fork didimitrie/speckle.exporter on GitHub') Speckle GH Component
-
-
-
-      .clearfix      
+              a.github-button(href='https://github.com/didimitrie/speckle.exporter/', data-style='mega', aria-label='Fork didimitrie/speckle.exporter on GitHub') Speckle GH Component
+            
+            p.
+      .clearfix
 
         script#github-bjs(async='', defer='', src='https://buttons.github.io/buttons.js')   
         script(src='https://cdn.auth0.com/js/lock-7.12.min.js')   
