@@ -1,6 +1,7 @@
 /**
  *
- * 
+ *  authors @idid
+ *  
  *  Frontend routes:
  *  - homepage
  *  - login
@@ -14,27 +15,26 @@
 
 
 var User = require('../../app/models/user');
-// change this to '../config/auth-config' for deployment
 var AuthDetails = require('../../config.local/auth-config')
 
-module.exports = function(app, passport, express) {
+module.exports = function( app, passport, express ) {
 
-  app.get("/", function(req, res) {
-    res.render("index.jade",  {
+  app.get( "/", function( req, res ) {
+    res.render( "index.jade",  {
       loggedIn : req.isAuthenticated(),
       username : req.user != null ? req.user.nickname : "Anon"
-    });
-  });
+    } );
+  } );
 
-  app.get("/terms", function(req, res){
+  app.get( "/terms", function( req, res ){
     res.render("terms.jade");
-  });
+  } );
 
-  app.get("/cookies", function(req, res){
+  app.get("/cookies", function( req, res ){
     res.render("cookies.jade");
-  });
+  } );
 
-  app.get("/login", function(req, res) {
+  app.get("/login", function( req, res ) {
     res.render("login.jade", {
       authdata : {
         'clientId' : AuthDetails.clientId,
@@ -43,12 +43,12 @@ module.exports = function(app, passport, express) {
         'baseUrl' : AuthDetails.baseUrl
       }
     });
-  });
+  } );
 
-  app.get("/logout", function(req, res) {
+  app.get("/logout", function( req, res ) {
     req.logout();
     res.redirect("/");
-  });
+  } );
 
   app.get( "/callback", passport.authenticate( 'auth0', { failureRedirect: '/url-if-something-fails' } ), function( req, res ) {
     if ( !req.user ) 
@@ -69,6 +69,6 @@ module.exports = function(app, passport, express) {
       }
       res.redirect("/profile");        
     });
-  });
+  } );
 
 } // module.exports end

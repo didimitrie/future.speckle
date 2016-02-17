@@ -9,8 +9,8 @@
  *
  * 
  */
-
-var appDir = path.dirname(require.main.filename);
+var path            = require('path')
+var appDir          = path.dirname(require.main.filename);
 
 module.exports = function( app, passport, express ) { 
   
@@ -24,6 +24,8 @@ module.exports = function( app, passport, express ) {
 
 } // module.exports end
 
+// this is more a placeholder for future functionality
+// ie access tokens and host of other complicated bs
 function isAuthorized(req, res, next) {
   return next();
 }

@@ -72,7 +72,11 @@ app.use('/view/s/js', express.static('spkw/dist/js'));
 app.use('/view/d/js', express.static('spkw/dist/js'));
 
 // dynamic routes come later
-require('./app/routes.js')(app, passport, express); // load our routes and pass in our app and fully configured passport
+//require('./app/routes.js')(app, passport, express); // load our routes and pass in our app and fully configured passport
+require('./app/routes/frontend.js')(app, passport, express); // load our routes and pass in our app and fully configured passport
+require('./app/routes/modelmanager.js')(app, passport, express); // load our routes and pass in our app and fully configured passport
+require('./app/routes/viewer.js')(app, passport, express); // load our routes and pass in our app and fully configured passport
+require('./app/routes/modelapi.js')(app, passport, express); // load our routes and pass in our app and fully configured passport
 
 // launch ======================================================================
 app.listen(port);
