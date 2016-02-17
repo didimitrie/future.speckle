@@ -1,13 +1,17 @@
-# [Future.Speckle](http://beta.speckle.xyz)
+# [Beta.Speckle](http://beta.speckle.xyz)
 *namechange under consideration*
 
-#### About 
-Share with your clients/stakeholders/community the full flexibility of your designs: display and explore parametric models in your browser. 
-Check the service in action on [http://beta.speckle.xyz](http://beta.speckle.xyz).
+## About 
+Beta.Speckle is an online parametric model viewer. It enables sharing with your clients/stakeholders/community flexible designs, not just static artefacts. 
+
+Check the service in action on [http://beta.speckle.xyz](http://beta.speckle.xyz). For now, it is developed by [@idid](http://twitter.com/idid).
 
 
 #### Why? 
-Design iteration has always been difficult to communicate with the right people, that's why we devised a tool to help leverage the felxibility of computational design in evnironments outside the architectural office. **Parametric models can go beyond aesthetic and technical exploration: they can tell a story and they can be the base of collaborative decision making**.
+Design iteration has always been difficult to communicate with the right people, that's why we devised a tool to help leverage the felxibility of computational design in evnironments outside the architectural office. 
+
+#####**Parametric models can go beyond aesthetic and technical exploration: they can tell a story and they can be the base of collaborative decision making**.
+
 
 #### The Project, Why FOSS, and Why Contribute
 
@@ -22,19 +26,18 @@ SPK has very little moving parts, and is geared towards (eventual) **deployment 
 All your models are pre-generated on your computer, so essentially the viewer is just loading and displaying static files. This means that there's no computational overhead and we are able to leverage native browser caching and compression - which is fast.
 
 
-#### The Parts
+
+## The Parts
 
 There are three main parts: 
 - the server app (model api, user registration, db, etc.)
-- the spk viewer (model viewer)
-- the exporter
+- the spk viewer (model viewer, inside `/spkw`)
+- **[the grasshopper exporter](https://github.com/didimitrie/speckle.exporter)**
   - currently only written for Rhino/GH. It resides in a separate repo [here](https://github.com/didimitrie/speckle.exporter)
-  - **There are other parametric software out there that hopefully you'll help us export from!**
-
-The SPK viewer is located in the /spkw and has, for now, its own build system :/ which might be confusing, but hey - we'll fix that. 
+  - *There are other parametric software out there that hopefully you'll help us export from!*
 
 
-#### Getting started with hacking on your local machine
+## Getting started with hacking on your local machine
 
 **Important notice: build and watch systems will soon (hopefully) be unified in something more straightforward. Until then, voila the temporary instructions:**
 
@@ -44,16 +47,17 @@ The SPK viewer is located in the /spkw and has, for now, its own build system :/
 Point your browser to `localhost:9009` and you should be good to go. 
 
 
-#### Deploying on your own server
+## Deploying on your own server
 
-If you want to deploy this to your own server (for various reasons), go ahead! Create a copy of the `config.local` folder, rename it `config` and update the details. You will need: 
+If you want to deploy this to your own server (for various reasons), go ahead! You will need: 
 - a mongodb instance running somewhere 
 - an [Auth0](auth0.com/) account if you plan to support authentication
 
 Please give us a heads up if you do this :bow:
 
 
-#### Contributing
+
+## Contribution Guidelines
 
 The `master` branch is the release branch. Whatever is there is online and running. 
 
@@ -70,7 +74,8 @@ Ideally, we would follow [these guidelines](https://www.atlassian.com/git/tutori
  - writing documentation
  - pretty much anything: everytime i try and sit down and do a todolist, i'm getting depressed. 
 
-#### Credits
+
+## Credits
 
 Started off & currently maintained by [@idid](http://twitter.com/idid/). 
 
@@ -83,10 +88,14 @@ Credits:
 
 This project has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Sklodowska-Curie grant agreement No 642877. 
 
-#### License
+## License
+
 GNU General Public License v2.0
+
+
 Future.Speckle
-Copyright (C) 2016 Dimitrie Andrei Stefanescu / The Bartlett School of Architecture, UCL
+
+Copyright (C) 2016 Dimitrie Andrei Stefanescu @idid / The Bartlett School of Architecture, UCL
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
