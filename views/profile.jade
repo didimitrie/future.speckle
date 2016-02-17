@@ -21,16 +21,13 @@ block content
         p.
           Your usage quota stands at: #[strong #{data.usedStoragePerc.toFixed(2)}% ] (#{data.usedStorage} out of 1GB) from #[strong #{data.userModels.length} ]  models. You are on the #[strong #{data.userTier}] plan. 
         hr
-        p.
-          Download the #[a(href="#") GH Exporter component and an example definition file.]
-        hr
         form.text-center(action='/api/upload', enctype='multipart/form-data', method='post')
           input#file.inputfile(type='file', accept=".zip" ,name='userModel', onchange='submitForm();')
           label(for='file')
             
             h2 + Upload +
         hr
-        h4.text-center #[a(href="/download/") Download the GH Export component & example file.]
+        h4.text-center #[a(href="/download/BetaSpeckle.zip") Download the GH Export component & example file.]
 
       .col-sm-8
         h4.lead #[strong Uploaded Models:]
@@ -44,7 +41,7 @@ block content
             No models here :( 
             #[br]
           p.text-center.
-            #[strong Have a model?] Press that big Upload button on the left. #[strong First time here?] Have a look at the #[strong #[a(href="#") getting started guide]].
+            #[strong Have a model?] Press that big Upload button on the left, or #[a(href="/download/BetaSpeckle.zip") download the GH Export component & example file.]
         .col-sm-8
         for myModel in data.userModels
           h4.
