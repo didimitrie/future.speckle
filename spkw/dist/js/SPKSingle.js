@@ -9832,7 +9832,7 @@ return jQuery;
 }));
 
 },{}],2:[function(require,module,exports){
-/*! nouislider - 8.3.0 - 2016-02-14 17:37:19 */
+/*! nouislider - 8.2.1 - 2015-12-02 21:43:14 */
 
 (function (factory) {
 
@@ -9943,9 +9943,13 @@ return jQuery;
 		}
 	}
 
-	// https://plainjs.com/javascript/attributes/adding-removing-and-testing-for-classes-9/
+	// http://youmightnotneedjquery.com/#has_class
 	function hasClass ( el, className ) {
-		return el.classList ? el.classList.contains(className) : new RegExp('\\b' + className + '\\b').test(el.className);
+		if ( el.classList ) {
+			el.classList.contains(className);
+		} else {
+			new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
+		}
 	}
 
 	// https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
@@ -10388,11 +10392,6 @@ return jQuery;
 
 		if ( !isNumeric(entry) ){
 			throw new Error("noUiSlider: 'margin' option must be numeric.");
-		}
-
-		// Issue #582
-		if ( entry === 0 ) {
-			return;
 		}
 
 		parsed.margin = parsed.spectrum.getMargin(entry);
@@ -10951,8 +10950,7 @@ function closure ( target, options ){
 	function addMarking ( spread, filterFunc, formatter ) {
 
 		var style = ['horizontal', 'vertical'][options.ort],
-			element = document.createElement('div'),
-			out = '';
+			element = document.createElement('div');
 
 		addClass(element, cssClasses[20]);
 		addClass(element, cssClasses[20] + '-' + style);
@@ -10978,11 +10976,12 @@ function closure ( target, options ){
 			values[1] = (values[1] && filterFunc) ? filterFunc(values[0], values[1]) : values[1];
 
 			// Add a marker for every point
-			out += '<div ' + getTags(offset, cssClasses[21], values) + '></div>';
+			element.innerHTML += '<div ' + getTags(offset, cssClasses[21], values) + '></div>';
 
 			// Values are only appended for points marked '1' or '2'.
 			if ( values[1] ) {
-				out += '<div '+getTags(offset, cssClasses[22], values)+'>' + formatter.to(values[0]) + '</div>';
+				// dim modification in here dimitrie modification hastag hashtag
+				element.innerHTML += '<div '+getTags(offset, cssClasses[22], values)+'>' + /*formatter.to(*/values[0] /*)*/ + '</div>';
 			}
 		}
 
@@ -10990,7 +10989,6 @@ function closure ( target, options ){
 		Object.keys(spread).forEach(function(a){
 			addSpread(a, spread[a]);
 		});
-		element.innerHTML = out;
 
 		return element;
 	}
@@ -11018,8 +11016,7 @@ function closure ( target, options ){
 
 	// Shorthand for base dimensions.
 	function baseSize ( ) {
-		var rect = scope_Base.getBoundingClientRect(), alt = 'offset' + ['Width', 'Height'][options.ort];
-		return options.ort === 0 ? (rect.width||scope_Base[alt]) : (rect.height||scope_Base[alt]);
+		return scope_Base['offset' + ['Width', 'Height'][options.ort]];
 	}
 
 	// External event handling
@@ -11035,21 +11032,9 @@ function closure ( target, options ){
 
 			if ( event === eventType ) {
 				scope_Events[targetEvent].forEach(function( callback ) {
-
-					callback.call(
-						// Use the slider public API as the scope ('this')
-						scope_Self,
-						// Return values as array, so arg_1[arg_2] is always valid.
-						asArray(valueGet()),
-						// Handle index, 0 or 1
-						handleNumber,
-						// Unformatted slider values
-						asArray(inSliderOrder(Array.prototype.slice.call(scope_Values))),
-						// Event is fired by tap, true or false
-						tap || false,
-						// Left offset of the handle, in relation to the slider
-						scope_Locations
-					);
+					// .reverse is in place
+					// Return values as array, so arg_1[arg_2] is always valid.
+					callback.call(scope_Self, asArray(valueGet()), handleNumber, asArray(inSliderOrder(Array.prototype.slice.call(scope_Values))), tap || false);
 				});
 			}
 		});
@@ -11284,11 +11269,6 @@ function closure ( target, options ){
 
 		// Find the handle closest to the tapped position.
 		handleNumber = ( location < total/2 || scope_Handles.length === 1 ) ? 0 : 1;
-		
-		// Check if handler is not disablet if yes set number to the next handler
-		if (scope_Handles[handleNumber].hasAttribute('disabled')) {
-			handleNumber = handleNumber ? 0 : 1;
-		}
 
 		location -= offset(scope_Base)[ options.style ];
 
@@ -11530,11 +11510,7 @@ function closure ( target, options ){
 
 		// Fire the 'set' event for both handles.
 		for ( i = 0; i < scope_Handles.length; i++ ) {
-
-			// Fire the event only for handles that received a new value, as per #579
-			if ( values[i] !== null ) {
-				fireEvent('set', i);
-			}
+			fireEvent('set', i);
 		}
 	}
 
@@ -11553,16 +11529,11 @@ function closure ( target, options ){
 
 	// Removes classes from the root and empties it.
 	function destroy ( ) {
-
 		cssClasses.forEach(function(cls){
 			if ( !cls ) { return; } // Ignore empty classes
 			removeClass(scope_Target, cls);
 		});
-
-		while (scope_Target.firstChild) {
-			scope_Target.removeChild(scope_Target.firstChild);
-		}
-
+		scope_Target.innerHTML = '';
 		delete scope_Target.noUiSlider;
 	}
 
@@ -11650,9 +11621,6 @@ function closure ( target, options ){
 			}
 		});
 
-		// Save current spectrum direction as testOptions in testRange call
-		// doesn't rely on current direction
-		newOptions.spectrum.direction = scope_Spectrum.direction;
 		scope_Spectrum = newOptions.spectrum;
 
 		// Invalidate the current positioning so valueSet forces an update.
@@ -11693,10 +11661,7 @@ function closure ( target, options ){
 		off: removeEvent,
 		get: valueGet,
 		set: valueSet,
-		updateOptions: updateOptions,
-		options: options, // Issue #600
-		target: scope_Target, // Issue #597
-		pips: pips // Issue #594
+		updateOptions: updateOptions
 	};
 
 	// Attach user events.
@@ -50027,7 +49992,7 @@ var SPK = function (wrapper, options) {
     grid : null,
     groundplane : null,
     shadowlight : null,
-    shadows : false
+    shadows : true
   }
   /*************************************************
   /   SPK Methods
@@ -50225,21 +50190,11 @@ var SPK = function (wrapper, options) {
     var tweenOut = new TWEEN.Tween( { x: opacity } )
     .to( {x: 0}, duration )
     .onUpdate( function() {
-
       for( var i = 0; i < out.length; i++ ) {
 
         out[i].material.opacity = this.x;
 
       }
-
-      if(( this.x >= opacity * 0.5 ) && (this.calledNext===undefined))
-      {
-        
-        //this.calledNext = true;
-        //SPK.addNewInstance();
-        
-      }
-
     })
     .onComplete( function() {
 
@@ -50384,88 +50339,6 @@ var SPK = function (wrapper, options) {
 
   }
 
-  SPK.setupEnvironment = function () {
-    // TODO: Grids, etc.
-    // 
-    // make the scene + renderer
-
-    SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : true, alpha: true} );
-
-    SPK.VIEWER.renderer.setClearColor( 0xF2F2F2 ); 
-
-    SPK.VIEWER.renderer.setPixelRatio( 1 );  // change to window.devicePixelRatio 
-    //SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );  // change to window.devicePixelRatio 
-    
-    SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); 
-
-    SPK.VIEWER.renderer.shadowMap.enabled = true;
-    
-    $(SPK.HMTL.canvas).append( SPK.VIEWER.renderer.domElement );
-
-    SPK.VIEWER.camera = new THREE.PerspectiveCamera( 40, $(SPK.HMTL.canvas).innerWidth() * 1 / $(SPK.HMTL.canvas).innerHeight(), 1, SPK.GLOBALS.boundingSphere.radius * 100 );
-
-    SPK.VIEWER.camera.position.z = -SPK.GLOBALS.boundingSphere.radius*1.8; 
-
-    SPK.VIEWER.camera.position.y = SPK.GLOBALS.boundingSphere.radius*1.8;
-    
-    SPK.VIEWER.controls = new OrbitCtrls( SPK.VIEWER.camera, SPK.VIEWER.renderer.domElement );
-
-    SPK.VIEWER.controls.addEventListener( 'change', function () {
-
-      SPKSync.syncCamera(SPK.VIEWER.camera) ;
-
-    });
-
-
-    // shadow light
-    var light = new THREE.DirectionalLight(0xffffff, 1);
-    light.castShadow = true;
-    light.shadowCameraNear = 0;
-    light.shadowCameraFar = SPK.GLOBALS.boundingSphere.radius * 6;
-    light.shadowCameraLeft = -SPK.GLOBALS.boundingSphere.radius * 2; 
-    light.shadowCameraRight = SPK.GLOBALS.boundingSphere.radius * 2; 
-    light.shadowCameraTop = SPK.GLOBALS.boundingSphere.radius * 2; 
-    light.shadowCameraBottom = -SPK.GLOBALS.boundingSphere.radius * 2; 
-    light.shadowMapWidth = 1024;
-    light.shadowMapHeight = 1024;
-    light.shadowBias = -0.0000022;
-    light.shadowDarkness = 0;
-    light.onlyShadow = true;
-    
-    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius * 1.7, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius * 3 ,SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius * 1.7); 
-
-    SPK.SCENE.shadowlight = light;
-    SPK.VIEWER.scene.add(light);
-
-    // camera light
-    
-    SPK.VIEWER.scene.add( new THREE.AmbientLight( 0xD8D8D8 ) );
-   
-    var flashlight = new THREE.PointLight( 0xffffff, 0.8, SPK.GLOBALS.boundingSphere.radius * 12, 1);
-    
-    SPK.VIEWER.camera.add( flashlight );
-    
-    SPK.VIEWER.scene.add( SPK.VIEWER.camera );
-
-    // grids
-    
-    SPK.makeContext();
-
-    // resize events
-    
-    $(window).resize( function() { 
-      
-      SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth()-1, $(SPK.HMTL.canvas).innerHeight()-5 ); 
-      
-      SPK.VIEWER.camera.aspect = ($(SPK.HMTL.canvas).innerWidth()-1) / ($(SPK.HMTL.canvas).innerHeight()-5);
-      
-      SPK.VIEWER.camera.updateProjectionMatrix();
-    
-    } );
-
-    window.scene = SPK.VIEWER.scene;
-  }
-
   SPK.loadInstance = function(key, callback) {
     
     key = key != -1 ? key : SPK.getCurrentKey();
@@ -50548,6 +50421,88 @@ var SPK = function (wrapper, options) {
 
   }
 
+  SPK.setupEnvironment = function () {
+    // TODO: Grids, etc.
+    // 
+    // make the scene + renderer
+
+    SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : true, alpha: true} );
+
+    SPK.VIEWER.renderer.setClearColor( 0xF2F2F2 ); 
+
+    SPK.VIEWER.renderer.setPixelRatio( 1 );  // change to window.devicePixelRatio 
+    //SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );  // change to window.devicePixelRatio 
+    
+    SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); 
+
+    SPK.VIEWER.renderer.shadowMap.enabled = true;
+    SPK.VIEWER.renderer.shadowMap.type = THREE.PCFShadowMap;
+
+    $(SPK.HMTL.canvas).append( SPK.VIEWER.renderer.domElement );
+
+    SPK.VIEWER.camera = new THREE.PerspectiveCamera( 40, $(SPK.HMTL.canvas).innerWidth() * 1 / $(SPK.HMTL.canvas).innerHeight(), 1, SPK.GLOBALS.boundingSphere.radius * 100 );
+
+    SPK.VIEWER.camera.position.z = -SPK.GLOBALS.boundingSphere.radius*1.8; 
+
+    SPK.VIEWER.camera.position.y = SPK.GLOBALS.boundingSphere.radius*1.8;
+    
+    SPK.VIEWER.controls = new OrbitCtrls( SPK.VIEWER.camera, SPK.VIEWER.renderer.domElement );
+
+    SPK.VIEWER.controls.addEventListener( 'change', function () {
+
+      SPKSync.syncCamera(SPK.VIEWER.camera) ;
+
+    });
+
+    // shadow light
+    var light = new THREE.SpotLight(0xffffff, 0.4);
+    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*20, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*20, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*20)
+    light.target.position.set( SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z );
+    light.castShadow = true;
+    
+    light.shadowMapWidth = 2048;
+    light.shadowMapHeight = 2048;
+    light.shadowBias = -0.00001;
+    light.shadowDarkness = 0.5;
+    //light.onlyShadow = true;
+    
+    
+    light.shadowCameraVisible = true;
+    //light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius * 1.7, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius * 3 ,SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius * 1.7); 
+
+    SPK.SCENE.shadowlight = light;
+    SPK.VIEWER.scene.add(light);
+
+    // camera light
+    
+    SPK.VIEWER.scene.add( new THREE.AmbientLight( 0xD8D8D8 ) );
+   
+    var flashlight = new THREE.PointLight( 0xffffff, 0.8, SPK.GLOBALS.boundingSphere.radius * 12, 1);
+    
+    SPK.VIEWER.camera.add( flashlight );
+    
+    SPK.VIEWER.scene.add( SPK.VIEWER.camera );
+
+    // grids
+    
+    SPK.makeContext();
+
+    // resize events
+    
+    $(window).resize( function() { 
+      
+      SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth()-1, $(SPK.HMTL.canvas).innerHeight()-5 ); 
+      
+      SPK.VIEWER.camera.aspect = ($(SPK.HMTL.canvas).innerWidth()-1) / ($(SPK.HMTL.canvas).innerHeight()-5);
+      
+      SPK.VIEWER.camera.updateProjectionMatrix();
+    
+    } );
+
+    window.scene = SPK.VIEWER.scene;
+    
+  }
+
   SPK.makeContext = function() {
 
     var multiplier = 10;
@@ -50558,7 +50513,7 @@ var SPK = function (wrapper, options) {
     plane = new THREE.Mesh( planeGeometry, planeMaterial );
     plane.receiveShadow = true;
     plane.position.set(SPK.GLOBALS.boundingSphere.center.x, -0.1, SPK.GLOBALS.boundingSphere.center.z );
-    plane.visible = false;
+    plane.visible = true;
 
     SPK.VIEWER.scene.add( plane );
     SPK.SCENE.plane = plane;
@@ -50577,9 +50532,6 @@ var SPK = function (wrapper, options) {
       SPK.VIEWER.scene.add( grid );
       SPK.SCENE.grid = grid;
    }
-   
-   
-    
 
   }
 
@@ -51172,7 +51124,7 @@ var SPKObjectMaker = function() {
 
   SPKObjectMaker.makeMesh = function( data, key, callback ) {
 
-    var material = new THREE.MeshPhongMaterial( { color: 0xdddddd, specular: 0xD1ECFF, shininess: 30, shading: THREE.FlatShading } );
+    var material = new THREE.MeshPhongMaterial( { color: 0xCACACA, specular: 0xD1ECFF, shininess: 20, shading: THREE.FlatShading } );
     //var material = new THREE.MeshNormalMaterial();
     
     material.side = THREE.DoubleSide; material.transparent = true; material.opacity = 0;
@@ -51564,7 +51516,7 @@ var SPKSync = function () {
 
   SPKSync.toggleGroundShadows = function() {
     SPKSync.toggleShadows();
-    SPKSync.toggleGroundplane();
+    //SPKSync.toggleGroundplane();
   }
 
   SPKSync.toggleShadows = function() {
@@ -51573,10 +51525,12 @@ var SPKSync = function () {
       if( SPKSync.instances[i].SCENE.shadows ) {
         SPKSync.instances[i].SCENE.shadowlight.shadowDarkness = 0;
         SPKSync.instances[i].SCENE.shadows = false;
+        SPKSync.instances[i].SCENE.plane.visible = false;
       }
       else {
-        SPKSync.instances[i].SCENE.shadowlight.shadowDarkness = 0.15;
+        SPKSync.instances[i].SCENE.shadowlight.shadowDarkness = 0.5;
         SPKSync.instances[i].SCENE.shadows = true;
+        SPKSync.instances[i].SCENE.plane.visible = true;
       }
 
     }
@@ -51615,7 +51569,7 @@ var SPKSync = function () {
       SPKSync.toggleGrid();
 
     if(e.keyCode == 83)
-      {SPKSync.toggleShadows();SPKSync.toggleGroundplane();}
+      SPKSync.toggleShadows(); //SPKSync.toggleGroundplane();
 
     if(e.keyCode == 32) 
       SPKSync.zoomExtents();

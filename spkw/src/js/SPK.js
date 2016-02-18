@@ -91,7 +91,7 @@ var SPK = function (wrapper, options) {
     grid : null,
     groundplane : null,
     shadowlight : null,
-    shadows : false
+    shadows : true
   }
   /*************************************************
   /   SPK Methods
@@ -289,21 +289,11 @@ var SPK = function (wrapper, options) {
     var tweenOut = new TWEEN.Tween( { x: opacity } )
     .to( {x: 0}, duration )
     .onUpdate( function() {
-
       for( var i = 0; i < out.length; i++ ) {
 
         out[i].material.opacity = this.x;
 
       }
-
-      if(( this.x >= opacity * 0.5 ) && (this.calledNext===undefined))
-      {
-        
-        //this.calledNext = true;
-        //SPK.addNewInstance();
-        
-      }
-
     })
     .onComplete( function() {
 
@@ -448,88 +438,6 @@ var SPK = function (wrapper, options) {
 
   }
 
-  SPK.setupEnvironment = function () {
-    // TODO: Grids, etc.
-    // 
-    // make the scene + renderer
-
-    SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : true, alpha: true} );
-
-    SPK.VIEWER.renderer.setClearColor( 0xF2F2F2 ); 
-
-    SPK.VIEWER.renderer.setPixelRatio( 1 );  // change to window.devicePixelRatio 
-    //SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );  // change to window.devicePixelRatio 
-    
-    SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); 
-
-    SPK.VIEWER.renderer.shadowMap.enabled = true;
-    
-    $(SPK.HMTL.canvas).append( SPK.VIEWER.renderer.domElement );
-
-    SPK.VIEWER.camera = new THREE.PerspectiveCamera( 40, $(SPK.HMTL.canvas).innerWidth() * 1 / $(SPK.HMTL.canvas).innerHeight(), 1, SPK.GLOBALS.boundingSphere.radius * 100 );
-
-    SPK.VIEWER.camera.position.z = -SPK.GLOBALS.boundingSphere.radius*1.8; 
-
-    SPK.VIEWER.camera.position.y = SPK.GLOBALS.boundingSphere.radius*1.8;
-    
-    SPK.VIEWER.controls = new OrbitCtrls( SPK.VIEWER.camera, SPK.VIEWER.renderer.domElement );
-
-    SPK.VIEWER.controls.addEventListener( 'change', function () {
-
-      SPKSync.syncCamera(SPK.VIEWER.camera) ;
-
-    });
-
-
-    // shadow light
-    var light = new THREE.DirectionalLight(0xffffff, 1);
-    light.castShadow = true;
-    light.shadowCameraNear = 0;
-    light.shadowCameraFar = SPK.GLOBALS.boundingSphere.radius * 6;
-    light.shadowCameraLeft = -SPK.GLOBALS.boundingSphere.radius * 2; 
-    light.shadowCameraRight = SPK.GLOBALS.boundingSphere.radius * 2; 
-    light.shadowCameraTop = SPK.GLOBALS.boundingSphere.radius * 2; 
-    light.shadowCameraBottom = -SPK.GLOBALS.boundingSphere.radius * 2; 
-    light.shadowMapWidth = 1024;
-    light.shadowMapHeight = 1024;
-    light.shadowBias = -0.0000022;
-    light.shadowDarkness = 0;
-    light.onlyShadow = true;
-    
-    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius * 1.7, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius * 3 ,SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius * 1.7); 
-
-    SPK.SCENE.shadowlight = light;
-    SPK.VIEWER.scene.add(light);
-
-    // camera light
-    
-    SPK.VIEWER.scene.add( new THREE.AmbientLight( 0xD8D8D8 ) );
-   
-    var flashlight = new THREE.PointLight( 0xffffff, 0.8, SPK.GLOBALS.boundingSphere.radius * 12, 1);
-    
-    SPK.VIEWER.camera.add( flashlight );
-    
-    SPK.VIEWER.scene.add( SPK.VIEWER.camera );
-
-    // grids
-    
-    SPK.makeContext();
-
-    // resize events
-    
-    $(window).resize( function() { 
-      
-      SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth()-1, $(SPK.HMTL.canvas).innerHeight()-5 ); 
-      
-      SPK.VIEWER.camera.aspect = ($(SPK.HMTL.canvas).innerWidth()-1) / ($(SPK.HMTL.canvas).innerHeight()-5);
-      
-      SPK.VIEWER.camera.updateProjectionMatrix();
-    
-    } );
-
-    window.scene = SPK.VIEWER.scene;
-  }
-
   SPK.loadInstance = function(key, callback) {
     
     key = key != -1 ? key : SPK.getCurrentKey();
@@ -612,6 +520,88 @@ var SPK = function (wrapper, options) {
 
   }
 
+  SPK.setupEnvironment = function () {
+    // TODO: Grids, etc.
+    // 
+    // make the scene + renderer
+
+    SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : true, alpha: true} );
+
+    SPK.VIEWER.renderer.setClearColor( 0xF2F2F2 ); 
+
+    SPK.VIEWER.renderer.setPixelRatio( 1 );  // change to window.devicePixelRatio 
+    //SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );  // change to window.devicePixelRatio 
+    
+    SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); 
+
+    SPK.VIEWER.renderer.shadowMap.enabled = true;
+    SPK.VIEWER.renderer.shadowMap.type = THREE.PCFShadowMap;
+
+    $(SPK.HMTL.canvas).append( SPK.VIEWER.renderer.domElement );
+
+    SPK.VIEWER.camera = new THREE.PerspectiveCamera( 40, $(SPK.HMTL.canvas).innerWidth() * 1 / $(SPK.HMTL.canvas).innerHeight(), 1, SPK.GLOBALS.boundingSphere.radius * 100 );
+
+    SPK.VIEWER.camera.position.z = -SPK.GLOBALS.boundingSphere.radius*1.8; 
+
+    SPK.VIEWER.camera.position.y = SPK.GLOBALS.boundingSphere.radius*1.8;
+    
+    SPK.VIEWER.controls = new OrbitCtrls( SPK.VIEWER.camera, SPK.VIEWER.renderer.domElement );
+
+    SPK.VIEWER.controls.addEventListener( 'change', function () {
+
+      SPKSync.syncCamera(SPK.VIEWER.camera) ;
+
+    });
+
+    // shadow light
+    var light = new THREE.SpotLight(0xffffff, 0.4);
+    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*20, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*20, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*20)
+    light.target.position.set( SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z );
+    light.castShadow = true;
+    
+    light.shadowMapWidth = 2048;
+    light.shadowMapHeight = 2048;
+    light.shadowBias = -0.00001;
+    light.shadowDarkness = 0.5;
+    //light.onlyShadow = true;
+    
+    
+    light.shadowCameraVisible = true;
+    //light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius * 1.7, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius * 3 ,SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius * 1.7); 
+
+    SPK.SCENE.shadowlight = light;
+    SPK.VIEWER.scene.add(light);
+
+    // camera light
+    
+    SPK.VIEWER.scene.add( new THREE.AmbientLight( 0xD8D8D8 ) );
+   
+    var flashlight = new THREE.PointLight( 0xffffff, 0.8, SPK.GLOBALS.boundingSphere.radius * 12, 1);
+    
+    SPK.VIEWER.camera.add( flashlight );
+    
+    SPK.VIEWER.scene.add( SPK.VIEWER.camera );
+
+    // grids
+    
+    SPK.makeContext();
+
+    // resize events
+    
+    $(window).resize( function() { 
+      
+      SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth()-1, $(SPK.HMTL.canvas).innerHeight()-5 ); 
+      
+      SPK.VIEWER.camera.aspect = ($(SPK.HMTL.canvas).innerWidth()-1) / ($(SPK.HMTL.canvas).innerHeight()-5);
+      
+      SPK.VIEWER.camera.updateProjectionMatrix();
+    
+    } );
+
+    window.scene = SPK.VIEWER.scene;
+    
+  }
+
   SPK.makeContext = function() {
 
     var multiplier = 10;
@@ -622,7 +612,7 @@ var SPK = function (wrapper, options) {
     plane = new THREE.Mesh( planeGeometry, planeMaterial );
     plane.receiveShadow = true;
     plane.position.set(SPK.GLOBALS.boundingSphere.center.x, -0.1, SPK.GLOBALS.boundingSphere.center.z );
-    plane.visible = false;
+    plane.visible = true;
 
     SPK.VIEWER.scene.add( plane );
     SPK.SCENE.plane = plane;
@@ -641,9 +631,6 @@ var SPK = function (wrapper, options) {
       SPK.VIEWER.scene.add( grid );
       SPK.SCENE.grid = grid;
    }
-   
-   
-    
 
   }
 

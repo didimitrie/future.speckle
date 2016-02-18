@@ -67,7 +67,7 @@ var SPKObjectMaker = function() {
 
   SPKObjectMaker.makeMesh = function( data, key, callback ) {
 
-    var material = new THREE.MeshPhongMaterial( { color: 0xdddddd, specular: 0xD1ECFF, shininess: 30, shading: THREE.FlatShading } );
+    var material = new THREE.MeshPhongMaterial( { color: 0xCACACA, specular: 0xD1ECFF, shininess: 20, shading: THREE.FlatShading } );
     //var material = new THREE.MeshNormalMaterial();
     
     material.side = THREE.DoubleSide; material.transparent = true; material.opacity = 0;
