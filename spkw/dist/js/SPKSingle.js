@@ -9832,7 +9832,7 @@ return jQuery;
 }));
 
 },{}],2:[function(require,module,exports){
-/*! nouislider - 8.2.1 - 2015-12-02 21:43:14 */
+/*! nouislider - 8.3.0 - 2016-02-14 17:37:19 */
 
 (function (factory) {
 
@@ -9943,13 +9943,9 @@ return jQuery;
 		}
 	}
 
-	// http://youmightnotneedjquery.com/#has_class
+	// https://plainjs.com/javascript/attributes/adding-removing-and-testing-for-classes-9/
 	function hasClass ( el, className ) {
-		if ( el.classList ) {
-			el.classList.contains(className);
-		} else {
-			new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
-		}
+		return el.classList ? el.classList.contains(className) : new RegExp('\\b' + className + '\\b').test(el.className);
 	}
 
 	// https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
@@ -10392,6 +10388,11 @@ return jQuery;
 
 		if ( !isNumeric(entry) ){
 			throw new Error("noUiSlider: 'margin' option must be numeric.");
+		}
+
+		// Issue #582
+		if ( entry === 0 ) {
+			return;
 		}
 
 		parsed.margin = parsed.spectrum.getMargin(entry);
@@ -10950,7 +10951,8 @@ function closure ( target, options ){
 	function addMarking ( spread, filterFunc, formatter ) {
 
 		var style = ['horizontal', 'vertical'][options.ort],
-			element = document.createElement('div');
+			element = document.createElement('div'),
+			out = '';
 
 		addClass(element, cssClasses[20]);
 		addClass(element, cssClasses[20] + '-' + style);
@@ -10976,12 +10978,11 @@ function closure ( target, options ){
 			values[1] = (values[1] && filterFunc) ? filterFunc(values[0], values[1]) : values[1];
 
 			// Add a marker for every point
-			element.innerHTML += '<div ' + getTags(offset, cssClasses[21], values) + '></div>';
+			out += '<div ' + getTags(offset, cssClasses[21], values) + '></div>';
 
 			// Values are only appended for points marked '1' or '2'.
 			if ( values[1] ) {
-				// dim modification in here dimitrie modification hastag hashtag
-				element.innerHTML += '<div '+getTags(offset, cssClasses[22], values)+'>' + /*formatter.to(*/values[0] /*)*/ + '</div>';
+				out += '<div '+getTags(offset, cssClasses[22], values)+'>' + formatter.to(values[0]) + '</div>';
 			}
 		}
 
@@ -10989,6 +10990,7 @@ function closure ( target, options ){
 		Object.keys(spread).forEach(function(a){
 			addSpread(a, spread[a]);
 		});
+		element.innerHTML = out;
 
 		return element;
 	}
@@ -11016,7 +11018,8 @@ function closure ( target, options ){
 
 	// Shorthand for base dimensions.
 	function baseSize ( ) {
-		return scope_Base['offset' + ['Width', 'Height'][options.ort]];
+		var rect = scope_Base.getBoundingClientRect(), alt = 'offset' + ['Width', 'Height'][options.ort];
+		return options.ort === 0 ? (rect.width||scope_Base[alt]) : (rect.height||scope_Base[alt]);
 	}
 
 	// External event handling
@@ -11032,9 +11035,21 @@ function closure ( target, options ){
 
 			if ( event === eventType ) {
 				scope_Events[targetEvent].forEach(function( callback ) {
-					// .reverse is in place
-					// Return values as array, so arg_1[arg_2] is always valid.
-					callback.call(scope_Self, asArray(valueGet()), handleNumber, asArray(inSliderOrder(Array.prototype.slice.call(scope_Values))), tap || false);
+
+					callback.call(
+						// Use the slider public API as the scope ('this')
+						scope_Self,
+						// Return values as array, so arg_1[arg_2] is always valid.
+						asArray(valueGet()),
+						// Handle index, 0 or 1
+						handleNumber,
+						// Unformatted slider values
+						asArray(inSliderOrder(Array.prototype.slice.call(scope_Values))),
+						// Event is fired by tap, true or false
+						tap || false,
+						// Left offset of the handle, in relation to the slider
+						scope_Locations
+					);
 				});
 			}
 		});
@@ -11269,6 +11284,11 @@ function closure ( target, options ){
 
 		// Find the handle closest to the tapped position.
 		handleNumber = ( location < total/2 || scope_Handles.length === 1 ) ? 0 : 1;
+		
+		// Check if handler is not disablet if yes set number to the next handler
+		if (scope_Handles[handleNumber].hasAttribute('disabled')) {
+			handleNumber = handleNumber ? 0 : 1;
+		}
 
 		location -= offset(scope_Base)[ options.style ];
 
@@ -11510,7 +11530,11 @@ function closure ( target, options ){
 
 		// Fire the 'set' event for both handles.
 		for ( i = 0; i < scope_Handles.length; i++ ) {
-			fireEvent('set', i);
+
+			// Fire the event only for handles that received a new value, as per #579
+			if ( values[i] !== null ) {
+				fireEvent('set', i);
+			}
 		}
 	}
 
@@ -11529,11 +11553,16 @@ function closure ( target, options ){
 
 	// Removes classes from the root and empties it.
 	function destroy ( ) {
+
 		cssClasses.forEach(function(cls){
 			if ( !cls ) { return; } // Ignore empty classes
 			removeClass(scope_Target, cls);
 		});
-		scope_Target.innerHTML = '';
+
+		while (scope_Target.firstChild) {
+			scope_Target.removeChild(scope_Target.firstChild);
+		}
+
 		delete scope_Target.noUiSlider;
 	}
 
@@ -11621,6 +11650,9 @@ function closure ( target, options ){
 			}
 		});
 
+		// Save current spectrum direction as testOptions in testRange call
+		// doesn't rely on current direction
+		newOptions.spectrum.direction = scope_Spectrum.direction;
 		scope_Spectrum = newOptions.spectrum;
 
 		// Invalidate the current positioning so valueSet forces an update.
@@ -11661,7 +11693,10 @@ function closure ( target, options ){
 		off: removeEvent,
 		get: valueGet,
 		set: valueSet,
-		updateOptions: updateOptions
+		updateOptions: updateOptions,
+		options: options, // Issue #600
+		target: scope_Target, // Issue #597
+		pips: pips // Issue #594
 	};
 
 	// Attach user events.

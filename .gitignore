@@ -5,4 +5,4 @@ node_modules
 config.deploy
 spkw/node_modules/
 spkw/*.map/
-spkw/.sass-cache/
+**/.sass-cache/*
