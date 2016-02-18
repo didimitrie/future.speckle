@@ -1,5 +1,5 @@
 # [Beta.Speckle](http://beta.speckle.xyz)
-*namechange under consideration*
+*[namechange under public consideration](https://github.com/didimitrie/future.speckle/issues/12)*
 
 ## About 
 Beta.Speckle is an online parametric model viewer. It enables sharing with your clients/stakeholders/community flexible designs, not just static artefacts. 
@@ -7,19 +7,19 @@ Beta.Speckle is an online parametric model viewer. It enables sharing with your 
 Check the service in action on [http://beta.speckle.xyz](http://beta.speckle.xyz). For now, it is developed by [@idid](http://twitter.com/idid).
 
 
-#### Why? 
+## Why? 
 Design iteration has always been difficult to communicate with the right people, that's why we devised a tool to help leverage the felxibility of computational design in evnironments outside the architectural office. 
 
 #####**Parametric models can go beyond aesthetic and technical exploration: they can tell a story and they can be the base of collaborative decision making**.
 
 
-#### The Project, Why FOSS, and Why Contribute
+## The Project, Why FOSS, and Why Contribute
 
 The infrastructure for this project is financed for the following three years. See the [Credits](https://github.com/didimitrie/future.speckle#credits). Part of our philosophy is to develop this together closely with the stakeholders and end-users, as such any contributions are welcome: feel free to propose new code architecture, features, etc.
 
 Ideally we would develop a flexible system that would allow for plug-and-play functionality that can be catered to a mulitude of usage scenarios. 
 
-#### The Approach
+## The Approach
 
 SPK has very little moving parts, and is geared towards (eventual) **deployment for a wide range of non-technical users and environements**. The current front-end tech stack ensures that on any (evergreen) browser, your model is accesible - mobile devices are supported as well. This is possible one of the few requirements - accesibility and software independence. 
 
