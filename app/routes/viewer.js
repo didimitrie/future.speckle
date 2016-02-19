@@ -15,11 +15,7 @@ var appDir          = path.dirname(require.main.filename);
 module.exports = function( app, passport, express ) { 
   
   app.get("/view/s/:m", isAuthorized, function(req, res) {
-    res.sendfile(appDir + "/spkw/dist/SPKSingle.html");
-  });
-
-  app.get("/view/d/:m", isAuthorized, function(req, res) {
-    res.sendfile(appDir + "/spkw/dist/SPKDouble.html");
+    res.sendfile(appDir + "/spkw/dist/html/Default.html");
   });
 
 } // module.exports end

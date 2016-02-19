@@ -49899,6 +49899,22 @@ TWEEN.Interpolation = {
 })(this);
 
 },{}],6:[function(require,module,exports){
+
+var $   = require('jquery'); 
+var SPK = require('./modules/SPK.js');
+
+
+$( function() {
+
+  var mySPK  = new SPK( 
+  {
+    canvasid : 'spk-canvas'
+  });
+
+});
+
+
+},{"./modules/SPK.js":7,"jquery":1}],7:[function(require,module,exports){
 /*
  * Beta.Speckle Parametric Model Viewer
  * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
@@ -49927,14 +49943,8 @@ var TWEEN           = require('tween.js');
 
 // SPK Libs
 var SPKLoader       = require('./SPKLoader.js');
-var SPKCache        = require('./SPKCache.js');
 var SPKMaker        = require('./SPKObjectMaker.js');
-var SPKSync         = require('./SPKSync.js');
 var SPKConfig       = require('./SPKConfig.js');
-var SPKLogger       = require('./SPKLogger.js');
-var SPKSaver        = require('./SPKSaver.js');
-var SPKUiManager    = require('./SPKUiManager.js');
-var SPKMeasures     = require('./SPKMeasures');
 
 var SPK = function (wrapper, options) {
 
@@ -49950,12 +49960,7 @@ var SPK = function (wrapper, options) {
   *************************************************/
 
   SPK.HMTL = { 
-    wrapper : "" , 
-    canvas : "", 
-    sidebar : "",
-    sliderwrapper : "",
-    sliders : "", 
-    meta : ""
+    canvas : ""
   };
 
   /*************************************************
@@ -49992,7 +49997,7 @@ var SPK = function (wrapper, options) {
     grid : null,
     groundplane : null,
     shadowlight : null,
-    shadows : false
+    shadows : true
   }
   /*************************************************
   /   SPK Methods
@@ -50002,23 +50007,12 @@ var SPK = function (wrapper, options) {
    * Main Init Function
    */
   
-  SPK.init = function(wrapper, options) {
-
-    if( wrapper === null ) {
-
-      console.error("No parent element found");
-
-      return;
-    }
+  SPK.init = function( options ) {
 
     SPK.Options = options;
 
     // get those elements in place, you cunt
-    SPK.HMTL.wrapper        = $(wrapper);
-    SPK.HMTL.canvas         = $(wrapper).find("#spk-canvas");
-    SPK.HMTL.sliderwrapper  = $(wrapper).find("#wrapper-params");
-    SPK.HMTL.sliders        = $(wrapper).find("#spk-sliders");
-    SPK.HMTL.meta           = $(SPK.HMTL.wrapper).find("#spk-metadata");
+    SPK.HMTL.canvas         = $( "#" + options.canvasid );
 
     // get the model url
     var href = window.location.pathname;
@@ -50033,38 +50027,19 @@ var SPK = function (wrapper, options) {
     
     // load parameters && go!
     
-    SPK.getModelMeta(function () {
+    SPK.getModelMeta( function () {
 
-      SPK.loadParameters(function () {
+      SPK.loadParameters( function ( firstKey ) {
 
-        SPK.loadInstance(-1, function () {
-          
-          SPK.alignSliders();
-
-          SPK.addNewInstance();
+        SPK.addNewInstance( firstKey, function () {
 
           SPK.loadStaticInstance();
-          
           SPK.setupEnvironment();
-        
           SPK.render(); 
-
-          SPKSync.addInstance(SPK);
-
-          if(options.logger) 
-            SPKLogger.newSession(SPK.GLOBALS.model);
-          
-          if(options.saver)
-            SPKSaver.init(SPK);
-
-          SPKUiManager.init();
-
           SPK.zoomExtents();
 
         });      
-
       });
-
     });
 
   }
@@ -50073,13 +50048,11 @@ var SPK = function (wrapper, options) {
 
     $.getJSON(SPKConfig.GEOMAPI + SPK.GLOBALS.model, function (data) {
       
-      SPK.GLOBALS.metadata.paramsFile = data.paramsFile.replace("./uploads", SPKConfig.UPLOADDIR);
-      SPK.GLOBALS.metadata.paramsFile = SPK.GLOBALS.metadata.paramsFile.replace("//p", "/p");
-
-      SPK.GLOBALS.metadata.staticGeoFile = data.staticGeoFile.replace("./uploads", SPKConfig.UPLOADDIR);
-      SPK.GLOBALS.metadata.staticGeoFile =  SPK.GLOBALS.metadata.staticGeoFile.replace("//s", "/s");
-
-      SPK.GLOBALS.metadata.rootFiles = SPK.GLOBALS.metadata.staticGeoFile.replace("/static.json", "/");
+      data.deflateLocation = data.deflateLocation.replace("./", "/");
+      
+      SPK.GLOBALS.metadata.paramsFile = SPKConfig.APPDIR + data.deflateLocation + "/params.json"
+      SPK.GLOBALS.metadata.staticGeoFile = SPKConfig.APPDIR + data.deflateLocation + "/static.json"
+      SPK.GLOBALS.metadata.rootFiles = SPKConfig.APPDIR + data.deflateLocation + "/";
 
       $(".model-name").html(data.modelName);
       
@@ -50091,136 +50064,50 @@ var SPK = function (wrapper, options) {
 
   }
 
+
+  // Loads the parameters file and passen on to call back the first key to load
+  // Used only in init
   SPK.loadParameters = function(callback) {
 
-    $.getJSON(SPK.GLOBALS.metadata.paramsFile, function(data) {
-
-      var params = data.parameters;
-
-      SPKMeasures.init(data.properties, data.kvpairs, data.propNames);
-      
-      for( var i = 0; i < params.length; i++ ) {
-        
-        var paramId = $(SPK.HMTL.wrapper).attr("id") + "_parameter_" + i;
-        var paramName = params[i].name === "" ? "Unnamed Parameter" : params[i].name;
-
-        $(SPK.HMTL.sliders).append( $( "<div>", { id: paramId, class: "parameter" } ) );
-        
-        $( "#" + paramId ).append( "<p class='parameter_name'>" + paramName + "</p>" );
-        
-        var sliderId = paramId + "_slider_" + i;
-
-        $( "#" + paramId ).append( $( "<div>", { id: sliderId, class: "basic-slider" } ) );
-
-        var myRange = {}, norm = 100 / (params[i].values.length-1);
-
-        for( var j = 0; j < params[i].values.length; j++ ) {
-
-          myRange[ norm * j + "%" ] = params[i].values[j];
-
-        }
-        
-        myRange["min"] = myRange["0%"]; delete myRange["0%"];
-      
-        myRange["max"] = myRange["100%"]; delete  myRange["100%"];
-
-        var sliderElem = $( "#" + sliderId )[0];
-        
-        var slider = noUISlider.create( sliderElem, {
-          start : [0],
-          conect : false,
-          tooltips : false,
-          snap : true,
-          range : myRange,
-          pips : {
-            mode : "values",
-            values : params[i].values,
-            density : 3
-          }
-        });
-
-        // set the callbacks
-
-        slider.on("slide", SPK.removeCurrentInstance);
-
-        slider.on("change", SPK.addNewInstance);
-
-        slider.on("end", SPK.purgeScene);
-
-        // add to master
-        slider.paramName = params[i].name;
-        SPK.GLOBALS.sliders.push(slider);
-      }
-
-      callback();
-
+    $.getJSON( SPK.GLOBALS.metadata.paramsFile, function(data) {
+      callback( data.kvpairs[0].key );
     });
 
   }
 
-  SPK.getCurrentKey = function () {
-    
-    var key = "";
 
-    for( var i = 0; i < SPK.GLOBALS.sliders.length; i++ ) {
+  SPK.fadeIn = function ( objects ) {
+      var duration = 300, opacity = 1;
+      
+      var tweenIn = new TWEEN.Tween( { x : 0 } )
+      .to( { x: opacity }, duration )
+      .onUpdate( function() {
+        for( var i = 0; i < objects.length; i++ ) {
+          objects[i].material.opacity = this.x;
+        }
+      })
 
-      key += Number( SPK.GLOBALS.sliders[i].get() ).toString() + ","; 
-
-    }
-
-    return key;
+      tweenIn.start();
 
   }
 
-  SPK.removeCurrentInstance = function () {
+  SPK.fadeOut = function ( objects ) {
 
-    var opacity = 1;
-    var duration = 600;
-    var out = [];
+    var opacity = 1, duration = 200;
     
-    for(var i = 0; i < SPK.VIEWER.scene.children.length; i++ ) {
-
-      var myObj = SPK.VIEWER.scene.children[i];
-      
-      if( myObj.removable ) {
-
-          out.push(myObj);
-
-      }
-    }
-
     var tweenOut = new TWEEN.Tween( { x: opacity } )
     .to( {x: 0}, duration )
     .onUpdate( function() {
-
-      for( var i = 0; i < out.length; i++ ) {
-
-        out[i].material.opacity = this.x;
-
-      }
-
-      if(( this.x >= opacity * 0.5 ) && (this.calledNext===undefined))
-      {
-        
-        this.calledNext = true;
-        SPK.addNewInstance();
-        
-      }
-
-    })
+      for( var i = 0; i < objects.length; i++ ) 
+        objects[ i ].material.opacity = this.x;
+    } )
     .onComplete( function() {
-
-      for( var i = 0; i < out.length; i++ ) {
-
-        SPK.VIEWER.scene.remove(out[i]);
-        out[i].geometry.dispose();
-        out[i].material.dispose();
-
+      for( var i = 0; i < objects.length; i++ ) {
+        SPK.VIEWER.scene.remove( objects[ i ] );
+        objects[ i ].geometry.dispose();
+        objects[ i ].material.dispose();
       }
-
-      //SPK.addNewInstance(); // off because called have way through in the opacity out 
-
-    })  ;
+    } );
 
     tweenOut.start();
 
@@ -50231,99 +50118,42 @@ var SPK = function (wrapper, options) {
     // theoretically should do nothing; but we do have cases when we have overlapping instances
     // due to "quickness" of slider drag, and the way we handle object loading. yoop. 
 
-    var opacity = 1;
-    var duration = 200;
     var out = [];
     
     for(var i = 0; i < SPK.VIEWER.scene.children.length; i++ ) {
-
       var myObj = SPK.VIEWER.scene.children[i];
-      
-      if( (myObj.removable) && (myObj.instance != SPK.GLOBALS.currentKey) ) {
-
+      if( (myObj.removable) && (myObj.instance != SPK.GLOBALS.currentKey) )
           out.push(myObj);
-
-      }
     }
 
-    var tweenOut = new TWEEN.Tween( { x: opacity } )
-    .to( {x: 0}, duration )
-    .onUpdate( function() {
-
-      for( var i = 0; i < out.length; i++ ) {
-
-        out[i].material.opacity = this.x;
-
-      }
-
-      if(( this.x >= opacity * 0.5 ) && (this.calledNext===undefined))
-      {
-        
-        this.calledNext = true;
-        
-      }
-
-    })
-    .onComplete( function() {
-
-      for( var i = 0; i < out.length; i++ ) {
-
-        SPK.VIEWER.scene.remove(out[i]);
-        out[i].geometry.dispose();
-        out[i].material.dispose();
-
-      }
-
-    })  ;
-
-    tweenOut.start();
-
+    SPK.fadeOut( out )
   }
 
-  SPK.addNewInstance = function() {
-
-    var key = SPK.getCurrentKey();
+  // 
+  SPK.addNewInstance = function( key, callback ) {
 
     if(SPK.GLOBALS.currentKey === key) {
-    
       SPK.purgeScene();
       return;
     }
 
-    SPKMeasures.setKey(key);
-
     SPK.GLOBALS.currentKey = key;
+
     SPK.loadInstance( key, function() {
 
       var iin = [];
-
       for(var i = 0; i < SPK.VIEWER.scene.children.length; i++ ) {
-
+        
         var myObj = SPK.VIEWER.scene.children[i];
         
-        if( myObj.removable ) {
-          
-          if( myObj.instance === SPK.GLOBALS.currentKey ) {
+        if( myObj.removable && ( myObj.instance === SPK.GLOBALS.currentKey ) ) 
+          iin.push(myObj);
 
-            iin.push(myObj);
-
-          } 
-        }
       }
 
-      var duration = 300, opacity = 1;
-      
-      var tweenIn = new TWEEN.Tween( { x : 0 } )
-      .to( { x: opacity }, duration )
-      .onUpdate( function() {
-        for( var i = 0; i < iin.length; i++ ) {
+      SPK.fadeIn( iin );
 
-          iin[i].material.opacity = this.x;
-
-        }
-      })
-
-      tweenIn.start();
+      callback();
 
     });
 
@@ -50351,94 +50181,11 @@ var SPK = function (wrapper, options) {
 
   }
 
-  SPK.setupEnvironment = function () {
-    // TODO: Grids, etc.
-    // 
-    // make the scene + renderer
-
-    SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : true, alpha: true} );
-
-    SPK.VIEWER.renderer.setClearColor( 0xF2F2F2 ); 
-
-    SPK.VIEWER.renderer.setPixelRatio( 1 );  // change to window.devicePixelRatio 
-    //SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );  // change to window.devicePixelRatio 
-    
-    SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); 
-
-    SPK.VIEWER.renderer.shadowMap.enabled = true;
-    
-    $(SPK.HMTL.canvas).append( SPK.VIEWER.renderer.domElement );
-
-    SPK.VIEWER.camera = new THREE.PerspectiveCamera( 40, $(SPK.HMTL.canvas).innerWidth() * 1 / $(SPK.HMTL.canvas).innerHeight(), 1, SPK.GLOBALS.boundingSphere.radius * 100 );
-
-    SPK.VIEWER.camera.position.z = -SPK.GLOBALS.boundingSphere.radius*1.8; 
-
-    SPK.VIEWER.camera.position.y = SPK.GLOBALS.boundingSphere.radius*1.8;
-    
-    SPK.VIEWER.controls = new OrbitCtrls( SPK.VIEWER.camera, SPK.VIEWER.renderer.domElement );
-
-    SPK.VIEWER.controls.addEventListener( 'change', function () {
-
-      SPKSync.syncCamera(SPK.VIEWER.camera) ;
-
-    });
-
-
-    // shadow light
-    var light = new THREE.DirectionalLight(0xffffff, 1);
-    light.castShadow = true;
-    light.shadowCameraNear = 0;
-    light.shadowCameraFar = SPK.GLOBALS.boundingSphere.radius * 6;
-    light.shadowCameraLeft = -SPK.GLOBALS.boundingSphere.radius * 2; 
-    light.shadowCameraRight = SPK.GLOBALS.boundingSphere.radius * 2; 
-    light.shadowCameraTop = SPK.GLOBALS.boundingSphere.radius * 2; 
-    light.shadowCameraBottom = -SPK.GLOBALS.boundingSphere.radius * 2; 
-    light.shadowMapWidth = 1024;
-    light.shadowMapHeight = 1024;
-    light.shadowBias = -0.0000022;
-    light.shadowDarkness = 0;
-    light.onlyShadow = true;
-    
-    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius * 1.7, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius * 3 ,SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius * 1.7); 
-
-    SPK.SCENE.shadowlight = light;
-    SPK.VIEWER.scene.add(light);
-
-    // camera light
-    
-    SPK.VIEWER.scene.add( new THREE.AmbientLight( 0xD8D8D8 ) );
-   
-    var flashlight = new THREE.PointLight( 0xffffff, 0.8, SPK.GLOBALS.boundingSphere.radius * 12, 1);
-    
-    SPK.VIEWER.camera.add( flashlight );
-    
-    SPK.VIEWER.scene.add( SPK.VIEWER.camera );
-
-    // grids
-    
-    SPK.makeContext();
-
-    // resize events
-    
-    $(window).resize( function() { 
-      
-      SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth()-1, $(SPK.HMTL.canvas).innerHeight()-5 ); 
-      
-      SPK.VIEWER.camera.aspect = ($(SPK.HMTL.canvas).innerWidth()-1) / ($(SPK.HMTL.canvas).innerHeight()-5);
-      
-      SPK.VIEWER.camera.updateProjectionMatrix();
-
-      SPK.alignSliders();
-    
-    } );
-
-  }
-
+  // Tells file.json > SPKLoader > SPKMaker > objects > adds them to scene
+  // Initial opacity is set to 0 so new objs can be fadedIn
   SPK.loadInstance = function(key, callback) {
-    
-    key = key != -1 ? key : SPK.getCurrentKey();
 
-    SPKLoader.load( SPK.GLOBALS.metadata.rootFiles + key + ".json", function (obj) {
+    SPKLoader.load( SPK.GLOBALS.metadata.rootFiles + key + ".json", function ( obj ) {
 
       for( var i = 0; i < obj.geometries.length; i++ ) {
 
@@ -50449,8 +50196,6 @@ var SPK = function (wrapper, options) {
         });
 
       }
-
-      SPKLogger.addUsedInstance(key);
 
       SPK.computeBoundingSphere();
       
@@ -50486,26 +50231,6 @@ var SPK = function (wrapper, options) {
 
   }
 
-  SPK.loadInstanceForced = function(key) {
-
-    if( SPK.GLOBALS.currentKey === key) return;
-
-    SPK.removeCurrentInstance();
-
-    var params = key.split(",");
-    
-    for( var i = 0; i < params.length - 1; i++ ) {
-
-      SPK.GLOBALS.sliders[i].set(params[i]);
-
-    }
-
-    //SPK.GLOBALS.currentKey = key;
-
-    SPK.addNewInstance();
-
-  }
-
   SPK.render = function() {
 
     requestAnimationFrame( SPK.render );
@@ -50514,6 +50239,86 @@ var SPK = function (wrapper, options) {
 
     SPK.VIEWER.renderer.render(SPK.VIEWER.scene, SPK.VIEWER.camera);
 
+  }
+
+  SPK.setupEnvironment = function () {
+    // TODO: Grids, etc.
+    // 
+    // make the scene + renderer
+
+    SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : true, alpha: true} );
+
+    SPK.VIEWER.renderer.setClearColor( 0xF2F2F2 ); 
+
+    SPK.VIEWER.renderer.setPixelRatio( 1 );  // change to window.devicePixelRatio 
+    //SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );  // change to window.devicePixelRatio 
+    
+    SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); 
+
+    SPK.VIEWER.renderer.shadowMap.enabled = true;
+    SPK.VIEWER.renderer.shadowMap.type = THREE.PCFShadowMap;
+
+    $(SPK.HMTL.canvas).append( SPK.VIEWER.renderer.domElement );
+
+    SPK.VIEWER.camera = new THREE.PerspectiveCamera( 40, $(SPK.HMTL.canvas).innerWidth() * 1 / $(SPK.HMTL.canvas).innerHeight(), 1, SPK.GLOBALS.boundingSphere.radius * 100 );
+
+    SPK.VIEWER.camera.position.z = -SPK.GLOBALS.boundingSphere.radius*1.8; 
+
+    SPK.VIEWER.camera.position.y = SPK.GLOBALS.boundingSphere.radius*1.8;
+    
+    SPK.VIEWER.controls = new OrbitCtrls( SPK.VIEWER.camera, SPK.VIEWER.renderer.domElement );
+
+    SPK.VIEWER.controls.addEventListener( 'change', function () {
+
+    });
+
+    // shadow light
+    var light = new THREE.SpotLight(0xffffff, 0.4);
+    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*20, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*20, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*20)
+    light.target.position.set( SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z );
+    light.castShadow = true;
+    
+    light.shadowMapWidth = 2048;
+    light.shadowMapHeight = 2048;
+    light.shadowBias = -0.00001;
+    light.shadowDarkness = 0.5;
+    //light.onlyShadow = true;
+    
+    
+    light.shadowCameraVisible = true;
+    //light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius * 1.7, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius * 3 ,SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius * 1.7); 
+
+    SPK.SCENE.shadowlight = light;
+    SPK.VIEWER.scene.add(light);
+
+    // camera light
+    
+    SPK.VIEWER.scene.add( new THREE.AmbientLight( 0xD8D8D8 ) );
+   
+    var flashlight = new THREE.PointLight( 0xffffff, 0.8, SPK.GLOBALS.boundingSphere.radius * 12, 1);
+    
+    SPK.VIEWER.camera.add( flashlight );
+    
+    SPK.VIEWER.scene.add( SPK.VIEWER.camera );
+
+    // grids
+    
+    SPK.makeContext();
+
+    // resize events
+    
+    $(window).resize( function() { 
+      
+      SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth()-1, $(SPK.HMTL.canvas).innerHeight()-5 ); 
+      
+      SPK.VIEWER.camera.aspect = ($(SPK.HMTL.canvas).innerWidth()-1) / ($(SPK.HMTL.canvas).innerHeight()-5);
+      
+      SPK.VIEWER.camera.updateProjectionMatrix();
+    
+    } );
+
+    window.scene = SPK.VIEWER.scene;
+    
   }
 
   SPK.makeContext = function() {
@@ -50526,7 +50331,7 @@ var SPK = function (wrapper, options) {
     plane = new THREE.Mesh( planeGeometry, planeMaterial );
     plane.receiveShadow = true;
     plane.position.set(SPK.GLOBALS.boundingSphere.center.x, -0.1, SPK.GLOBALS.boundingSphere.center.z );
-    plane.visible = false;
+    plane.visible = true;
 
     SPK.VIEWER.scene.add( plane );
     SPK.SCENE.plane = plane;
@@ -50545,9 +50350,6 @@ var SPK = function (wrapper, options) {
       SPK.VIEWER.scene.add( grid );
       SPK.SCENE.grid = grid;
    }
-   
-   
-    
 
   }
 
@@ -50570,22 +50372,6 @@ var SPK = function (wrapper, options) {
 
   }
 
-  SPK.alignSliders = function () {
-    
-    return;
-    
-    var containerHeight = $(SPK.HMTL.sidebar).innerHeight(); 
-    
-    var wrapperHeight = $(SPK.HMTL.sidebar).find("#wrapper-params").height(); 
-
-    var diff = containerHeight - wrapperHeight;
-
-    if( diff > 0 ) {
-      $(SPK.HMTL.sidebar).find("#wrapper-params").css("top", diff / 2 + "px");
-    }
-
-  }
-
   SPK.beep = function () {
 
     return "boop";
@@ -50604,56 +50390,7 @@ var SPK = function (wrapper, options) {
 module.exports = SPK;
 
 
-},{"./SPKCache.js":7,"./SPKConfig.js":8,"./SPKLoader.js":10,"./SPKLogger.js":11,"./SPKMeasures":12,"./SPKObjectMaker.js":13,"./SPKSaver.js":14,"./SPKSync.js":15,"./SPKUiManager.js":16,"jquery":1,"nouislider":2,"three":4,"three-orbit-controls":3,"tween.js":5}],7:[function(require,module,exports){
-/*
- * Beta.Speckle Parametric Model Viewer
- * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
- *
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-
-var SPKCache = function() {
-  
-  var SPKCache = this;
-
-  SPKCache.instances = [];
-
-  SPKCache.add = function(instance, key) {
-    // TODO
-  } 
-
-  SPKCache.get = function(key) {
-    
-    for( var i = 0; i < SPKCache.instances.length; i++ ) {
-    
-      if( SPKCache.instances[i].key === key ) 
-    
-        return SPKCache.instances[i];
-    
-    }
-    
-    return null;
-  }
-
-  SPKCache.clear = function() {
-    // TODO 
-  }
-}
-
-module.exports = new SPKCache();
-},{}],8:[function(require,module,exports){
+},{"./SPKConfig.js":8,"./SPKLoader.js":9,"./SPKObjectMaker.js":10,"jquery":1,"nouislider":2,"three":4,"three-orbit-controls":3,"tween.js":5}],8:[function(require,module,exports){
 /*
  * Beta.Speckle Parametric Model Viewer
  * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
@@ -50675,63 +50412,19 @@ module.exports = new SPKCache();
 var SPKConfig = function () {
 
   var SPKConfig = this;
+  
+  if (!location.origin) location.origin = location.protocol + "//" + location.host;
+  SPKConfig.ORIGIN = location.origin;
 
-  // deployment
-  SPKConfig.APPDIR     = "http://beta.speckle.xyz";
-  SPKConfig.UPLOADDIR  = "http://beta.speckle.xyz/uploads";
-  SPKConfig.GEOMAPI    = "http://beta.speckle.xyz/api/model/";
-  SPKConfig.METAAPI    = "http://beta.speckle.xyz/api/model/metadata/";
-  SPKConfig.INSTAPI    = "http://beta.speckle.xyz/api/model/instances/";
-   
-  
-  // testing
-<<<<<<< HEAD
-  /*
-  
-=======
->>>>>>> origin/master
-  SPKConfig.APPDIR     = "http://localhost:9009";
-  SPKConfig.UPLOADDIR  = "http://localhost:9009/uploads";
-  SPKConfig.GEOMAPI    = "http://localhost:9009/api/model/";
-  SPKConfig.METAAPI    = "http://localhost:9009/api/model/metadata/";
-  SPKConfig.INSTAPI    = "http://localhost:9009/api/model/instances/";
-  
-  */
+  SPKConfig.APPDIR     = location.origin;
+  SPKConfig.UPLOADDIR  = location.origin + "/uploads";
+  SPKConfig.GEOMAPI    = location.origin + "/api/model/";
+  SPKConfig.METAAPI    = location.origin + "/api/model/metadata/";
+  SPKConfig.INSTAPI    = location.origin + "/api/model/instances/"; 
 }
 
 module.exports = new SPKConfig();
 },{}],9:[function(require,module,exports){
-/*
- * Beta.Speckle Parametric Model Viewer
- * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
- *
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-
-var $   = require('jquery'); 
-var SPK = require('./SPK.js');
-
-$( function() {
-
-  var mySPK1  = new SPK( $( '#spk-viewer-1' ) );
-  var mySPK2  = new SPK( $( '#spk-viewer-2' ) );
-
-});
-
-
-},{"./SPK.js":6,"jquery":1}],10:[function(require,module,exports){
 /*
  * Beta.Speckle Parametric Model Viewer
  * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
@@ -50870,261 +50563,7 @@ var SPKLoader = function () {
 }
 
 module.exports = new SPKLoader();
-},{"three":4}],11:[function(require,module,exports){
-/*
- * Beta.Speckle Parametric Model Viewer
- * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
- *
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-
-
-var $           = require('jquery');
-var SPKConfig   = require('./SPKConfig.js');
-
-var SPKLogger = function () {
-
-  var SPKLogger = this;
-
-  SPKLogger.sessionid = null;
-
-
-  SPKLogger.mx = 0;
-  SPKLogger.my = 0;
-
-  SPKLogger.newSession = function (id) {
-
-    if( SPKLogger.sessionid != null ) return;
-    
-    var sendData = { 
-      type: "newSession",
-      modelid: id
-    }
-    
-    $.post(SPKConfig.METAAPI, sendData, function (sessionid) {
-
-      SPKLogger.sessionid = sessionid;
-
-    });
-    
-  }
-
-  SPKLogger.postUpdate = function(data) {
-    
-    $.post(SPKConfig.METAAPI, data, function (dataa) {
-
-      if(dataa === "err") 
-        console.warn("SPK_ERR: Failed to update metadata");
-    
-    });
-
-  }
-
-  SPKLogger.updateScreenSize = function() {
-    var sendData = {
-      sessionid: SPKLogger.sessionid,
-      type: "updateViewport",
-      viewportsize: window.innerHeight + "x" + window.innerWidth
-    }
-
-    SPKLogger.postUpdate(sendData);
-
-  }
-
-  SPKLogger.addUsedInstance = function(key) {
-    
-    var sendData = {
-      sessionid : SPKLogger.sessionid,
-      type : "addInstance",
-      key : key
-    }
-    
-    SPKLogger.postUpdate(sendData);
-
-  }
-  
-  SPKLogger.addMouseClick = function(mouseposition) {
-    
-    var sendData = {
-      sessionid : SPKLogger.sessionid,
-      type : "addMouseClick",
-      mouseloc : {x: SPKLogger.mx, y: SPKLogger.my}
-    }
-
-    SPKLogger.postUpdate(sendData);
-
-  }
-
-  SPKLogger.finishSession = function() {
-
-    SPKLogger.postUpdate( {sessionid: SPKLogger.sessionid, type:"sessionend"} );
-
-  }
-
-  /*************************************************
-  /   SPKLogger document events
-  *************************************************/
-
-  // continously update mouse pos
-  window.onmousemove = function(e) { 
-    
-    SPKLogger.mx = e.pageX; 
-
-    SPKLogger.my = e.pageY; 
-
-  }
-
-  // trigger event
-  $(window).click( function() {
-
-    SPKLogger.addMouseClick();
-
-  });
-
-  // update exit time beforeunload
-  $(window).bind('beforeunload', SPKLogger.finishSession );
-
-}
-
-module.exports = new SPKLogger();
-},{"./SPKConfig.js":8,"jquery":1}],12:[function(require,module,exports){
-/*
- * Beta.Speckle Parametric Model Viewer
- * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
- *
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-
-
-var $               = require('jquery');
-var noUISlider      = require('nouislider');
-
-var SPKMeasures = function () {
-
-  var SPKMeasures = this;
-
-  SPKMeasures.data = null;
-  SPKMeasures.kvpairs = null;
-  SPKMeasures.names = null;
-
-  SPKMeasures.mySliders = [];
-
-
-  SPKMeasures.init = function(parametersdata, keyvaluepairs, propNames) {
-
-    SPKMeasures.data = parametersdata;
-    SPKMeasures.kvpairs = keyvaluepairs;
-    SPKMeasures.names = propNames;
-
-    for( var i = 0; i < SPKMeasures.data.length; i++ ) {
-      SPKMeasures.createSlider(SPKMeasures.data[i], i);
-    }
-
-  }
-
-  SPKMeasures.createSlider = function(param, index) {
-
-    var myRange = param.values;
-    myRange.sort(function(a,b) { return a-b});
-
-    var sliderRange = {
-      "min" : Number(myRange[0]),
-      "max" : Number(myRange[myRange.length-1])
-    }
-
-
-    var container = $("#spk-measures-ui").find("#wrapper-measures");
-
-    var myMeasureWrapper = $(container).append( $("<div>", {id:"measure-wrapper-" + index, class:"measure parameter"}) );
-
-    var finalFuckingName = "<p>" + param.name  + "</p><p> <span class='pull-left'>(MIN) " + myRange[0] + "</span> " + " <span class='pull-right'>" + myRange[myRange.length-1] + " (MAX)</span></p>";
-
-    $("#measure-wrapper-" + index).append($("<p>", {class:"measure-name parameter-name text-center", html: finalFuckingName }));
-
-    var sliderId = "measure-" + index;
-
-    $("#measure-wrapper-" + index).append( $("<div>", {id: sliderId, class: "basic-slider measure-slider" }));
-    
-  
-    var slider = noUISlider.create( $("#"+sliderId)[0], {
-          start : [0],
-          conect : true,
-          tooltips : true,
-          snap : false,
-          range: sliderRange,
-          disable: true,
-          
-    });
-
-    $("#"+sliderId)[0].setAttribute('disabled', true);
-
-    SPKMeasures.mySliders.push(slider);
-
-  }
-
-  SPKMeasures.setKey = function(key) {
-    
-    var mymeasures = "";
-    var found = false;
-    for(var i =0; i< SPKMeasures.kvpairs.length && !found; i++) {
-      if(SPKMeasures.kvpairs[i].key === key) {
-        mymeasures = SPKMeasures.kvpairs[i].values;
-        found = true
-      }
-    }
-  
-    var mysplits = mymeasures.split(",");
-
-    for( var i = 0; i < SPKMeasures.mySliders.length; i++ ) {
-
-      SPKMeasures.mySliders[i].set(Number(mysplits[i]));
-    }
-  }
-
-  SPKMeasures.getValuesForKey = function(key) {
-    
-    var mymeasures = null;
-    var found = false;
-
-    for(var i =0; i< SPKMeasures.kvpairs.length && !found; i++) {
-    
-      if(SPKMeasures.kvpairs[i].key === key) {
-    
-        mymeasures = SPKMeasures.kvpairs[i].values;
-        found = true;
-    
-      }
-    }
-    return { measure: mymeasures, names : SPKMeasures.names } ;
-  }
-}
-
-module.exports =  new SPKMeasures();
-},{"jquery":1,"nouislider":2}],13:[function(require,module,exports){
+},{"three":4}],10:[function(require,module,exports){
 /*
  * Beta.Speckle Parametric Model Viewer
  * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
@@ -51194,7 +50633,7 @@ var SPKObjectMaker = function() {
 
   SPKObjectMaker.makeMesh = function( data, key, callback ) {
 
-    var material = new THREE.MeshPhongMaterial( { color: 0xdddddd, specular: 0xD1ECFF, shininess: 30, shading: THREE.FlatShading } );
+    var material = new THREE.MeshPhongMaterial( { color: 0xCACACA, specular: 0xD1ECFF, shininess: 20, shading: THREE.FlatShading } );
     //var material = new THREE.MeshNormalMaterial();
     
     material.side = THREE.DoubleSide; material.transparent = true; material.opacity = 0;
@@ -51294,423 +50733,4 @@ var SPKObjectMaker = function() {
 }
 
 module.exports = new SPKObjectMaker();
-},{"three":4}],14:[function(require,module,exports){
-/*
- * Beta.Speckle Parametric Model Viewer
- * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
- *
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-var $               = require('jquery');
-var SPKUiManager    = require('./SPKUiManager');
-var SPKConfig       = require('./SPKConfig.js');
-var SPKSync         = require('./SPKSync.js');
-var SPKMeasures     = require('./SPKMeasures');
-
-var SPKSaver = function (wrapper) {
-  
-  var SPKSaver = this;
-  
-  SPKSaver.HTML = {
-    wrapper: "",
-    list : "",
-    saveform: ""
-  }
-
-  SPKSaver.SPK = "";
-  SPKSaver.paramNames = [];
-
-  SPKSaver.init = function (SPKInstance) {
-    
-    SPKSaver.HTML.wrapper = $("#wrapper-saver");
-    SPKSaver.HTML.form = $(SPKSaver.HTML.wrapper).find("form");
-    SPKSaver.HTML.list = $(SPKSaver.HTML.wrapper).find("#instance-list");
-
-    SPKSaver.SPK = SPKInstance;
-
-    $(SPKSaver.HTML.form).find("textarea").focusin( function () {
-      SPKSync.pause = true;
-    }) 
-
-    $(SPKSaver.HTML.form).find("textarea").focusout( function () {
-      SPKSync.pause = false;
-    })
-
-    $(SPKSaver.HTML.form).find("textarea").keypress(function(event) {
-      if (event.which == 13) {
-          event.preventDefault();
-          $(SPKSaver.HTML.form).submit();
-      }
-    });
-
-    $(SPKSaver.HTML.form).on("submit", function (e) {
-
-      e.preventDefault();
-
-      var dataToSubmit = {
-        type : "addnew",
-        model: SPKSaver.SPK.GLOBALS.model, 
-        key : SPKSaver.SPK.GLOBALS.currentKey,
-        description: $(SPKSaver.HTML.form).find("textarea").val(),
-        camerapos: { x: SPKSaver.SPK.VIEWER.camera.position.x, y: SPKSaver.SPK.VIEWER.camera.position.y, z: SPKSaver.SPK.VIEWER.camera.position.z }
-      }
-      
-      if(dataToSubmit.description === "") {
-        return;
-      }
-      
-      $(SPKSaver.HTML.form).find("textarea").val("");
-
-      $.post(SPKConfig.INSTAPI, dataToSubmit, function(data) {
-
-        SPKSaver.refreshList();
-
-      })
-
-    });
-
-    SPKSaver.refreshList();
-
-  }
-
-  SPKSaver.refreshList = function () {
-    
-    $(SPKSaver.HTML.list).html("");
-    
-    $.post(SPKConfig.INSTAPI, { type: "getsavedinstances", model: SPKSaver.SPK.GLOBALS.model}, function(data){
-        
-        data = data.reverse();
-   
-        if(data.length) {
-   
-          for( var i = 0; i < data.length; i++ ) {
-   
-            SPKSaver.createInstance( data[i], i );
-   
-          }
-
-          $(".model-comments").text("There are " + data.length + " saved configurations.");
-          
-
-        } else {
-   
-          $(SPKSaver.HTML.list).append("<h3 class='text-center'> There are no saved configurations. Add one!</h3>")
-        }
-
-    });
-  
-  }
-
-  SPKSaver.createInstance = function (instance, index) {
-    
-    $(SPKSaver.HTML.list).append( $("<div>", { id: "instance-" + index, class: "instance-element", html: "<p class='description'>" + instance.description + "</p>"}) );
-    
-    $( "#instance-" + index ).append( "<p class='key'>" + SPKSaver.parseKeyName( instance.key, index ) + "</p>");
-
-    $( "#instance-" + index ).attr( "spk-inst", instance.key );
-    $( "#instance-" + index ).attr( "spk-inst-index", index );
-    
-    // behaviour
-    $( "#instance-" + index ).click( function () {
-
-      var myKey = $( this ).attr( "spk-inst" );
-
-      SPKSaver.SPK.loadInstanceForced(myKey);
-
-      $(".instance-element.active").removeClass("active");
-
-      $(this).addClass("active");
-      
-    });
-
-  }
-
-  SPKSaver.parseKeyName = function (key, index) {
-
-    var params = key.split(",");
-
-    var fullname = "<div class='spk-saver-half'><p><strong>Input parameters:</strong></p><p>";
-
-    for( var i = 0; i < params.length - 1; i++ ) {
-      
-      if(SPKSaver.SPK.GLOBALS.sliders[i].paramName != "") fullname += SPKSaver.SPK.GLOBALS.sliders[i].paramName;
-      else fullname += "Unnamed parameter";
-      
-      fullname += ": <strong>" + params[i] + "</strong><br> ";
-
-    }
-      
-
-    var measures = SPKMeasures.getValuesForKey(key);
-
-    var splitmeausres = measures.measure.split(",");
-
-    fullname += " </p></div> <div class='spk-saver-half'><p><strong>Performance measures:</strong></p><p>"
-
-    for( var i = 0; i < splitmeausres.length - 1; i++ ) {
-      
-      fullname += measures.names[i]
-      
-      fullname += ": <strong>" + splitmeausres[i] + "</strong><br> ";
-
-    }
-
-    fullname += "</p></div><div class='clear'></div>"
-
-    return fullname;  
-
-  }
-
-}
-
-// make it unique across all instances
-module.exports = new SPKSaver();
-},{"./SPKConfig.js":8,"./SPKMeasures":12,"./SPKSync.js":15,"./SPKUiManager":16,"jquery":1}],15:[function(require,module,exports){
-/*
- * Beta.Speckle Parametric Model Viewer
- * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
- *
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-
-
-var $           = require('jquery');
-
-var SPKSync = function () {
-
-  var SPKSync = this;
-
-  SPKSync.instances = [];
-  SPKSync.pause = false;
-
-  SPKSync.addInstance = function (instance) {
-
-    SPKSync.instances.push(instance);
-
-    $(".toggle-grid").on("click", SPKSync.toggleGrid);
-    $(".toggle-ground-shadows").on("click", SPKSync.toggleGroundShadows);
-    $(".toggle-zoom").on("click", SPKSync.zoomExtents);
-
-  }
-
-  SPKSync.syncCamera = function (camera) {
-
-    for( var  i = 0; i < SPKSync.instances.length; i++ ) {
-
-      if( camera != SPKSync.instances[i].VIEWER.camera ) {
-        
-        var camToSync = SPKSync.instances[i].VIEWER.camera;
-
-        camToSync.position.x = camera.position.x;
-        camToSync.position.y = camera.position.y;
-        camToSync.position.z = camera.position.z;
-        
-        camToSync.quaternion._w = camera.quaternion._w;
-        camToSync.quaternion._x = camera.quaternion._x;
-        camToSync.quaternion._y = camera.quaternion._y;
-        camToSync.quaternion._z = camera.quaternion._z;
-
-        camToSync.updateProjectionMatrix();
-      }
-    }
-
-  }
-  
-  SPKSync.zoomExtents = function() {
-    
-    for( var  i = 0; i < SPKSync.instances.length; i++ ) {
-      
-      SPKSync.instances[i].zoomExtents();
-
-    }
-
-  }  
-
-  SPKSync.toggleGroundShadows = function() {
-    SPKSync.toggleShadows();
-    SPKSync.toggleGroundplane();
-  }
-
-  SPKSync.toggleShadows = function() {
-    
-    for( var  i = 0; i < SPKSync.instances.length; i++ ) {
-      if( SPKSync.instances[i].SCENE.shadows ) {
-        SPKSync.instances[i].SCENE.shadowlight.shadowDarkness = 0;
-        SPKSync.instances[i].SCENE.shadows = false;
-      }
-      else {
-        SPKSync.instances[i].SCENE.shadowlight.shadowDarkness = 0.15;
-        SPKSync.instances[i].SCENE.shadows = true;
-      }
-
-    }
-
-  }
-
-  SPKSync.toggleGrid = function() {
-    
-    for( var  i = 0; i < SPKSync.instances.length; i++ ) {
-      
-      SPKSync.instances[i].SCENE.grid.visible = ! SPKSync.instances[i].SCENE.grid.visible;
-
-    }
-
-  }
-
-  SPKSync.toggleGroundplane = function () {
-
-    for( var  i = 0; i < SPKSync.instances.length; i++ ) {
-      
-      SPKSync.instances[i].SCENE.plane.visible = ! SPKSync.instances[i].SCENE.plane.visible;
-
-    }
-
-  }
-
-  // centralising key presses in SPKSync 
-  // Allows for distributed control events to all poss instances
-
-
-  $(document).keyup(function(e) {
-
-    if(SPKSync.pause) return;
-
-    if(e.keyCode == 71) 
-      SPKSync.toggleGrid();
-
-    if(e.keyCode == 83)
-      {SPKSync.toggleShadows();SPKSync.toggleGroundplane();}
-
-    if(e.keyCode == 32) 
-      SPKSync.zoomExtents();
-
-  });
-
-
-
-}
-
-module.exports = new SPKSync();
-},{"jquery":1}],16:[function(require,module,exports){
-/*
- * Beta.Speckle Parametric Model Viewer
- * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
- *
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-
-//
-//
-//  THIS IS A CODE DUMP NEEDS PROPER THINKIN ABOOT
-//
-//
-
-
-var $               = require('jquery');
-
-var SPKUiManager = function () {
-  
-  var SPKUiManager = this;
-
-  SPKUiManager.controlGroups = [];
-
-  SPKUiManager.activeUi = null;
-
-  SPKUiManager.init = function () {
-    /**
-     * SAVE CONTROLS
-     */
-    $("#spk-save-controls").on("click", function () {
-      
-      $("#spk-save-ui").toggleClass("hide-right-ui");
-      
-      $(this).toggleClass("hide-right");
-
-      if($(this).hasClass("hide-right")) {
-        $(this).html("<i class='fa fa-copy'></i>")
-
-      }
-      else{
-        $(this).html("<i class='fa fa-angle-double-left'></i>")
-        $(".instance-element").removeClass("active");
-        
-      }
-
-    });
-
-    $("#spk-measures-controls").on("click", function () {
-      
-      $("#spk-measures-ui").toggleClass("hide-right-ui");
-      
-      $(this).toggleClass("hide-right");
-
-      if($(this).hasClass("hide-right")) 
-        $(this).html("<i class='fa fa-area-chart'></i>")
-      else{
-        $(this).html("<i class='fa fa-angle-double-left'></i>")
-        $(".instance-element").removeClass("active");
-      }
-
-    });
-
-    /**
-     * SETTINGS CONTROLS
-     */
-    
-    $("#spk-settings-controls").on("click", function () {
-      
-      $("#spk-settings-ui").toggleClass("hide-right-ui");
-      
-      $(this).toggleClass("hide-right");
-
-      if($(this).hasClass("hide-right")) 
-        $(this).html("<i class='fa fa-cogs'></i>")
-      else{
-        $(this).html("<i class='fa fa-angle-double-left'></i>")
-        $(".instance-element").removeClass("active");
-      }
-
-    });
-  }
-
-}
-
-// he's global and unique
-module.exports = new SPKUiManager();
-},{"jquery":1}]},{},[9]);
+},{"three":4}]},{},[6]);
