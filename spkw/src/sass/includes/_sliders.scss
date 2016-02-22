@@ -57,11 +57,13 @@
 /* Slider size and handle placement;
  */
 .noUi-horizontal {
-  height:10px;
+  height:1px;
 }
+
+//this one
 .noUi-horizontal .noUi-handle {
-  width: 20px;
-  height: 20px;
+  width: 0.1px;
+  height: 0.1px;
   left: -11px;
   top: -5px;
 
@@ -147,17 +149,23 @@
   display: block;
   position: absolute;
   background: white;
-  color: black;
-  size: 12px;
-  padding: 2px;
-  left: -19px;
+  color: $accentColour;
+  border-bottom: 2px solid $accentColour;
+  font-size: 11px;
+  padding: 3px;
+  left: -13px;
   text-align: center;
-  width: 50px;
+  width: 35px;
   transition: background-color 0.2s ease;
+  transition: border-bottom 0.2s ease;
+  transition: color 0.2s ease;
+  font-weight: 700;
 }
 
+
+
 .noUi-handle-lower .noUi-tooltip {
-  bottom: -20px;
+  bottom: -14px;
 }
 
 .noUi-handle-upper .noUi-tooltip {
@@ -182,7 +190,7 @@
  *
  */
 .noUi-value {
-  width: 40px;
+  width: 30px;
   position: absolute;
   text-align: center;
   color: $txtColour;
@@ -220,7 +228,8 @@
 }
 .noUi-value-horizontal {
   margin-left: -20px;
-  padding-top: 20px;
+  padding-top: 4px;
+  background-color: white;
 }
 .noUi-value-horizontal.noUi-value-sub {
   padding-top: 10px;
@@ -274,7 +283,7 @@
 
 
 
-.measure-slider {
+.xxxxmeasure-slider {
     background-color: #CFCFCF !important;
     height: 1px !important;
 
@@ -294,7 +303,7 @@
     }
 }
 
-.measure:hover{
+.xxxmeasure:hover{
   .noUi-tooltip {
     background-color: $accentColour;
     color: white;

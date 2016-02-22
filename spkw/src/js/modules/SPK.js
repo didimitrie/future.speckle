@@ -17,19 +17,19 @@
  */
 
 
-// general deps
+// General deps
 var $               = require('jquery');
 var THREE           = require('three');
 var OrbitCtrls      = require('three-orbit-controls')(THREE);
 var noUISlider      = require('nouislider');
 var TWEEN           = require('tween.js');
 
-// SPK Libs
+// SPK "Core" Libs
 var SPKLoader       = require('./SPKLoader.js');
 var SPKMaker        = require('./SPKObjectMaker.js');
 var SPKConfig       = require('./SPKConfig.js');
 
-var SPK = function (wrapper, options) {
+var SPK = function ( options ) {
 
   /*************************************************
   /   SPK Global
@@ -49,6 +49,9 @@ var SPK = function (wrapper, options) {
   /*************************************************
   /   SPK Vars
   *************************************************/
+  
+  SPK.META = {}
+  SPK.PARAMS = {}
 
   SPK.GLOBALS = {
     model : "",
@@ -121,6 +124,8 @@ var SPK = function (wrapper, options) {
           SPK.render(); 
           SPK.zoomExtents();
 
+          if( options.onInitEnd !== undefined ) options.onInitEnd( SPK )
+
         });      
       });
     });
@@ -131,17 +136,19 @@ var SPK = function (wrapper, options) {
 
     $.getJSON(SPKConfig.GEOMAPI + SPK.GLOBALS.model, function (data) {
       
+      SPK.META = data;
+
       data.deflateLocation = data.deflateLocation.replace("./", "/");
       
       SPK.GLOBALS.metadata.paramsFile = SPKConfig.APPDIR + data.deflateLocation + "/params.json"
       SPK.GLOBALS.metadata.staticGeoFile = SPKConfig.APPDIR + data.deflateLocation + "/static.json"
       SPK.GLOBALS.metadata.rootFiles = SPKConfig.APPDIR + data.deflateLocation + "/";
 
-      $(".model-name").html(data.modelName);
+      //$(".model-name").html(data.modelName);
       
-      $(".model-meta").html("Added on " + data.dateAdded + " by " + data.ownerName);
+      //$(".model-meta").html("Added on " + data.dateAdded + " by " + data.ownerName);
 
-      callback();
+      if( callback !== undefined ) callback();
 
     })
 
@@ -153,6 +160,7 @@ var SPK = function (wrapper, options) {
   SPK.loadParameters = function(callback) {
 
     $.getJSON( SPK.GLOBALS.metadata.paramsFile, function(data) {
+      SPK.PARAMS = data;
       callback( data.kvpairs[0].key );
     });
 
@@ -215,12 +223,11 @@ var SPK = function (wrapper, options) {
   // 
   SPK.addNewInstance = function( key, callback ) {
 
-    if(SPK.GLOBALS.currentKey === key) {
-      SPK.purgeScene();
+    if(SPK.GLOBALS.currentKey === key) 
       return;
-    }
-
+    
     SPK.GLOBALS.currentKey = key;
+    SPK.purgeScene();
 
     SPK.loadInstance( key, function() {
 
@@ -236,7 +243,7 @@ var SPK = function (wrapper, options) {
 
       SPK.fadeIn( iin );
 
-      callback();
+      if( callback !== undefined ) callback();
 
     });
 
@@ -326,7 +333,6 @@ var SPK = function (wrapper, options) {
 
   SPK.setupEnvironment = function () {
     // TODO: Grids, etc.
-    // 
     // make the scene + renderer
 
     SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : true, alpha: true} );
@@ -444,16 +450,18 @@ var SPK = function (wrapper, options) {
   SPK.zoomExtents = function () {
 
     var r = SPK.GLOBALS.boundingSphere.radius;
-    var offset = r / Math.tan(Math.PI / 180.0 * SPK.VIEWER.controls.object.fov * 0.5);
+    var offset = r / Math.tan(Math.PI / 180.0 * SPK.VIEWER.controls.object.fov * 0.4);
     var vector = new THREE.Vector3(0, 0, 1);
     var dir = vector.applyQuaternion(SPK.VIEWER.controls.object.quaternion);
     var newPos = new THREE.Vector3();
+
     dir.multiplyScalar(offset * 1.05);
+    
     newPos.addVectors(SPK.GLOBALS.boundingSphere.center, dir);
     SPK.VIEWER.controls.object.position.set(newPos.x, newPos.y, newPos.z);
     SPK.VIEWER.controls.target.set(SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z);
 
-  }
+  }  
 
   SPK.beep = function () {
 
@@ -466,7 +474,7 @@ var SPK = function (wrapper, options) {
   /   SPK INIT
   *************************************************/
     
-  SPK.init(wrapper, options);
+  SPK.init(options);
 
 }
 

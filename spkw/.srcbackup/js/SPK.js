@@ -249,7 +249,8 @@ var SPK = function (wrapper, options) {
         SPK.GLOBALS.sliders.push(slider);
       }
 
-      callback();
+      if(callback !== undefined)
+        callback();
 
     });
 

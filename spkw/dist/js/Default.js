@@ -11697,6 +11697,321 @@ function closure ( target, options ){
 
 }));
 },{}],3:[function(require,module,exports){
+'use strict';
+module.exports = require('./lib/index');
+
+},{"./lib/index":7}],4:[function(require,module,exports){
+'use strict';
+
+var randomFromSeed = require('./random/random-from-seed');
+
+var ORIGINAL = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-';
+var alphabet;
+var previousSeed;
+
+var shuffled;
+
+function reset() {
+    shuffled = false;
+}
+
+function setCharacters(_alphabet_) {
+    if (!_alphabet_) {
+        if (alphabet !== ORIGINAL) {
+            alphabet = ORIGINAL;
+            reset();
+        }
+        return;
+    }
+
+    if (_alphabet_ === alphabet) {
+        return;
+    }
+
+    if (_alphabet_.length !== ORIGINAL.length) {
+        throw new Error('Custom alphabet for shortid must be ' + ORIGINAL.length + ' unique characters. You submitted ' + _alphabet_.length + ' characters: ' + _alphabet_);
+    }
+
+    var unique = _alphabet_.split('').filter(function(item, ind, arr){
+       return ind !== arr.lastIndexOf(item);
+    });
+
+    if (unique.length) {
+        throw new Error('Custom alphabet for shortid must be ' + ORIGINAL.length + ' unique characters. These characters were not unique: ' + unique.join(', '));
+    }
+
+    alphabet = _alphabet_;
+    reset();
+}
+
+function characters(_alphabet_) {
+    setCharacters(_alphabet_);
+    return alphabet;
+}
+
+function setSeed(seed) {
+    randomFromSeed.seed(seed);
+    if (previousSeed !== seed) {
+        reset();
+        previousSeed = seed;
+    }
+}
+
+function shuffle() {
+    if (!alphabet) {
+        setCharacters(ORIGINAL);
+    }
+
+    var sourceArray = alphabet.split('');
+    var targetArray = [];
+    var r = randomFromSeed.nextValue();
+    var characterIndex;
+
+    while (sourceArray.length > 0) {
+        r = randomFromSeed.nextValue();
+        characterIndex = Math.floor(r * sourceArray.length);
+        targetArray.push(sourceArray.splice(characterIndex, 1)[0]);
+    }
+    return targetArray.join('');
+}
+
+function getShuffled() {
+    if (shuffled) {
+        return shuffled;
+    }
+    shuffled = shuffle();
+    return shuffled;
+}
+
+/**
+ * lookup shuffled letter
+ * @param index
+ * @returns {string}
+ */
+function lookup(index) {
+    var alphabetShuffled = getShuffled();
+    return alphabetShuffled[index];
+}
+
+module.exports = {
+    characters: characters,
+    seed: setSeed,
+    lookup: lookup,
+    shuffled: getShuffled
+};
+
+},{"./random/random-from-seed":10}],5:[function(require,module,exports){
+'use strict';
+var alphabet = require('./alphabet');
+
+/**
+ * Decode the id to get the version and worker
+ * Mainly for debugging and testing.
+ * @param id - the shortid-generated id.
+ */
+function decode(id) {
+    var characters = alphabet.shuffled();
+    return {
+        version: characters.indexOf(id.substr(0, 1)) & 0x0f,
+        worker: characters.indexOf(id.substr(1, 1)) & 0x0f
+    };
+}
+
+module.exports = decode;
+
+},{"./alphabet":4}],6:[function(require,module,exports){
+'use strict';
+
+var randomByte = require('./random/random-byte');
+
+function encode(lookup, number) {
+    var loopCounter = 0;
+    var done;
+
+    var str = '';
+
+    while (!done) {
+        str = str + lookup( ( (number >> (4 * loopCounter)) & 0x0f ) | randomByte() );
+        done = number < (Math.pow(16, loopCounter + 1 ) );
+        loopCounter++;
+    }
+    return str;
+}
+
+module.exports = encode;
+
+},{"./random/random-byte":9}],7:[function(require,module,exports){
+'use strict';
+
+var alphabet = require('./alphabet');
+var encode = require('./encode');
+var decode = require('./decode');
+var isValid = require('./is-valid');
+
+// Ignore all milliseconds before a certain time to reduce the size of the date entropy without sacrificing uniqueness.
+// This number should be updated every year or so to keep the generated id short.
+// To regenerate `new Date() - 0` and bump the version. Always bump the version!
+var REDUCE_TIME = 1426452414093;
+
+// don't change unless we change the algos or REDUCE_TIME
+// must be an integer and less than 16
+var version = 5;
+
+// if you are using cluster or multiple servers use this to make each instance
+// has a unique value for worker
+// Note: I don't know if this is automatically set when using third
+// party cluster solutions such as pm2.
+var clusterWorkerId = require('./util/cluster-worker-id') || 0;
+
+// Counter is used when shortid is called multiple times in one second.
+var counter;
+
+// Remember the last time shortid was called in case counter is needed.
+var previousSeconds;
+
+/**
+ * Generate unique id
+ * Returns string id
+ */
+function generate() {
+
+    var str = '';
+
+    var seconds = Math.floor((Date.now() - REDUCE_TIME) * 0.001);
+
+    if (seconds === previousSeconds) {
+        counter++;
+    } else {
+        counter = 0;
+        previousSeconds = seconds;
+    }
+
+    str = str + encode(alphabet.lookup, version);
+    str = str + encode(alphabet.lookup, clusterWorkerId);
+    if (counter > 0) {
+        str = str + encode(alphabet.lookup, counter);
+    }
+    str = str + encode(alphabet.lookup, seconds);
+
+    return str;
+}
+
+
+/**
+ * Set the seed.
+ * Highly recommended if you don't want people to try to figure out your id schema.
+ * exposed as shortid.seed(int)
+ * @param seed Integer value to seed the random alphabet.  ALWAYS USE THE SAME SEED or you might get overlaps.
+ */
+function seed(seedValue) {
+    alphabet.seed(seedValue);
+    return module.exports;
+}
+
+/**
+ * Set the cluster worker or machine id
+ * exposed as shortid.worker(int)
+ * @param workerId worker must be positive integer.  Number less than 16 is recommended.
+ * returns shortid module so it can be chained.
+ */
+function worker(workerId) {
+    clusterWorkerId = workerId;
+    return module.exports;
+}
+
+/**
+ *
+ * sets new characters to use in the alphabet
+ * returns the shuffled alphabet
+ */
+function characters(newCharacters) {
+    if (newCharacters !== undefined) {
+        alphabet.characters(newCharacters);
+    }
+
+    return alphabet.shuffled();
+}
+
+
+// Export all other functions as properties of the generate function
+module.exports = generate;
+module.exports.generate = generate;
+module.exports.seed = seed;
+module.exports.worker = worker;
+module.exports.characters = characters;
+module.exports.decode = decode;
+module.exports.isValid = isValid;
+
+},{"./alphabet":4,"./decode":5,"./encode":6,"./is-valid":8,"./util/cluster-worker-id":11}],8:[function(require,module,exports){
+'use strict';
+var alphabet = require('./alphabet');
+
+function isShortId(id) {
+    if (!id || typeof id !== 'string' || id.length < 6 ) {
+        return false;
+    }
+
+    var characters = alphabet.characters();
+    var invalidCharacters = id.split('').map(function(char){
+        if (characters.indexOf(char) === -1) {
+            return char;
+        }
+    }).join('').split('').join('');
+
+    return invalidCharacters.length === 0;
+}
+
+module.exports = isShortId;
+
+},{"./alphabet":4}],9:[function(require,module,exports){
+'use strict';
+
+var crypto = window.crypto || window.msCrypto; // IE 11 uses window.msCrypto
+
+function randomByte() {
+    if (!crypto || !crypto.getRandomValues) {
+        return Math.floor(Math.random() * 256) & 0x30;
+    }
+    var dest = new Uint8Array(1);
+    crypto.getRandomValues(dest);
+    return dest[0] & 0x30;
+}
+
+module.exports = randomByte;
+
+},{}],10:[function(require,module,exports){
+'use strict';
+
+// Found this seed-based random generator somewhere
+// Based on The Central Randomizer 1.3 (C) 1997 by Paul Houle (houle@msc.cornell.edu)
+
+var seed = 1;
+
+/**
+ * return a random number based on a seed
+ * @param seed
+ * @returns {number}
+ */
+function getNextValue() {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed/(233280.0);
+}
+
+function setSeed(_seed_) {
+    seed = _seed_;
+}
+
+module.exports = {
+    nextValue: getNextValue,
+    seed: setSeed
+};
+
+},{}],11:[function(require,module,exports){
+'use strict';
+
+module.exports = 0;
+
+},{}],12:[function(require,module,exports){
 module.exports = function(THREE) {
 	var MOUSE = THREE.MOUSE
 	if (!MOUSE)
@@ -12817,7 +13132,7 @@ module.exports = function(THREE) {
 	return OrbitControls;
 }
 
-},{}],4:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var self = self || {};// File:src/Three.js
 
 /**
@@ -49006,7 +49321,7 @@ if (typeof exports !== 'undefined') {
   this['THREE'] = THREE;
 }
 
-},{}],5:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * Tween.js - Licensed under the MIT license
  * https://github.com/tweenjs/tween.js
@@ -49898,23 +50213,50 @@ TWEEN.Interpolation = {
 
 })(this);
 
-},{}],6:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 
-var $   = require('jquery'); 
-var SPK = require('./modules/SPK.js');
-
+var $                   = require('jquery')
+var SPK                 = require('./modules/SPK.js')
+var SPKMeta             = require('./modules/SPKMetaDisplay.js')
+var SPKSliderControl    = require('./modules/SPKSliderControl.js')
+var SPKCommentsControl  = require('./modules/SPKCommentsControl.js')
 
 $( function() {
 
   var mySPK  = new SPK( 
   {
-    canvasid : 'spk-canvas'
-  });
+    canvasid : 'spk-canvas', 
+    onInitEnd : function ( SPK ) { 
+      
+      var myMeta = new SPKMeta ( {
+        wrapperid : 'spk-metadata',
+        spk : SPK.META
+      } );
 
-});
+      var mySliderCtrl = new SPKSliderControl ( { 
+        wrapperid : 'spk-parameters',
+        uitabid : 'spk-ui-tabs',
+        icon : 'fa-sliders',
+        data: SPK.PARAMS, 
+        open: false,
+        spk : SPK
+      } );
+
+      var myCommentCtrl = new SPKCommentsControl ( {
+        wrapperid : 'spk-comments',
+        uitabid : 'spk-ui-tabs',
+        icon : 'fa-comments',
+        data: SPK.PARAMS,
+        open : false,
+        spk : SPK
+      } );
+    }
+  } )
+
+} )
 
 
-},{"./modules/SPK.js":7,"jquery":1}],7:[function(require,module,exports){
+},{"./modules/SPK.js":16,"./modules/SPKCommentsControl.js":17,"./modules/SPKMetaDisplay.js":20,"./modules/SPKSliderControl.js":22,"jquery":1}],16:[function(require,module,exports){
 /*
  * Beta.Speckle Parametric Model Viewer
  * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
@@ -49934,19 +50276,19 @@ $( function() {
  */
 
 
-// general deps
+// General deps
 var $               = require('jquery');
 var THREE           = require('three');
 var OrbitCtrls      = require('three-orbit-controls')(THREE);
 var noUISlider      = require('nouislider');
 var TWEEN           = require('tween.js');
 
-// SPK Libs
+// SPK "Core" Libs
 var SPKLoader       = require('./SPKLoader.js');
 var SPKMaker        = require('./SPKObjectMaker.js');
 var SPKConfig       = require('./SPKConfig.js');
 
-var SPK = function (wrapper, options) {
+var SPK = function ( options ) {
 
   /*************************************************
   /   SPK Global
@@ -49966,6 +50308,9 @@ var SPK = function (wrapper, options) {
   /*************************************************
   /   SPK Vars
   *************************************************/
+  
+  SPK.META = {}
+  SPK.PARAMS = {}
 
   SPK.GLOBALS = {
     model : "",
@@ -50038,6 +50383,8 @@ var SPK = function (wrapper, options) {
           SPK.render(); 
           SPK.zoomExtents();
 
+          if( options.onInitEnd !== undefined ) options.onInitEnd( SPK )
+
         });      
       });
     });
@@ -50048,17 +50395,19 @@ var SPK = function (wrapper, options) {
 
     $.getJSON(SPKConfig.GEOMAPI + SPK.GLOBALS.model, function (data) {
       
+      SPK.META = data;
+
       data.deflateLocation = data.deflateLocation.replace("./", "/");
       
       SPK.GLOBALS.metadata.paramsFile = SPKConfig.APPDIR + data.deflateLocation + "/params.json"
       SPK.GLOBALS.metadata.staticGeoFile = SPKConfig.APPDIR + data.deflateLocation + "/static.json"
       SPK.GLOBALS.metadata.rootFiles = SPKConfig.APPDIR + data.deflateLocation + "/";
 
-      $(".model-name").html(data.modelName);
+      //$(".model-name").html(data.modelName);
       
-      $(".model-meta").html("Added on " + data.dateAdded + " by " + data.ownerName);
+      //$(".model-meta").html("Added on " + data.dateAdded + " by " + data.ownerName);
 
-      callback();
+      if( callback !== undefined ) callback();
 
     })
 
@@ -50070,6 +50419,7 @@ var SPK = function (wrapper, options) {
   SPK.loadParameters = function(callback) {
 
     $.getJSON( SPK.GLOBALS.metadata.paramsFile, function(data) {
+      SPK.PARAMS = data;
       callback( data.kvpairs[0].key );
     });
 
@@ -50132,12 +50482,11 @@ var SPK = function (wrapper, options) {
   // 
   SPK.addNewInstance = function( key, callback ) {
 
-    if(SPK.GLOBALS.currentKey === key) {
-      SPK.purgeScene();
+    if(SPK.GLOBALS.currentKey === key) 
       return;
-    }
-
+    
     SPK.GLOBALS.currentKey = key;
+    SPK.purgeScene();
 
     SPK.loadInstance( key, function() {
 
@@ -50153,7 +50502,7 @@ var SPK = function (wrapper, options) {
 
       SPK.fadeIn( iin );
 
-      callback();
+      if( callback !== undefined ) callback();
 
     });
 
@@ -50243,7 +50592,6 @@ var SPK = function (wrapper, options) {
 
   SPK.setupEnvironment = function () {
     // TODO: Grids, etc.
-    // 
     // make the scene + renderer
 
     SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : true, alpha: true} );
@@ -50361,16 +50709,18 @@ var SPK = function (wrapper, options) {
   SPK.zoomExtents = function () {
 
     var r = SPK.GLOBALS.boundingSphere.radius;
-    var offset = r / Math.tan(Math.PI / 180.0 * SPK.VIEWER.controls.object.fov * 0.5);
+    var offset = r / Math.tan(Math.PI / 180.0 * SPK.VIEWER.controls.object.fov * 0.4);
     var vector = new THREE.Vector3(0, 0, 1);
     var dir = vector.applyQuaternion(SPK.VIEWER.controls.object.quaternion);
     var newPos = new THREE.Vector3();
+
     dir.multiplyScalar(offset * 1.05);
+    
     newPos.addVectors(SPK.GLOBALS.boundingSphere.center, dir);
     SPK.VIEWER.controls.object.position.set(newPos.x, newPos.y, newPos.z);
     SPK.VIEWER.controls.target.set(SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z);
 
-  }
+  }  
 
   SPK.beep = function () {
 
@@ -50383,14 +50733,182 @@ var SPK = function (wrapper, options) {
   /   SPK INIT
   *************************************************/
     
-  SPK.init(wrapper, options);
+  SPK.init(options);
 
 }
 
 module.exports = SPK;
 
 
-},{"./SPKConfig.js":8,"./SPKLoader.js":9,"./SPKObjectMaker.js":10,"jquery":1,"nouislider":2,"three":4,"three-orbit-controls":3,"tween.js":5}],8:[function(require,module,exports){
+},{"./SPKConfig.js":18,"./SPKLoader.js":19,"./SPKObjectMaker.js":21,"jquery":1,"nouislider":2,"three":13,"three-orbit-controls":12,"tween.js":14}],17:[function(require,module,exports){
+
+var $               = require('jquery');
+var shortid         = require('shortid');
+var SPKConfig       = require('./SPKConfig.js');
+
+var SPKCommentsControl = function ( options ) {
+
+  var SPKCommentsControl = this;
+  SPKCommentsControl.data = {}
+  SPKCommentsControl.SPK = {}
+  SPKCommentsControl.id = shortid.generate()
+  SPKCommentsControl.Wrapper = {} 
+  SPKCommentsControl.form = {}
+  SPKCommentsControl.list = {}
+
+  SPKCommentsControl.init = function ( options ) {
+
+    SPKCommentsControl.data = options.data;
+    SPKCommentsControl.SPK = options.spk;
+    SPKCommentsControl.Wrapper = $( "#" + options.wrapperid );
+    SPKCommentsControl.form = $(SPKCommentsControl.Wrapper).find( "form" ); console.log(SPKCommentsControl.form);
+    SPKCommentsControl.list = $(SPKCommentsControl.Wrapper).find( "#instance-list" );
+
+    $( SPKCommentsControl.Wrapper ).attr( "spktabid", SPKCommentsControl.id );
+
+    var uitabs = $( "#" + options.uitabid);
+    var icon = "<div class='icon' spkuiid='" + SPKCommentsControl.id + "'><i class='fa " + options.icon + "'></div>";
+    $( uitabs ).append( icon );
+
+    $( "[spkuiid='" + SPKCommentsControl.id + "']").click( function() {
+      //$( "#" + options.wrapperid   ).removeClass( "sidebar-hidden" );
+      $( "#spk-ui-tabs").find(".icon").removeClass( "icon-active" );
+      $( this ).addClass( "icon-active" );
+
+      $( ".sidebar" ).addClass( "sidebar-hidden" );
+      $( "[spktabid='"+ SPKCommentsControl.id + "']").removeClass( "sidebar-hidden" );
+    })
+
+
+    // set up form submit and key press ease
+    $(SPKCommentsControl.form).find( "textarea" ).keypress(function(event) {
+      console.log("enter has been hit")
+      if (event.which == 13) {
+          event.preventDefault();
+          $(SPKCommentsControl.form).submit();
+      }
+    });
+    $( SPKCommentsControl.form ).on( "submit", function ( e ) {
+      e.preventDefault();
+      var dataToSubmit = {
+        type : "addnew",
+        model: SPKCommentsControl.SPK.GLOBALS.model, 
+        key : SPKCommentsControl.SPK.GLOBALS.currentKey,
+        description: $(SPKCommentsControl.form).find("textarea").val(),
+        camerapos: { x: SPKCommentsControl.SPK.VIEWER.camera.position.x, y: SPKCommentsControl.SPK.VIEWER.camera.position.y, z: SPKCommentsControl.SPK.VIEWER.camera.position.z }
+      }
+      
+      if(dataToSubmit.description === "") {
+        return;
+      }
+      
+      $(SPKCommentsControl.form).find("textarea").val("");
+
+      $.post(SPKConfig.INSTAPI, dataToSubmit, function(data) {
+
+        SPKCommentsControl.refreshList();
+
+      })
+
+    });
+
+    SPKCommentsControl.refreshList(); 
+  }
+
+  SPKCommentsControl.refreshList = function () {
+    
+    $(SPKCommentsControl.list).html("");
+    
+    $.post(SPKConfig.INSTAPI, { type: "getsavedinstances", model: SPKCommentsControl.SPK.GLOBALS.model}, function( data ) {
+        data = data.reverse();
+        if(data.length) { 
+          for( var i = 0; i < data.length; i++ ) {
+            SPKCommentsControl.createInstance( data[i], i );
+          }
+          $(".model-comments").text("There are " + data.length + " saved configurations.");
+        } else 
+          $(SPKCommentsControl.list).append("<h3 class='text-center'> There are no saved configurations. Add one!</h3>")        
+    });  
+  }
+
+  SPKCommentsControl.createInstance = function (instance, index) {
+    
+    $(SPKCommentsControl.list).append( $("<div>", { id: "instance-" + index, class: "instance-element", html: "<p class='description'>" + instance.description + "</p>"}) );
+    
+    $( "#instance-" + index ).append( "<p class='key'>" + SPKCommentsControl.parseKeyName( instance.key, index ) + "</p>");
+
+    $( "#instance-" + index ).attr( "spk-inst", instance.key );
+    $( "#instance-" + index ).attr( "spk-inst-index", index );
+    
+    // behaviour
+    $( "#instance-" + index ).click( function () {
+
+      var myKey = $( this ).attr( "spk-inst" );
+
+      SPKCommentsControl.SPK.loadInstanceForced(myKey);
+
+      $(".instance-element.active").removeClass("active");
+
+      $(this).addClass("active");
+      
+    });
+
+  }
+
+  SPKCommentsControl.parseKeyName = function ( key ) {
+
+    var params = key.split(",");
+    var fullname = "<div class='spk-saver-half'><p><strong>Input parameters:</strong></p><p>";
+
+    for( var i = 0; i < params.length - 1; i++ ) {
+      
+      if(SPKCommentsControl.data.parameters[i].name != "") 
+        fullname += SPKCommentsControl.data.parameters[i].name;
+      else
+        fullname += "Unnamed parameter";
+      
+      fullname += ": <strong>" + params[i] + "</strong><br> ";
+
+    }
+      
+
+    var measures = SPKCommentsControl.getValuesForKey(key);
+
+    var splitmeausres = measures.measure.split(",");
+
+    fullname += " </p></div> <div class='spk-saver-half'><p><strong>Performance measures:</strong></p><p>"
+
+    for( var i = 0; i < splitmeausres.length - 1; i++ ) {
+      fullname += measures.names[i]
+      fullname += ": <strong>" + splitmeausres[i] + "</strong><br> ";
+    }
+
+    fullname += "</p></div><div class='clear'></div>"
+    return fullname;  
+  }
+
+  SPKCommentsControl.getValuesForKey = function(key) {
+    
+    var mymeasures = null;
+    var found = false;
+
+    for(var i =0; i < SPKCommentsControl.data.kvpairs.length && !found; i++) {
+    
+      if(SPKCommentsControl.data.kvpairs[i].key === key) {
+    
+        mymeasures = SPKCommentsControl.data.kvpairs[i].values;
+        found = true;
+    
+      }
+    }
+    return { measure: mymeasures, names : ['uga'] } ;
+  }
+
+  SPKCommentsControl.init( options );
+}
+
+module.exports = SPKCommentsControl;
+},{"./SPKConfig.js":18,"jquery":1,"shortid":3}],18:[function(require,module,exports){
 /*
  * Beta.Speckle Parametric Model Viewer
  * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
@@ -50424,7 +50942,7 @@ var SPKConfig = function () {
 }
 
 module.exports = new SPKConfig();
-},{}],9:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /*
  * Beta.Speckle Parametric Model Viewer
  * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
@@ -50563,7 +51081,29 @@ var SPKLoader = function () {
 }
 
 module.exports = new SPKLoader();
-},{"three":4}],10:[function(require,module,exports){
+},{"three":13}],20:[function(require,module,exports){
+
+// Really basic handler
+
+var $               = require('jquery');
+
+var SPKMetaDisplay = function ( options ) { 
+  
+  var SPKMetaDisplay = this;
+  var Data = {};
+  var Wrapper = {};
+  
+  SPKMetaDisplay.init = function ( options ) {
+    console.log(options);
+    $( '#' + options.wrapperid ).find( ".name" ).html( options.spk.modelName );
+    $( '#' + options.wrapperid ).find( ".author-date" ).html( " by " + options.spk.ownerName + " | " + options.spk.dateAdded);
+  }
+
+  SPKMetaDisplay.init( options );
+}
+
+module.exports = SPKMetaDisplay;
+},{"jquery":1}],21:[function(require,module,exports){
 /*
  * Beta.Speckle Parametric Model Viewer
  * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
@@ -50733,4 +51273,177 @@ var SPKObjectMaker = function() {
 }
 
 module.exports = new SPKObjectMaker();
-},{"three":4}]},{},[6]);
+},{"three":13}],22:[function(require,module,exports){
+
+// Really not so basic handler
+
+var $               = require('jquery');
+var noUISlider      = require('nouislider');
+var shortid         = require('shortid');
+
+
+var SPKSliderControl = function ( options ) { 
+  
+  var SPKSliderControl = this;
+  
+  SPKSliderControl.id = shortid.generate();
+  SPKSliderControl.Data = {};
+  SPKSliderControl.Wrapper = {};
+  SPKSliderControl.SPK = {};
+  SPKSliderControl.Sliders = [];
+  SPKSliderControl.MeasureSliders = []; 
+
+  SPKSliderControl.init = function ( options ) {
+    console.log(options);
+
+    SPKSliderControl.Wrapper = $( "#" + options.wrapperid );
+    SPKSliderControl.SPK = options.spk;
+    SPKSliderControl.Data = options.data;
+
+    $( SPKSliderControl.Wrapper ).attr( "spktabid", SPKSliderControl.id );
+
+    // register 'tab' in ui-tabs
+    var uitabs = $( "#" + options.uitabid);
+    var icon = "<div class='icon icon-active' spkuiid='" + SPKSliderControl.id + "'><i class='fa " + options.icon + "'></div>";
+    $(uitabs).append(icon);
+    
+    // handle the clickie
+    $("[spkuiid='"+ SPKSliderControl.id + "']").click( function() {
+      //$( SPKSliderControl.Wrapper ).slideToggle()
+      //$( SPKSliderControl.Wrapper ).toggleClass( "sidebar-hidden" );
+      $( "#spk-ui-tabs").find(".icon").removeClass( "icon-active" );
+      $( this ).addClass( "icon-active" );
+      $( ".sidebar" ).addClass( "sidebar-hidden" );
+      $( "[spktabid='"+ SPKSliderControl.id + "']").removeClass( "sidebar-hidden" );
+    } )
+
+    SPKSliderControl.makeSliders( options.data.parameters );
+    SPKSliderControl.makeMeasureSliders( options.data.properties );
+  }
+
+  SPKSliderControl.makeSliders = function ( params ) {
+    
+    $( SPKSliderControl.Wrapper ).append("<h1 class='slider-group-title'>Model Parameters</h1>")
+
+    for( var i = 0; i < params.length; i++ ) {
+        
+        var paramId = "parameter_" + i;
+        var paramName = params[i].name === "" ? "Unnamed Parameter" : params[i].name;
+
+        $( SPKSliderControl.Wrapper ).append( $( "<div>", { id: paramId, class: "parameter" } ) );
+        
+        $( "#" + paramId ).append( "<p class='parameter_name'>" + paramName + "</p>" );
+        
+        var sliderId = paramId + "_slider_" + i;
+
+        $( "#" + paramId ).append( $( "<div>", { id: sliderId, class: "basic-slider" } ) );
+
+        var myRange = {}, norm = 100 / (params[i].values.length-1);
+
+        for( var j = 0; j < params[i].values.length; j++ ) {
+
+          myRange[ norm * j + "%" ] = params[i].values[j];
+
+        }
+        
+        myRange["min"] = myRange["0%"]; delete myRange["0%"];
+      
+        myRange["max"] = myRange["100%"]; delete  myRange["100%"];
+
+        var sliderElem = $( "#" + sliderId )[0];
+        
+        var slider = noUISlider.create( sliderElem, {
+          start : [0],
+          conect : false,
+          tooltips : true,
+          snap : true,
+          range : myRange,
+          pips : {
+            mode : "values",
+            values : params[i].values,
+            density : 3
+          }
+        });
+        SPKSliderControl.Sliders.push( slider );
+      }
+
+    for( var i = 0; i < SPKSliderControl.Sliders.length; i++ ) {
+      SPKSliderControl.Sliders[i].on( "change", function() { 
+        var currentKey = SPKSliderControl.getCurrentKey();
+        SPKSliderControl.SPK.addNewInstance( currentKey );
+        SPKSliderControl.setMeasureSliders( currentKey );
+        //SPKSliderControl.SPK.zoomExtents()
+      } );
+    }
+  }
+
+  SPKSliderControl.makeMeasureSliders = function ( params ) {
+    
+    if( params === undefined || params.length == 0 )
+      return;
+
+    $( SPKSliderControl.Wrapper ).append("<br><br><h1 class='slider-group-title'>Performance Measures</h1>")
+
+    for( var i = 0; i < params.length; i++ ) {
+      var param = params[i];
+
+      var myRange = param.values; myRange.sort( function( a,b ) { return a-b } );
+
+      var sliderRange = {
+        "min" : Number(myRange[0]),
+        "max" : Number(myRange[myRange.length-1])
+      }
+
+      var container = $( SPKSliderControl.Wrapper ); 
+      var myMeasureWrapper = $( container ).append( $("<div>", {id:"measure-wrapper-" + i, class:"measure parameter"}) );
+      var finalFuckingName = "<p>" + param.name  + "</p><p> <span class='pull-left'>(MIN) " + myRange[0] + "</span> " + " <span class='pull-right'>" + myRange[myRange.length-1] + " (MAX)</span></p>";
+      $( "#measure-wrapper-" + i ).append( $( "<p>", { class: "measure-name parameter_name text-center", html: finalFuckingName } ) );
+      var sliderId = "measure-" + i;
+      $( "#measure-wrapper-" + i ).append( $("<div>", { id: sliderId, class: "basic-slider measure-slider" } ) );
+    
+  
+    var slider = noUISlider.create( $("#"+sliderId)[0], {
+          start : [0],
+          conect : true,
+          tooltips : true,
+          snap : false,
+          range: sliderRange,
+          disable: true,
+          
+    });
+
+    $("#"+sliderId)[0].setAttribute('disabled', true);
+
+    SPKSliderControl.MeasureSliders.push(slider);
+    }
+  }
+
+  SPKSliderControl.setMeasureSliders = function ( key ) {
+    var mymeasures = "";
+    var found = false;
+    for( var i =0; i< SPKSliderControl.Data.kvpairs.length && !found; i++ )
+      if( SPKSliderControl.Data.kvpairs[i].key === key ) {
+        mymeasures = SPKSliderControl.Data.kvpairs[i].values;
+        found = true;
+      }
+  
+    var mysplits = mymeasures.split(",");
+
+    for( var i = 0; i < SPKSliderControl.MeasureSliders.length; i++ ) 
+      SPKSliderControl.MeasureSliders[i].set(Number(mysplits[i]));
+  }
+
+  SPKSliderControl.getCurrentKey = function () {
+    var key = "";
+    for( var i = 0; i < SPKSliderControl.Sliders.length; i++ ) {
+      key += Number( SPKSliderControl.Sliders[i].get() ).toString() + ","; 
+    }
+    return key;
+  }
+
+  SPKSliderControl.init( options );
+
+}
+
+module.exports = SPKSliderControl;
+},{"jquery":1,"nouislider":2,"shortid":3}]},{},[15]);

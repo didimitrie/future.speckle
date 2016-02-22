@@ -451,11 +451,11 @@ table {
 /* Slider size and handle placement;
  */
 .noUi-horizontal {
-  height: 10px; }
+  height: 1px; }
 
 .noUi-horizontal .noUi-handle {
-  width: 20px;
-  height: 20px;
+  width: 0.1px;
+  height: 0.1px;
   left: -11px;
   top: -5px;
   box-shadow: 0px 0px 2px 1px rgba(50, 50, 50, 0.33); }
@@ -519,16 +519,20 @@ table {
   display: block;
   position: absolute;
   background: white;
-  color: black;
-  size: 12px;
-  padding: 2px;
-  left: -19px;
+  color: #0000FF;
+  border-bottom: 2px solid #0000FF;
+  font-size: 11px;
+  padding: 3px;
+  left: -13px;
   text-align: center;
-  width: 50px;
-  transition: background-color 0.2s ease; }
+  width: 35px;
+  transition: background-color 0.2s ease;
+  transition: border-bottom 0.2s ease;
+  transition: color 0.2s ease;
+  font-weight: 700; }
 
 .noUi-handle-lower .noUi-tooltip {
-  bottom: -20px; }
+  bottom: -14px; }
 
 .noUi-handle-upper .noUi-tooltip {
   bottom: -32px; }
@@ -549,7 +553,7 @@ table {
  *
  */
 .noUi-value {
-  width: 40px;
+  width: 30px;
   position: absolute;
   text-align: center;
   color: #333333;
@@ -585,7 +589,8 @@ table {
 
 .noUi-value-horizontal {
   margin-left: -20px;
-  padding-top: 20px; }
+  padding-top: 4px;
+  background-color: white; }
 
 .noUi-value-horizontal.noUi-value-sub {
   padding-top: 10px; }
@@ -631,22 +636,22 @@ table {
  * later
  * not now xxx
  */
-.measure-slider {
+.xxxxmeasure-slider {
   background-color: #CFCFCF !important;
   height: 1px !important; }
-  .measure-slider .noUi-handle {
+  .xxxxmeasure-slider .noUi-handle {
     background-color: #000000 !important;
     width: 0px;
     height: 0px;
     left: -11px;
     top: -5px;
     box-shadow: 0; }
-  .measure-slider .noUi-tooltip {
+  .xxxxmeasure-slider .noUi-tooltip {
     bottom: -12px;
     background-color: #E5E5E5;
     color: black; }
 
-.measure:hover .noUi-tooltip {
+.xxxmeasure:hover .noUi-tooltip {
   background-color: #0000FF;
   color: white; }
 
@@ -688,7 +693,7 @@ a {
   color: #0000FF; }
 
 a:hover {
-  color: #A538BC; }
+  color: #00CBB8; }
 
 a.logo {
   text-decoration: none;
@@ -698,24 +703,6 @@ hr {
   border: 0;
   border-bottom: 1px dashed #C3C3C3;
   margin: 20px 0; }
-
-p.parameter_name {
-  display: relative;
-  width: 100%;
-  float: left;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  background-color: white;
-  text-align: center; }
-
-.parameter {
-  margin-bottom: 30px; }
-
-.basic-slider {
-  width: 90%;
-  margin-left: 5%;
-  display: inline-block;
-  margin-top: 10px; }
 
 .text-center {
   text-align: center; }

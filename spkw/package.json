@@ -4,14 +4,11 @@
   "description": "soulution and performance space visualiser",
   "author": "Dimitrie Andrei Stefanescu | http://dimitrie.org",
   "license": "GPL-2.0",
-  
   "scripts": {
-    "watch-sass" : "sass --watch src/sass/:dist/css/",
+    "watch-sass": "sass --watch src/sass/:dist/css/",
     "watch-jade": "jade --watch src/jade/*.jade -o dist/html/",
-  
-    "build-js" : "browserify src/js/Default.js -o dist/js/Default.js & browserify src/js/Template.js -o dist/js/Template.js",
-    "watch-js" : "nodemon -e js -w src/js -x 'npm run build-js'",
-  
+    "build-js": "browserify src/js/Default.js -o dist/js/Default.js & browserify src/js/Template.js -o dist/js/Template.js",
+    "watch-js": "nodemon -e js -w src/js -x 'npm run build-js'",
     "watch": "npm run watch-sass & npm run watch-jade & npm run watch-js"
   },
   "dependencies": {
@@ -21,6 +18,7 @@
     "nodemon": "^1.8.1",
     "normalize-scss": "^4.0.3",
     "nouislider": "github:leongersen/noUiSlider",
+    "shortid": "^2.2.4",
     "three": "^0.73.2",
     "three-orbit-controls": "^72.0.0",
     "tween.js": "^16.3.4"
