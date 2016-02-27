@@ -252,23 +252,32 @@ var SPK = function ( options ) {
   SPK.computeBoundingSphere = function() {
 
     var geometry = new THREE.Geometry();
-
+    
     for(var i = 0; i < SPK.VIEWER.scene.children.length; i++) {
-
-      if(SPK.VIEWER.scene.children[i].selectable) {
+      //console.log( SPK.VIEWER.scene.children[i] );
+      if(SPK.VIEWER.scene.children[i].selectable && SPK.VIEWER.scene.children[i].instance === SPK.GLOBALS.currentKey) {
         
         geometry.merge(SPK.VIEWER.scene.children[i].geometry);
       
       }
     }
 
-
     geometry.computeBoundingSphere();
-
     SPK.GLOBALS.boundingSphere = geometry.boundingSphere;
-    
     geometry.dispose();
 
+    console.log(SPK.GLOBALS.boundingSphere)
+
+    //var geometry = new THREE.SphereGeometry( SPK.GLOBALS.boundingSphere.radius, 32, 32 );
+    //var material = new THREE.MeshBasicMaterial( {color: 0xffff00, wireframe: true} );
+    //var sphere = new THREE.Mesh( geometry, material );
+    //sphere.position.x = SPK.GLOBALS.boundingSphere.center.x;
+    //sphere.position.y = SPK.GLOBALS.boundingSphere.center.y;
+    //sphere.position.z = SPK.GLOBALS.boundingSphere.center.z;
+
+    //var MyMesh = new THREE.Mesh( SPK.GLOBALS.boundingSphere, new THREE.MeshBasicMaterial( { color: 0x0093A0}));
+    //console.log(sphere);
+    //SPK.VIEWER.scene.add( sphere );
   }
 
   // Tells file.json > SPKLoader > SPKMaker > objects > adds them to scene
@@ -458,10 +467,64 @@ var SPK = function ( options ) {
     dir.multiplyScalar(offset * 1.05);
     
     newPos.addVectors(SPK.GLOBALS.boundingSphere.center, dir);
+
+    //SPK.moveAndLookAtCCC( SPK.VIEWER.camera, newPos, SPK.GLOBALS.boundingSphere.center);
     SPK.VIEWER.controls.object.position.set(newPos.x, newPos.y, newPos.z);
     SPK.VIEWER.controls.target.set(SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z);
-
+    SPK.VIEWER.controls.update();
   }  
+
+  SPK.moveAndLookAt = function ( dstpos, dstlookat, options ) {
+    options || (options = {duration: 100});
+
+    new TWEEN.Tween(SPK.VIEWER.controls.object.position).to({
+      x: dstpos.x,
+      y: dstpos.y,
+      z: dstpos.z
+    }, options.duration).onUpdate( function () { SPK.VIEWER.controls.update() }).onComplete( function () { }).start();
+
+  } 
+
+  SPK.moveAndLookAtCCC = function( camera, dstpos, dstlookat, options ) {
+    options || (options = {duration: 100});
+
+    var origpos = new THREE.Vector3().copy(camera.position); // original position
+    var origrot = new THREE.Euler().copy(camera.rotation); // original rotation
+
+    camera.position.set(dstpos.x, dstpos.y, dstpos.z);
+    camera.lookAt(dstlookat);
+    var dstrot = new THREE.Euler().copy(camera.rotation)
+
+    // reset original position and rotation
+    camera.position.set(origpos.x, origpos.y, origpos.z);
+    camera.rotation.set(origrot.x, origrot.y, origrot.z);
+
+    //
+    // Tweening
+    //
+    
+    // position
+    new TWEEN.Tween(camera.position).to({
+      x: dstpos.x,
+      y: dstpos.y,
+      z: dstpos.z
+    }, options.duration).onUpdate( function () {  SPK.VIEWER.controls.update() }).start();
+
+    // rotation (using slerp)
+    (function () {
+      var qa = qa = new THREE.Quaternion().copy(camera.quaternion); // src quaternion
+      var qb = new THREE.Quaternion().setFromEuler(dstrot); // dst quaternion
+      var qm = new THREE.Quaternion();
+      camera.quaternion = qm;
+      
+      var o = {t: 0};
+      new TWEEN.Tween(o).to({t: 1}, options.duration).onUpdate(function () {
+        THREE.Quaternion.slerp(qa, qb, qm, o.t);
+        camera.quaternion.set(qm.x, qm.y, qm.z, qm.w);
+        SPK.VIEWER.controls.update()
+      }).onComplete( function () { SPK.VIEWER.controls.update() }).start();
+    }).call(this);
+  }
 
   SPK.beep = function () {
 

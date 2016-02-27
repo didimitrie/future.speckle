@@ -59,9 +59,7 @@ var SPKSaver = function (wrapper) {
     });
 
     $(SPKSaver.HTML.form).on("submit", function (e) {
-
       e.preventDefault();
-
       var dataToSubmit = {
         type : "addnew",
         model: SPKSaver.SPK.GLOBALS.model, 
@@ -92,28 +90,16 @@ var SPKSaver = function (wrapper) {
     
     $(SPKSaver.HTML.list).html("");
     
-    $.post(SPKConfig.INSTAPI, { type: "getsavedinstances", model: SPKSaver.SPK.GLOBALS.model}, function(data){
-        
+    $.post(SPKConfig.INSTAPI, { type: "getsavedinstances", model: SPKSaver.SPK.GLOBALS.model}, function( data ) {
         data = data.reverse();
-   
-        if(data.length) {
-   
+        if(data.length) { 
           for( var i = 0; i < data.length; i++ ) {
-   
             SPKSaver.createInstance( data[i], i );
-   
           }
-
           $(".model-comments").text("There are " + data.length + " saved configurations.");
-          
-
-        } else {
-   
-          $(SPKSaver.HTML.list).append("<h3 class='text-center'> There are no saved configurations. Add one!</h3>")
-        }
-
-    });
-  
+        } else 
+          $(SPKSaver.HTML.list).append("<h3 class='text-center'> There are no saved configurations. Add one!</h3>")        
+    });  
   }
 
   SPKSaver.createInstance = function (instance, index) {

@@ -2906,10 +2906,6 @@ body {
   width: 100%;
   height: 100%; }
 
-.canvas-large {
-  width: 100% !important;
-  left: 0 !important; }
-
 #spk-canvas {
   position: absolute;
   width: 75%;
@@ -3026,7 +3022,6 @@ body {
   min-width: 350px;
   height: 100%;
   left: 3%;
-  box-sizing: border-box;
   z-index: 2;
   background-color: white;
   overflow-y: auto; }
@@ -3074,5 +3069,48 @@ body {
   margin-bottom: 40px;
   font-size: 10px;
   padding: 0px 15px; }
+
+#spk-comments form {
+  box-sizing: border-box;
+  padding: 20px; }
+  #spk-comments form i {
+    width: 7%;
+    display: inline-block;
+    float: left;
+    font-size: large;
+    color: #0000FF;
+    height: 100px;
+    line-height: 100px; }
+  #spk-comments form textarea {
+    width: 90%;
+    display: inline-block;
+    height: 100px; }
+#spk-comments .instance-element {
+  position: relative;
+  box-sizing: border-box;
+  padding: 20px;
+  width: 80%;
+  left: 10%;
+  border: 2px solid white;
+  transition: border 0.3s ease; }
+#spk-comments .instance-element:hover {
+  border: 2px solid #0000FF; }
+#spk-comments .instance-element.active {
+  border: 2px solid #00CBB8; }
+#spk-comments .description {
+  margin: 10px 0px; }
+#spk-comments .spk-saver-half {
+  width: 45%;
+  display: inline-block;
+  float: left;
+  font-size: small; }
+#spk-comments .clear:before,
+#spk-comments .clear:after {
+  content: " ";
+  /* 1 */
+  display: table;
+  /* 2 */ }
+#spk-comments .clear:after {
+  clear: both; }
 
 /*# sourceMappingURL=Default.css.map */

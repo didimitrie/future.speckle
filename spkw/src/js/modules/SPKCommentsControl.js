@@ -102,7 +102,7 @@ var SPKCommentsControl = function ( options ) {
 
       var myKey = $( this ).attr( "spk-inst" );
 
-      SPKCommentsControl.SPK.loadInstanceForced(myKey);
+      SPKCommentsControl.SPK.addNewInstance(myKey);
 
       $(".instance-element.active").removeClass("active");
 
@@ -148,7 +148,7 @@ var SPKCommentsControl = function ( options ) {
     
     var mymeasures = null;
     var found = false;
-
+    
     for(var i =0; i < SPKCommentsControl.data.kvpairs.length && !found; i++) {
     
       if(SPKCommentsControl.data.kvpairs[i].key === key) {
@@ -158,7 +158,7 @@ var SPKCommentsControl = function ( options ) {
     
       }
     }
-    return { measure: mymeasures, names : ['uga'] } ;
+    return { measure: mymeasures, names : SPKCommentsControl.data.propNames } ;
   }
 
   SPKCommentsControl.init( options );
