@@ -50220,8 +50220,9 @@ var SPK                 = require('./modules/SPK.js')
 var SPKMeta             = require('./modules/SPKMetaDisplay.js')
 var SPKSliderControl    = require('./modules/SPKSliderControl.js')
 var SPKCommentsControl  = require('./modules/SPKCommentsControl.js')
+var SPKHelpControl      = require('./modules/SPKHelpControl.js')
 
-$( function() {
+$( function () {
 
   var mySPK  = new SPK( 
   {
@@ -50250,13 +50251,22 @@ $( function() {
         open : false,
         spk : SPK
       } );
+
+      var myHelpCtrl = new SPKHelpControl ( {
+        wrapperid : 'spk-help',
+        uitabid : 'spk-ui-tabs',
+        //icon : 'fa-info-circle'
+        icon : 'fa-cogs'
+      })
+
+      //window.SPK = mySPK;
     }
   } )
 
 } )
 
 
-},{"./modules/SPK.js":16,"./modules/SPKCommentsControl.js":17,"./modules/SPKMetaDisplay.js":20,"./modules/SPKSliderControl.js":22,"jquery":1}],16:[function(require,module,exports){
+},{"./modules/SPK.js":16,"./modules/SPKCommentsControl.js":17,"./modules/SPKHelpControl.js":19,"./modules/SPKMetaDisplay.js":21,"./modules/SPKSliderControl.js":23,"jquery":1}],16:[function(require,module,exports){
 /*
  * Beta.Speckle Parametric Model Viewer
  * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
@@ -50403,16 +50413,10 @@ var SPK = function ( options ) {
       SPK.GLOBALS.metadata.staticGeoFile = SPKConfig.APPDIR + data.deflateLocation + "/static.json"
       SPK.GLOBALS.metadata.rootFiles = SPKConfig.APPDIR + data.deflateLocation + "/";
 
-      //$(".model-name").html(data.modelName);
-      
-      //$(".model-meta").html("Added on " + data.dateAdded + " by " + data.ownerName);
-
       if( callback !== undefined ) callback();
-
     })
 
   }
-
 
   // Loads the parameters file and passen on to call back the first key to load
   // Used only in init
@@ -50525,8 +50529,6 @@ var SPK = function ( options ) {
     SPK.GLOBALS.boundingSphere = geometry.boundingSphere;
     geometry.dispose();
 
-    console.log(SPK.GLOBALS.boundingSphere)
-
     //var geometry = new THREE.SphereGeometry( SPK.GLOBALS.boundingSphere.radius, 32, 32 );
     //var material = new THREE.MeshBasicMaterial( {color: 0xffff00, wireframe: true} );
     //var sphere = new THREE.Mesh( geometry, material );
@@ -50556,7 +50558,7 @@ var SPK = function ( options ) {
       }
 
       SPK.computeBoundingSphere();
-      
+
       if( callback != undefined )
 
         callback();
@@ -50712,11 +50714,53 @@ var SPK = function ( options ) {
 
 
   /*************************************************
-  /   SPK Random functions that should probs go somewehere else
+  /   SPK CAMERA FUNC
   *************************************************/
+  SPK.setCamera = function ( where ) {
+    var cam = JSON.parse( where );
 
+    SPK.VIEWER.camera.position.set(cam.position.x, cam.position.y, cam.position.z);
+    SPK.VIEWER.camera.rotation.set(cam.rotation.x, cam.rotation.y, cam.rotation.z);
+
+    SPK.VIEWER.controls.center.set(cam.controlCenter.x, cam.controlCenter.y, cam.controlCenter.z);
+    SPK.VIEWER.controls.update();
+  }
+
+  SPK.setCameraTween = function ( where ) {
+     var duration = 400;
+     var cam = JSON.parse( where );
+
+     new TWEEN.Tween( SPK.VIEWER.camera.position ).to( {
+      x: cam.position.x,
+      y: cam.position.y,
+      z: cam.position.z
+     }, duration ).onUpdate( function() {
+      //SPK.VIEWER.controls.update(); // not needed as it seems to be enough to call it once in the last tween
+     }).easing(TWEEN.Easing.Quadratic.InOut).start();
+
+     new TWEEN.Tween( SPK.VIEWER.camera.rotation ).to( {
+      x: cam.rotation.x,
+      y: cam.rotation.y,
+      z: cam.rotation.z
+     }, duration ).onUpdate( function() {
+      //SPK.VIEWER.controls.update();
+     }).easing(TWEEN.Easing.Quadratic.InOut).start();
+
+     new TWEEN.Tween( SPK.VIEWER.controls.center ).to( {
+      x: cam.controlCenter.x,
+      y: cam.controlCenter.y,
+      z: cam.controlCenter.z
+     }, duration ).onUpdate( function() {
+      SPK.VIEWER.controls.update();
+     }).easing(TWEEN.Easing.Quadratic.InOut).start();
+  }
+
+  /*************************************************
+  /   SPK CAMERA FUNC
+  *************************************************/
+  
   SPK.zoomExtents = function () {
-
+    console.log(SPK.VIEWER.controls);
     var r = SPK.GLOBALS.boundingSphere.radius;
     var offset = r / Math.tan(Math.PI / 180.0 * SPK.VIEWER.controls.object.fov * 0.4);
     var vector = new THREE.Vector3(0, 0, 1);
@@ -50733,62 +50777,8 @@ var SPK = function ( options ) {
     SPK.VIEWER.controls.update();
   }  
 
-  SPK.moveAndLookAt = function ( dstpos, dstlookat, options ) {
-    options || (options = {duration: 100});
-
-    new TWEEN.Tween(SPK.VIEWER.controls.object.position).to({
-      x: dstpos.x,
-      y: dstpos.y,
-      z: dstpos.z
-    }, options.duration).onUpdate( function () { SPK.VIEWER.controls.update() }).onComplete( function () { }).start();
-
-  } 
-
-  SPK.moveAndLookAtCCC = function( camera, dstpos, dstlookat, options ) {
-    options || (options = {duration: 100});
-
-    var origpos = new THREE.Vector3().copy(camera.position); // original position
-    var origrot = new THREE.Euler().copy(camera.rotation); // original rotation
-
-    camera.position.set(dstpos.x, dstpos.y, dstpos.z);
-    camera.lookAt(dstlookat);
-    var dstrot = new THREE.Euler().copy(camera.rotation)
-
-    // reset original position and rotation
-    camera.position.set(origpos.x, origpos.y, origpos.z);
-    camera.rotation.set(origrot.x, origrot.y, origrot.z);
-
-    //
-    // Tweening
-    //
-    
-    // position
-    new TWEEN.Tween(camera.position).to({
-      x: dstpos.x,
-      y: dstpos.y,
-      z: dstpos.z
-    }, options.duration).onUpdate( function () {  SPK.VIEWER.controls.update() }).start();
-
-    // rotation (using slerp)
-    (function () {
-      var qa = qa = new THREE.Quaternion().copy(camera.quaternion); // src quaternion
-      var qb = new THREE.Quaternion().setFromEuler(dstrot); // dst quaternion
-      var qm = new THREE.Quaternion();
-      camera.quaternion = qm;
-      
-      var o = {t: 0};
-      new TWEEN.Tween(o).to({t: 1}, options.duration).onUpdate(function () {
-        THREE.Quaternion.slerp(qa, qb, qm, o.t);
-        camera.quaternion.set(qm.x, qm.y, qm.z, qm.w);
-        SPK.VIEWER.controls.update()
-      }).onComplete( function () { SPK.VIEWER.controls.update() }).start();
-    }).call(this);
-  }
-
   SPK.beep = function () {
-
-    return "boop";
-
+    return "boop"; // THE MOST AMAZING FUNCTION 3V3R
   }
 
 
@@ -50803,11 +50793,12 @@ var SPK = function ( options ) {
 module.exports = SPK;
 
 
-},{"./SPKConfig.js":18,"./SPKLoader.js":19,"./SPKObjectMaker.js":21,"jquery":1,"nouislider":2,"three":13,"three-orbit-controls":12,"tween.js":14}],17:[function(require,module,exports){
+},{"./SPKConfig.js":18,"./SPKLoader.js":20,"./SPKObjectMaker.js":22,"jquery":1,"nouislider":2,"three":13,"three-orbit-controls":12,"tween.js":14}],17:[function(require,module,exports){
 
 var $               = require('jquery');
 var shortid         = require('shortid');
 var SPKConfig       = require('./SPKConfig.js');
+var THREE           = require('three');
 
 var SPKCommentsControl = function ( options ) {
 
@@ -50818,13 +50809,14 @@ var SPKCommentsControl = function ( options ) {
   SPKCommentsControl.Wrapper = {} 
   SPKCommentsControl.form = {}
   SPKCommentsControl.list = {}
+  SPKCommentsControl.Data = []
 
   SPKCommentsControl.init = function ( options ) {
 
     SPKCommentsControl.data = options.data;
     SPKCommentsControl.SPK = options.spk;
     SPKCommentsControl.Wrapper = $( "#" + options.wrapperid );
-    SPKCommentsControl.form = $(SPKCommentsControl.Wrapper).find( "form" ); console.log(SPKCommentsControl.form);
+    SPKCommentsControl.form = $(SPKCommentsControl.Wrapper).find( "form" );
     SPKCommentsControl.list = $(SPKCommentsControl.Wrapper).find( "#instance-list" );
 
     $( SPKCommentsControl.Wrapper ).attr( "spktabid", SPKCommentsControl.id );
@@ -50851,14 +50843,27 @@ var SPKCommentsControl = function ( options ) {
           $(SPKCommentsControl.form).submit();
       }
     });
+
+    // form submitting event: 
     $( SPKCommentsControl.form ).on( "submit", function ( e ) {
       e.preventDefault();
+
+      var lookAtVector = new THREE.Vector3(0,0, -1);
+      lookAtVector.applyQuaternion(SPKCommentsControl.SPK.VIEWER.controls.object.quaternion);
+
+      var camToSave = { };
+      camToSave.position = SPKCommentsControl.SPK.VIEWER.controls.object.position.clone();
+      camToSave.rotation = SPKCommentsControl.SPK.VIEWER.controls.object.rotation.clone();
+      camToSave.controlCenter = SPKCommentsControl.SPK.VIEWER.controls.center.clone();
+
+      console.log( JSON.stringify(camToSave) );
+
       var dataToSubmit = {
         type : "addnew",
         model: SPKCommentsControl.SPK.GLOBALS.model, 
         key : SPKCommentsControl.SPK.GLOBALS.currentKey,
         description: $(SPKCommentsControl.form).find("textarea").val(),
-        camerapos: { x: SPKCommentsControl.SPK.VIEWER.camera.position.x, y: SPKCommentsControl.SPK.VIEWER.camera.position.y, z: SPKCommentsControl.SPK.VIEWER.camera.position.z }
+        camerapos: JSON.stringify(camToSave)
       }
       
       if(dataToSubmit.description === "") {
@@ -50866,6 +50871,8 @@ var SPKCommentsControl = function ( options ) {
       }
       
       $(SPKCommentsControl.form).find("textarea").val("");
+
+      //return;
 
       $.post(SPKConfig.INSTAPI, dataToSubmit, function(data) {
 
@@ -50884,6 +50891,8 @@ var SPKCommentsControl = function ( options ) {
     
     $.post(SPKConfig.INSTAPI, { type: "getsavedinstances", model: SPKCommentsControl.SPK.GLOBALS.model}, function( data ) {
         data = data.reverse();
+        SPKCommentsControl.Data = data;
+
         if(data.length) { 
           for( var i = 0; i < data.length; i++ ) {
             SPKCommentsControl.createInstance( data[i], i );
@@ -50908,7 +50917,12 @@ var SPKCommentsControl = function ( options ) {
 
       var myKey = $( this ).attr( "spk-inst" );
 
-      SPKCommentsControl.SPK.addNewInstance(myKey);
+      SPKCommentsControl.SPK.addNewInstance( myKey );
+      var camerapos = "";
+      camerapos = SPKCommentsControl.Data[ $( this ).attr( "spk-inst-index" )].camerapos;
+
+      if( camerapos != undefined )
+        SPKCommentsControl.SPK.setCameraTween( SPKCommentsControl.Data[ $( this ).attr( "spk-inst-index" )].camerapos );
 
       $(".instance-element.active").removeClass("active");
 
@@ -50971,7 +50985,7 @@ var SPKCommentsControl = function ( options ) {
 }
 
 module.exports = SPKCommentsControl;
-},{"./SPKConfig.js":18,"jquery":1,"shortid":3}],18:[function(require,module,exports){
+},{"./SPKConfig.js":18,"jquery":1,"shortid":3,"three":13}],18:[function(require,module,exports){
 /*
  * Beta.Speckle Parametric Model Viewer
  * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
@@ -51006,6 +51020,41 @@ var SPKConfig = function () {
 
 module.exports = new SPKConfig();
 },{}],19:[function(require,module,exports){
+var $               = require('jquery');
+
+var shortid         = require('shortid');
+
+
+var SPKHelpControl = function ( options ) {
+
+  var SPKHelpControl = this
+  
+  SPKHelpControl.id = shortid.generate()
+  SPKHelpControl.Wrapper = {}
+
+  SPKHelpControl.init = function ( options ) {
+
+    SPKHelpControl.Wrapper = $( "#" + options.wrapperid );
+    $( SPKHelpControl.Wrapper ).attr( "spktabid", SPKHelpControl.id );
+
+    var uitabs = $( "#" + options.uitabid );
+    var icon = "<div class='icon' spkuiid='" + SPKHelpControl.id + "'><i class='fa " + options.icon + "'></div>";
+    $(uitabs).append(icon);
+
+    $("[spkuiid='"+ SPKHelpControl.id + "']").click( function() {
+      $( "#spk-ui-tabs").find(".icon").removeClass( "icon-active" );
+      $( this ).addClass( "icon-active" );
+      $( ".sidebar" ).addClass( "sidebar-hidden" );
+      $( "[spktabid='"+ SPKHelpControl.id + "']").removeClass( "sidebar-hidden" );
+    } )
+
+  }
+
+  SPKHelpControl.init( options );
+}
+
+module.exports = SPKHelpControl;
+},{"jquery":1,"shortid":3}],20:[function(require,module,exports){
 /*
  * Beta.Speckle Parametric Model Viewer
  * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
@@ -51144,7 +51193,7 @@ var SPKLoader = function () {
 }
 
 module.exports = new SPKLoader();
-},{"three":13}],20:[function(require,module,exports){
+},{"three":13}],21:[function(require,module,exports){
 
 // Really basic handler
 
@@ -51157,7 +51206,6 @@ var SPKMetaDisplay = function ( options ) {
   var Wrapper = {};
   
   SPKMetaDisplay.init = function ( options ) {
-    console.log(options);
     $( '#' + options.wrapperid ).find( ".name" ).html( options.spk.modelName );
     $( '#' + options.wrapperid ).find( ".author-date" ).html( " by " + options.spk.ownerName + " | " + options.spk.dateAdded);
   }
@@ -51166,7 +51214,7 @@ var SPKMetaDisplay = function ( options ) {
 }
 
 module.exports = SPKMetaDisplay;
-},{"jquery":1}],21:[function(require,module,exports){
+},{"jquery":1}],22:[function(require,module,exports){
 /*
  * Beta.Speckle Parametric Model Viewer
  * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
@@ -51336,7 +51384,7 @@ var SPKObjectMaker = function() {
 }
 
 module.exports = new SPKObjectMaker();
-},{"three":13}],22:[function(require,module,exports){
+},{"three":13}],23:[function(require,module,exports){
 
 // Really not so basic handler
 
@@ -51357,7 +51405,6 @@ var SPKSliderControl = function ( options ) {
   SPKSliderControl.MeasureSliders = []; 
 
   SPKSliderControl.init = function ( options ) {
-    console.log(options);
 
     SPKSliderControl.Wrapper = $( "#" + options.wrapperid );
     SPKSliderControl.SPK = options.spk;

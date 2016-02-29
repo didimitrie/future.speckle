@@ -2,6 +2,7 @@
 var $               = require('jquery');
 var shortid         = require('shortid');
 var SPKConfig       = require('./SPKConfig.js');
+var THREE           = require('three');
 
 var SPKCommentsControl = function ( options ) {
 
@@ -12,13 +13,14 @@ var SPKCommentsControl = function ( options ) {
   SPKCommentsControl.Wrapper = {} 
   SPKCommentsControl.form = {}
   SPKCommentsControl.list = {}
+  SPKCommentsControl.Data = []
 
   SPKCommentsControl.init = function ( options ) {
 
     SPKCommentsControl.data = options.data;
     SPKCommentsControl.SPK = options.spk;
     SPKCommentsControl.Wrapper = $( "#" + options.wrapperid );
-    SPKCommentsControl.form = $(SPKCommentsControl.Wrapper).find( "form" ); console.log(SPKCommentsControl.form);
+    SPKCommentsControl.form = $(SPKCommentsControl.Wrapper).find( "form" );
     SPKCommentsControl.list = $(SPKCommentsControl.Wrapper).find( "#instance-list" );
 
     $( SPKCommentsControl.Wrapper ).attr( "spktabid", SPKCommentsControl.id );
@@ -45,14 +47,27 @@ var SPKCommentsControl = function ( options ) {
           $(SPKCommentsControl.form).submit();
       }
     });
+
+    // form submitting event: 
     $( SPKCommentsControl.form ).on( "submit", function ( e ) {
       e.preventDefault();
+
+      var lookAtVector = new THREE.Vector3(0,0, -1);
+      lookAtVector.applyQuaternion(SPKCommentsControl.SPK.VIEWER.controls.object.quaternion);
+
+      var camToSave = { };
+      camToSave.position = SPKCommentsControl.SPK.VIEWER.controls.object.position.clone();
+      camToSave.rotation = SPKCommentsControl.SPK.VIEWER.controls.object.rotation.clone();
+      camToSave.controlCenter = SPKCommentsControl.SPK.VIEWER.controls.center.clone();
+
+      console.log( JSON.stringify(camToSave) );
+
       var dataToSubmit = {
         type : "addnew",
         model: SPKCommentsControl.SPK.GLOBALS.model, 
         key : SPKCommentsControl.SPK.GLOBALS.currentKey,
         description: $(SPKCommentsControl.form).find("textarea").val(),
-        camerapos: { x: SPKCommentsControl.SPK.VIEWER.camera.position.x, y: SPKCommentsControl.SPK.VIEWER.camera.position.y, z: SPKCommentsControl.SPK.VIEWER.camera.position.z }
+        camerapos: JSON.stringify(camToSave)
       }
       
       if(dataToSubmit.description === "") {
@@ -60,6 +75,8 @@ var SPKCommentsControl = function ( options ) {
       }
       
       $(SPKCommentsControl.form).find("textarea").val("");
+
+      //return;
 
       $.post(SPKConfig.INSTAPI, dataToSubmit, function(data) {
 
@@ -78,6 +95,8 @@ var SPKCommentsControl = function ( options ) {
     
     $.post(SPKConfig.INSTAPI, { type: "getsavedinstances", model: SPKCommentsControl.SPK.GLOBALS.model}, function( data ) {
         data = data.reverse();
+        SPKCommentsControl.Data = data;
+
         if(data.length) { 
           for( var i = 0; i < data.length; i++ ) {
             SPKCommentsControl.createInstance( data[i], i );
@@ -102,7 +121,12 @@ var SPKCommentsControl = function ( options ) {
 
       var myKey = $( this ).attr( "spk-inst" );
 
-      SPKCommentsControl.SPK.addNewInstance(myKey);
+      SPKCommentsControl.SPK.addNewInstance( myKey );
+      var camerapos = "";
+      camerapos = SPKCommentsControl.Data[ $( this ).attr( "spk-inst-index" )].camerapos;
+
+      if( camerapos != undefined )
+        SPKCommentsControl.SPK.setCameraTween( SPKCommentsControl.Data[ $( this ).attr( "spk-inst-index" )].camerapos );
 
       $(".instance-element.active").removeClass("active");
 

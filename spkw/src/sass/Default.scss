@@ -1,13 +1,39 @@
 // include these amazing base styles
 @import './includes/app';
-@import './includes/animate.min';
-
 // drop your custom styles down here
 
 body {
   position: absolute;
   width: 100%;
   height: 100%;
+}
+
+.sidebar-hidden {
+  left: -100% !important;
+  //opacity: 0 !important;
+}
+
+.sidebar {
+  @include boxshadow-right();
+  position: absolute;
+  width: 27%;
+  min-width: 350px;
+  height: 100%;
+  left: 3%;
+  z-index: 2;
+  background-color: rgba(255,255,255,1);
+  overflow-y: auto;
+  opacity: 1;
+  //transition: all 0.4s ease;
+
+  @include respond-to(800) {
+    width: 100%;
+    height: 35%;
+    bottom: 50px;
+    left: 0;
+    
+    background-color: rgba(255, 255, 255, 1);
+  }
 }
 
 #spk-canvas {
@@ -65,7 +91,7 @@ body {
     overflow: hidden;
     display: inline-block;
     float:left;
-    transition: width 0.3s ease;
+    transition: all 0.3s ease;
     i {
       width: 50px; height: 50px; display: inline-block; float: left;
       text-align: center; line-height: 50px;
@@ -117,12 +143,15 @@ body {
     font-size: 15px;
     text-align: center;
     color: white;
-
+    transition: all 0.3s ease;
     @include respond-to(800) {
       width: 80px;
       height: 50px;
       line-height: 50px;
     }
+  }
+  .icon:hover {
+    cursor: pointer;
   }
   .icon-active {
       //color: $hoverColour;
@@ -133,31 +162,6 @@ body {
       @include respond-to(800) {
         width: 80px;
       }
-  }
-}
-
-.sidebar-hidden {
-  left: -100% !important;
-}
-
-.sidebar {
-  @include boxshadow-right();
-  position: absolute;
-  width: 27%;
-  min-width: 350px;
-  height: 100%;
-  left: 3%;
-  z-index: 2;
-  background-color: rgba(255,255,255,1);
-  overflow-y: auto;
-
-  @include respond-to(800) {
-    width: 100%;
-    height: 35%;
-    bottom: 50px;
-    left: 0;
-    
-    background-color: rgba(255, 255, 255, 1);
   }
 }
 
@@ -221,15 +225,11 @@ body {
   form {
     box-sizing: border-box;
     padding: 20px;
-    i { 
-      width: 7%; display: inline-block; float: left;
-      font-size: large;
-      color: $accentColour;
-      height: 100px;
-      line-height: 100px;
-    }
+    position: relative;
+    width: 80%;
+    left: 10%;
     textarea {
-      width: 90%;
+      width: 100%;
       display: inline-block; 
       height: 100px;
     }
@@ -240,12 +240,13 @@ body {
     padding: 20px;
     width: 80%;
     left: 10%;
-     border: 2px solid white;
-    transition: border 0.3s ease;
+    border: 2px solid white;
+    transition: all 0.3s ease;
   }
 
   .instance-element:hover {
     //@include boxshadow-right();
+    cursor: pointer;
     border: 2px solid $accentColour;
   }
 
@@ -260,7 +261,12 @@ body {
     width: 45%;
     display: inline-block;
     float: left;
-    font-size: small;
+    font-size: 10px;
+
+    @include respond-to(450) {
+      width: 100%;
+    }
+
   }
   .clear:before,
   .clear:after {
@@ -270,6 +276,40 @@ body {
 
   .clear:after {
       clear: both;
+  }
 }
+
+#spk-help {
+  box-sizing: border-box;
+  padding: 20px;
+  * {
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-size: large;
+  }
+
+  .shortcut { 
+    width: 100%;
+    
+    .half-1, .half-2 {
+      width: 50%;
+      display: inline-block;
+      float: left;
+      height: 40px;
+      line-height: 40px;
+      font-size: 12px;
+    }
+
+    .half-2 {
+      font-weight: 700;
+      font-size: 20px;
+      box-sizing: border-box;
+      //border: 2px solid $hoverColour;
+      color: $hoverColour;
+      text-align: center;
+    }
+
+  }
 }
 

@@ -4,8 +4,9 @@ var SPK                 = require('./modules/SPK.js')
 var SPKMeta             = require('./modules/SPKMetaDisplay.js')
 var SPKSliderControl    = require('./modules/SPKSliderControl.js')
 var SPKCommentsControl  = require('./modules/SPKCommentsControl.js')
+var SPKHelpControl      = require('./modules/SPKHelpControl.js')
 
-$( function() {
+$( function () {
 
   var mySPK  = new SPK( 
   {
@@ -34,6 +35,15 @@ $( function() {
         open : false,
         spk : SPK
       } );
+
+      var myHelpCtrl = new SPKHelpControl ( {
+        wrapperid : 'spk-help',
+        uitabid : 'spk-ui-tabs',
+        //icon : 'fa-info-circle'
+        icon : 'fa-cogs'
+      })
+
+      //window.SPK = mySPK;
     }
   } )
 

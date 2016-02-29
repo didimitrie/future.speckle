@@ -18,7 +18,6 @@ var SPKSliderControl = function ( options ) {
   SPKSliderControl.MeasureSliders = []; 
 
   SPKSliderControl.init = function ( options ) {
-    console.log(options);
 
     SPKSliderControl.Wrapper = $( "#" + options.wrapperid );
     SPKSliderControl.SPK = options.spk;

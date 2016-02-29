@@ -144,16 +144,10 @@ var SPK = function ( options ) {
       SPK.GLOBALS.metadata.staticGeoFile = SPKConfig.APPDIR + data.deflateLocation + "/static.json"
       SPK.GLOBALS.metadata.rootFiles = SPKConfig.APPDIR + data.deflateLocation + "/";
 
-      //$(".model-name").html(data.modelName);
-      
-      //$(".model-meta").html("Added on " + data.dateAdded + " by " + data.ownerName);
-
       if( callback !== undefined ) callback();
-
     })
 
   }
-
 
   // Loads the parameters file and passen on to call back the first key to load
   // Used only in init
@@ -266,8 +260,6 @@ var SPK = function ( options ) {
     SPK.GLOBALS.boundingSphere = geometry.boundingSphere;
     geometry.dispose();
 
-    console.log(SPK.GLOBALS.boundingSphere)
-
     //var geometry = new THREE.SphereGeometry( SPK.GLOBALS.boundingSphere.radius, 32, 32 );
     //var material = new THREE.MeshBasicMaterial( {color: 0xffff00, wireframe: true} );
     //var sphere = new THREE.Mesh( geometry, material );
@@ -297,7 +289,7 @@ var SPK = function ( options ) {
       }
 
       SPK.computeBoundingSphere();
-      
+
       if( callback != undefined )
 
         callback();
@@ -453,11 +445,53 @@ var SPK = function ( options ) {
 
 
   /*************************************************
-  /   SPK Random functions that should probs go somewehere else
+  /   SPK CAMERA FUNC
   *************************************************/
+  SPK.setCamera = function ( where ) {
+    var cam = JSON.parse( where );
 
+    SPK.VIEWER.camera.position.set(cam.position.x, cam.position.y, cam.position.z);
+    SPK.VIEWER.camera.rotation.set(cam.rotation.x, cam.rotation.y, cam.rotation.z);
+
+    SPK.VIEWER.controls.center.set(cam.controlCenter.x, cam.controlCenter.y, cam.controlCenter.z);
+    SPK.VIEWER.controls.update();
+  }
+
+  SPK.setCameraTween = function ( where ) {
+     var duration = 400;
+     var cam = JSON.parse( where );
+
+     new TWEEN.Tween( SPK.VIEWER.camera.position ).to( {
+      x: cam.position.x,
+      y: cam.position.y,
+      z: cam.position.z
+     }, duration ).onUpdate( function() {
+      //SPK.VIEWER.controls.update(); // not needed as it seems to be enough to call it once in the last tween
+     }).easing(TWEEN.Easing.Quadratic.InOut).start();
+
+     new TWEEN.Tween( SPK.VIEWER.camera.rotation ).to( {
+      x: cam.rotation.x,
+      y: cam.rotation.y,
+      z: cam.rotation.z
+     }, duration ).onUpdate( function() {
+      //SPK.VIEWER.controls.update();
+     }).easing(TWEEN.Easing.Quadratic.InOut).start();
+
+     new TWEEN.Tween( SPK.VIEWER.controls.center ).to( {
+      x: cam.controlCenter.x,
+      y: cam.controlCenter.y,
+      z: cam.controlCenter.z
+     }, duration ).onUpdate( function() {
+      SPK.VIEWER.controls.update();
+     }).easing(TWEEN.Easing.Quadratic.InOut).start();
+  }
+
+  /*************************************************
+  /   SPK CAMERA FUNC
+  *************************************************/
+  
   SPK.zoomExtents = function () {
-
+    console.log(SPK.VIEWER.controls);
     var r = SPK.GLOBALS.boundingSphere.radius;
     var offset = r / Math.tan(Math.PI / 180.0 * SPK.VIEWER.controls.object.fov * 0.4);
     var vector = new THREE.Vector3(0, 0, 1);
@@ -474,62 +508,8 @@ var SPK = function ( options ) {
     SPK.VIEWER.controls.update();
   }  
 
-  SPK.moveAndLookAt = function ( dstpos, dstlookat, options ) {
-    options || (options = {duration: 100});
-
-    new TWEEN.Tween(SPK.VIEWER.controls.object.position).to({
-      x: dstpos.x,
-      y: dstpos.y,
-      z: dstpos.z
-    }, options.duration).onUpdate( function () { SPK.VIEWER.controls.update() }).onComplete( function () { }).start();
-
-  } 
-
-  SPK.moveAndLookAtCCC = function( camera, dstpos, dstlookat, options ) {
-    options || (options = {duration: 100});
-
-    var origpos = new THREE.Vector3().copy(camera.position); // original position
-    var origrot = new THREE.Euler().copy(camera.rotation); // original rotation
-
-    camera.position.set(dstpos.x, dstpos.y, dstpos.z);
-    camera.lookAt(dstlookat);
-    var dstrot = new THREE.Euler().copy(camera.rotation)
-
-    // reset original position and rotation
-    camera.position.set(origpos.x, origpos.y, origpos.z);
-    camera.rotation.set(origrot.x, origrot.y, origrot.z);
-
-    //
-    // Tweening
-    //
-    
-    // position
-    new TWEEN.Tween(camera.position).to({
-      x: dstpos.x,
-      y: dstpos.y,
-      z: dstpos.z
-    }, options.duration).onUpdate( function () {  SPK.VIEWER.controls.update() }).start();
-
-    // rotation (using slerp)
-    (function () {
-      var qa = qa = new THREE.Quaternion().copy(camera.quaternion); // src quaternion
-      var qb = new THREE.Quaternion().setFromEuler(dstrot); // dst quaternion
-      var qm = new THREE.Quaternion();
-      camera.quaternion = qm;
-      
-      var o = {t: 0};
-      new TWEEN.Tween(o).to({t: 1}, options.duration).onUpdate(function () {
-        THREE.Quaternion.slerp(qa, qb, qm, o.t);
-        camera.quaternion.set(qm.x, qm.y, qm.z, qm.w);
-        SPK.VIEWER.controls.update()
-      }).onComplete( function () { SPK.VIEWER.controls.update() }).start();
-    }).call(this);
-  }
-
   SPK.beep = function () {
-
-    return "boop";
-
+    return "boop"; // THE MOST AMAZING FUNCTION 3V3R
   }
 
 
