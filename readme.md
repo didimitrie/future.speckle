@@ -1,112 +1,98 @@
 # [Beta.Speckle](http://beta.speckle.xyz)
-*namechange under consideration*
+*[namechange under public consideration](https://github.com/didimitrie/future.speckle/issues/12)*
 
 ## About 
 Beta.Speckle is an online parametric model viewer. It enables sharing with your clients/stakeholders/community flexible designs, not just static artefacts. 
 
 Check the service in action on [http://beta.speckle.xyz](http://beta.speckle.xyz). For now, it is developed by [@idid](http://twitter.com/idid).
 
-
-#### Why? 
+##Why? 
 Design iteration has always been difficult to communicate with the right people, that's why we devised a tool to help leverage the felxibility of computational design in evnironments outside the architectural office. 
 
 #####**Parametric models can go beyond aesthetic and technical exploration: they can tell a story and they can be the base of collaborative decision making**.
 
+##The Approach
 
-#### The Project, Why FOSS, and Why Contribute
+SPK has very little moving parts, and is geared towards (eventual) **deployment for a wide range of non-technical users and environements**. 
 
-The infrastructure for this project is financed for the following three years. See the [Credits](https://github.com/didimitrie/future.speckle#credits). Part of our philosophy is to develop this together closely with the stakeholders and end-users, as such any contributions are welcome: feel free to propose new code architecture, features, etc.
-
-Ideally we would develop a flexible system that would allow for plug-and-play functionality that can be catered to a mulitude of usage scenarios. 
-
-#### The Approach
-
-SPK has very little moving parts, and is geared towards (eventual) **deployment for a wide range of non-technical users and environements**. The current front-end tech stack ensures that on any (evergreen) browser, your model is accesible - mobile devices are supported as well. This is possible one of the few requirements - accesibility and software independence. 
+The current front-end tech stack ensures that on any (evergreen) browser, your model is accesible - mobile devices are supported as well. This is possible one of the few requirements - accesibility and software independence. 
 
 All your models are pre-generated on your computer, so essentially the viewer is just loading and displaying static files. This means that there's no computational overhead and we are able to leverage native browser caching and compression - which is fast.
 
-
-
-## The Parts
+##The Parts
 
 There are three main parts: 
-- the server app (model api, user registration, db, etc.)
-- the spk viewer (model viewer, inside `/spkw`)
-- **[the grasshopper exporter](https://github.com/didimitrie/speckle.exporter)**
-  - currently only written for Rhino/GH. It resides in a separate repo [here](https://github.com/didimitrie/speckle.exporter)
-  - *There are other parametric software out there that hopefully you'll help us export from!*
+###1. The Backend
+Contains: 
+- the API
+- the landing page
+- user registration
+- user profile page
 
+###2. The Viewer
+This is a static front-end that loads & displays the parametric models. It resides within the `/spkw` directory and is a littl independent module of its own. Check its readme for more information.
 
-## Getting started with hacking on your local machine
+###3. The Grasshopper Exporter
+Has its **[own github repo](https://github.com/didimitrie/speckle.exporter)**. It currently only exists for Rhino/GH.
+*There are other parametric software out there that hopefully you'll help us export from!*
+
+##Getting started with hacking on your local machine
 
 **Important notice: build and watch systems will soon (hopefully) be unified in something more straightforward. Until then, voila the temporary instructions:**
 
-- For the backend: `npm install` then `npm run watch-simple` in the repo root.
-- For the viewer, then `cd spkw` and `npm install` and then `npm run watch-remote`
+1. `npm install`
+2. 'npm run watch'
+3. Point your browser to `http://localhost:9009` and you should be good to go. 
 
-Point your browser to `localhost:9009` and you should be good to go. 
+**If developing on windows** be sure to check [issue #25](https://github.com/didimitrie/future.speckle/issues/25). There are some platform specific troubles that are not yet fixed.
 
-
-## Deploying on your own server
+###Deploying on your own server
 
 If you want to deploy this to your own server (for various reasons), go ahead! You will need: 
 - a mongodb instance running somewhere 
 - an [Auth0](auth0.com/) account if you plan to support authentication
 
-Please give us a heads up if you do this :bow:
+Please give us a heads up if you do this :bow:.
 
+##Need Help?
+Hit me up [@idid](http://twitter.com/idid) or open an issue (preffered). 
 
+##Contribution Guidelines
 
-## Contribution Guidelines
+See the [contribution guidelines](./contributing.md).
 
-The `master` branch is the release branch. Whatever is there is online and running. 
+##The Project, Why FOSS, and Why Contribute
 
-The `dev` branch is where active development happens. Always fork from `/dev` for new features. 
+The infrastructure for this project is financed for the following three years. See the [Credits](https://github.com/didimitrie/future.speckle#credits). Part of our philosophy is to develop this together closely with the stakeholders and end-users, as such any contributions are welcome: feel free to propose new code architecture, features, etc.
 
-Each new feature should go in a fork of the `dev` branch, ie. `dev/my-new-super-feature`. Once ready, submit a PR.
+##Credits
 
-Ideally, we would follow [these guidelines](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) (thanks @philipbelesky).
+Started off & currently maintained by [@idid](http://twitter.com/idid/). *Add yourself here if you contribute!*
 
-**What can I contribute towards?** 
- - the backend
- - the viewer (/spkw)
- - the website proper
- - writing documentation
- - pretty much anything: everytime i try and sit down and do a todolist, i'm getting depressed. 
+The project is underway at **[The Bartlett, UCL](http://www.bartlett.ucl.ac.uk/)**, within the **[Innochain](http://innochain.net/)** Research Project.
 
+**This project has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Sklodowska-Curie grant agreement No 642877.**
 
-## Credits
+##License
 
-Started off & currently maintained by [@idid](http://twitter.com/idid/). 
+The MIT License (MIT)
 
-*Add yourself here if you contribute!*
+Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
 
-Credits: 
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-- **[The Bartlett, UCL](http://www.bartlett.ucl.ac.uk/)**
-- **[Innochain](http://innochain.net/)**
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-This project has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Sklodowska-Curie grant agreement No 642877. 
-
-## License
-
-GNU General Public License v2.0
-
-
-Future.Speckle
-
-Copyright (C) 2016 Dimitrie Andrei Stefanescu @idid / The Bartlett School of Architecture, UCL
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
