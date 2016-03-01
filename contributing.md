@@ -1,5 +1,5 @@
-# Contributing to `future.speckle`
-## Flow: 
+#Contributing to `future.speckle`
+##Flow: 
 The `master` branch is the release branch. Whatever is there is online and running. 
 
 The `dev` branch is where active development happens. Always fork from `/dev` for new features. 

@@ -50268,21 +50268,8 @@ $( function () {
 
 },{"./modules/SPK.js":16,"./modules/SPKCommentsControl.js":17,"./modules/SPKHelpControl.js":19,"./modules/SPKMetaDisplay.js":21,"./modules/SPKSliderControl.js":23,"jquery":1}],16:[function(require,module,exports){
 /*
- * Beta.Speckle Parametric Model Viewer
- * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
- *
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
  */
 
 
@@ -50760,7 +50747,6 @@ var SPK = function ( options ) {
   *************************************************/
   
   SPK.zoomExtents = function () {
-    console.log(SPK.VIEWER.controls);
     var r = SPK.GLOBALS.boundingSphere.radius;
     var offset = r / Math.tan(Math.PI / 180.0 * SPK.VIEWER.controls.object.fov * 0.4);
     var vector = new THREE.Vector3(0, 0, 1);
@@ -50794,6 +50780,11 @@ module.exports = SPK;
 
 
 },{"./SPKConfig.js":18,"./SPKLoader.js":20,"./SPKObjectMaker.js":22,"jquery":1,"nouislider":2,"three":13,"three-orbit-controls":12,"tween.js":14}],17:[function(require,module,exports){
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
+ */
+
 
 var $               = require('jquery');
 var shortid         = require('shortid');
@@ -50987,22 +50978,10 @@ var SPKCommentsControl = function ( options ) {
 module.exports = SPKCommentsControl;
 },{"./SPKConfig.js":18,"jquery":1,"shortid":3,"three":13}],18:[function(require,module,exports){
 /*
- * Beta.Speckle Parametric Model Viewer
- * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
- *
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
  */
+
 
 var SPKConfig = function () {
 
@@ -51020,10 +50999,14 @@ var SPKConfig = function () {
 
 module.exports = new SPKConfig();
 },{}],19:[function(require,module,exports){
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
+ */
+
+
 var $               = require('jquery');
-
 var shortid         = require('shortid');
-
 
 var SPKHelpControl = function ( options ) {
 
@@ -51056,23 +51039,9 @@ var SPKHelpControl = function ( options ) {
 module.exports = SPKHelpControl;
 },{"jquery":1,"shortid":3}],20:[function(require,module,exports){
 /*
- * Beta.Speckle Parametric Model Viewer
- * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
- *
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
  */
-
 
 /*
   Handles all json loading and parsing
@@ -51194,8 +51163,10 @@ var SPKLoader = function () {
 
 module.exports = new SPKLoader();
 },{"three":13}],21:[function(require,module,exports){
-
-// Really basic handler
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
+ */
 
 var $               = require('jquery');
 
@@ -51216,21 +51187,8 @@ var SPKMetaDisplay = function ( options ) {
 module.exports = SPKMetaDisplay;
 },{"jquery":1}],22:[function(require,module,exports){
 /*
- * Beta.Speckle Parametric Model Viewer
- * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL
- *
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
  */
 
 
@@ -51385,8 +51343,11 @@ var SPKObjectMaker = function() {
 
 module.exports = new SPKObjectMaker();
 },{"three":13}],23:[function(require,module,exports){
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
+ */
 
-// Really not so basic handler
 
 var $               = require('jquery');
 var noUISlider      = require('nouislider');

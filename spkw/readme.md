@@ -50,10 +50,42 @@ Core modules are the ones that provide the basic functionality. Non-core modules
 - **`YOUR NEW STUFF`** - The sky's the limit. 
 
 ###How To Create Your Own Interface
-//TODO 
+####1. Scaffolding your template
 
-Walk through the creation of, say, a new SliderControl.
+- In `spkw/src/jade/` make a copy of `Template.jade` and rename it to `MyNewInterface.jade`. 
+- In `spkw/src/js/` make a copy of `Template.js` and rename it to `MyNewInterface.js`.
+- In `spkw/src/sass/` make a copy of `Template.scss` and rename it to `MyNewInterface.scss`.
 
+Don't forget to update the links to the stylesheet and the script file inside the jade template. 
+
+**Please be consistent with the names to avoid messiness!** 
+
+####2. Building your template
+
+All **jade** and **sass** files are built automatically to `spkw/dist/html` (jade > html) and `spkw\dist\css` (sass > css), so you shouldn't worry too much about them. 
+
+You will need to build the js file yourself, I am afraid. Here's how to do it:
+
+**Manually build the js file**
+Run the following command: `browserify spkw/src/js/**MyNewInterface**.js -o spkw/dist/js/**MyNewInterface**.js`
+
+You will need to run this command everytime you make a change. Want to automate, read on! 
+
+**Automate the js build**
+In `future.speckle/package.json` add the command to the `build-js` script. It should look something like this: 
+
+`"build-js": "browserify spkw/src/js/Default.js -o spkw/dist/js/Default.js & browserify spkw/src/js/Template.js -o spkw/dist/js/Template.js & browserify spkw/src/js/**MyNewInterface**.js -o spkw/dist/js/**MyNewInterface**.js"`
+
+####3. Adding your template to the server routes
+In future.speckle/app/routes/viewer.js add the following lines of code: 
+
+`  
+app.get("/view/**YOURPREFIX**/:m", isAuthorized, function(req, res) {
+    res.sendfile(appDir + "/spkw/dist/html/**MyNewInterface.html**"); 
+});
+`
+
+Always make sure that **YOURPREFIX** is unique and doesn't confict with any of the previous ones. 
 
 
 

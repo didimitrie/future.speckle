@@ -3,13 +3,13 @@
   "version": "0.0.1",
   "description": "soulution and performance space visualiser",
   "author": "Dimitrie Andrei Stefanescu | http://dimitrie.org",
-  "license": "GPL-2.0",
+  "license": "MIT",
   "scripts": {
     "watch-sass": "sass --watch src/sass/:dist/css/",
     "watch-jade": "jade --watch src/jade/*.jade -o dist/html/",
     "build-js": "browserify src/js/Default.js -o dist/js/Default.js & browserify src/js/Template.js -o dist/js/Template.js",
     "watch-js": "nodemon -e js -w src/js -x 'npm run build-js'",
-    "watch": "npm run watch-sass & npm run watch-jade & npm run watch-js"
+    "watch": "echo DEPRECATED: ALL COMMANDS MOVED IN MAIN REPO package.json"
   },
   "dependencies": {
     "browserify": "^13.0.0",
