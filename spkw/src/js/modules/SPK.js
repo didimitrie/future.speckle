@@ -478,7 +478,6 @@ var SPK = function ( options ) {
   *************************************************/
   
   SPK.zoomExtents = function () {
-    console.log(SPK.VIEWER.controls);
     var r = SPK.GLOBALS.boundingSphere.radius;
     var offset = r / Math.tan(Math.PI / 180.0 * SPK.VIEWER.controls.object.fov * 0.4);
     var vector = new THREE.Vector3(0, 0, 1);
