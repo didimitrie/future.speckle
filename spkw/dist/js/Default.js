@@ -50221,6 +50221,7 @@ var SPKMeta             = require('./modules/SPKMetaDisplay.js')
 var SPKSliderControl    = require('./modules/SPKSliderControl.js')
 var SPKCommentsControl  = require('./modules/SPKCommentsControl.js')
 var SPKHelpControl      = require('./modules/SPKHelpControl.js')
+var SPKKeyHandler       = require('./modules/SPKKeyHandler.js')
 
 $( function () {
 
@@ -50245,6 +50246,7 @@ $( function () {
 
       var myCommentCtrl = new SPKCommentsControl ( {
         wrapperid : 'spk-comments',
+        formid : 'instance-saver-form',
         uitabid : 'spk-ui-tabs',
         icon : 'fa-comments',
         data: SPK.PARAMS,
@@ -50255,10 +50257,13 @@ $( function () {
       var myHelpCtrl = new SPKHelpControl ( {
         wrapperid : 'spk-help',
         uitabid : 'spk-ui-tabs',
-        //icon : 'fa-info-circle'
-        icon : 'fa-cogs'
+        icon : 'fa-info-circle'
+        //icon : 'fa-cogs'
       })
 
+      var myKeyHandler = new SPKKeyHandler ( {
+        spk: SPK
+      })
       //window.SPK = mySPK;
     }
   } )
@@ -50266,7 +50271,7 @@ $( function () {
 } )
 
 
-},{"./modules/SPK.js":16,"./modules/SPKCommentsControl.js":17,"./modules/SPKHelpControl.js":19,"./modules/SPKMetaDisplay.js":21,"./modules/SPKSliderControl.js":23,"jquery":1}],16:[function(require,module,exports){
+},{"./modules/SPK.js":16,"./modules/SPKCommentsControl.js":17,"./modules/SPKHelpControl.js":19,"./modules/SPKKeyHandler.js":20,"./modules/SPKMetaDisplay.js":22,"./modules/SPKSliderControl.js":24,"jquery":1}],16:[function(require,module,exports){
 /*
  * The MIT License (MIT)
  * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
@@ -50418,7 +50423,7 @@ var SPK = function ( options ) {
 
 
   SPK.fadeIn = function ( objects ) {
-      var duration = 300, opacity = 1;
+      var duration = 300, opacity = 0.8;
       
       var tweenIn = new TWEEN.Tween( { x : 0 } )
       .to( { x: opacity }, duration )
@@ -50434,7 +50439,7 @@ var SPK = function ( options ) {
 
   SPK.fadeOut = function ( objects ) {
 
-    var opacity = 1, duration = 200;
+    var opacity = 0.8, duration = 300;
     
     var tweenOut = new TWEEN.Tween( { x: opacity } )
     .to( {x: 0}, duration )
@@ -50492,6 +50497,7 @@ var SPK = function ( options ) {
       }
 
       SPK.fadeIn( iin );
+      //SPK.zoomExtents();
 
       if( callback !== undefined ) callback();
 
@@ -50620,7 +50626,7 @@ var SPK = function ( options ) {
 
     // shadow light
     var light = new THREE.SpotLight(0xffffff, 0.4);
-    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*20, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*20, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*20)
+    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*10, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*10, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*10)
     light.target.position.set( SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z );
     light.castShadow = true;
     
@@ -50628,10 +50634,6 @@ var SPK = function ( options ) {
     light.shadowMapHeight = 2048;
     light.shadowBias = -0.00001;
     light.shadowDarkness = 0.5;
-    //light.onlyShadow = true;
-    
-    
-    light.shadowCameraVisible = true;
     //light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius * 1.7, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius * 3 ,SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius * 1.7); 
 
     SPK.SCENE.shadowlight = light;
@@ -50714,7 +50716,7 @@ var SPK = function ( options ) {
   }
 
   SPK.setCameraTween = function ( where ) {
-     var duration = 400;
+     var duration = 600;
      var cam = JSON.parse( where );
 
      new TWEEN.Tween( SPK.VIEWER.camera.position ).to( {
@@ -50752,15 +50754,15 @@ var SPK = function ( options ) {
     var vector = new THREE.Vector3(0, 0, 1);
     var dir = vector.applyQuaternion(SPK.VIEWER.controls.object.quaternion);
     var newPos = new THREE.Vector3();
-
-    dir.multiplyScalar(offset * 1.05);
-    
+    dir.multiplyScalar(offset * 1.05);    
     newPos.addVectors(SPK.GLOBALS.boundingSphere.center, dir);
 
-    //SPK.moveAndLookAtCCC( SPK.VIEWER.camera, newPos, SPK.GLOBALS.boundingSphere.center);
-    SPK.VIEWER.controls.object.position.set(newPos.x, newPos.y, newPos.z);
-    SPK.VIEWER.controls.target.set(SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z);
-    SPK.VIEWER.controls.update();
+    var futureLocation = { };
+    futureLocation.position = newPos;
+    futureLocation.rotation = SPK.VIEWER.controls.object.rotation.clone();
+    futureLocation.controlCenter = SPK.GLOBALS.boundingSphere.center.clone();
+    SPK.setCameraTween(JSON.stringify(futureLocation));
+    
   }  
 
   SPK.beep = function () {
@@ -50772,14 +50774,14 @@ var SPK = function ( options ) {
   /   SPK INIT
   *************************************************/
     
-  SPK.init(options);
+  SPK.init( options );
 
 }
 
 module.exports = SPK;
 
 
-},{"./SPKConfig.js":18,"./SPKLoader.js":20,"./SPKObjectMaker.js":22,"jquery":1,"nouislider":2,"three":13,"three-orbit-controls":12,"tween.js":14}],17:[function(require,module,exports){
+},{"./SPKConfig.js":18,"./SPKLoader.js":21,"./SPKObjectMaker.js":23,"jquery":1,"nouislider":2,"three":13,"three-orbit-controls":12,"tween.js":14}],17:[function(require,module,exports){
 /*
  * The MIT License (MIT)
  * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
@@ -50807,40 +50809,45 @@ var SPKCommentsControl = function ( options ) {
     SPKCommentsControl.data = options.data;
     SPKCommentsControl.SPK = options.spk;
     SPKCommentsControl.Wrapper = $( "#" + options.wrapperid );
-    SPKCommentsControl.form = $(SPKCommentsControl.Wrapper).find( "form" );
+    SPKCommentsControl.form = $( "#" + options.formid );
     SPKCommentsControl.list = $(SPKCommentsControl.Wrapper).find( "#instance-list" );
 
     $( SPKCommentsControl.Wrapper ).attr( "spktabid", SPKCommentsControl.id );
 
     var uitabs = $( "#" + options.uitabid);
-    var icon = "<div class='icon' spkuiid='" + SPKCommentsControl.id + "'><i class='fa " + options.icon + "'></div>";
+    var icon = "<div class='icon' spkuiid='" + SPKCommentsControl.id + "'><span class='hint--right' data-hint='Saved Instances'><i class='fa " + options.icon + "'></span></div>";
+    
     $( uitabs ).append( icon );
 
     $( "[spkuiid='" + SPKCommentsControl.id + "']").click( function() {
-      //$( "#" + options.wrapperid   ).removeClass( "sidebar-hidden" );
       $( "#spk-ui-tabs").find(".icon").removeClass( "icon-active" );
       $( this ).addClass( "icon-active" );
 
       $( ".sidebar" ).addClass( "sidebar-hidden" );
       $( "[spktabid='"+ SPKCommentsControl.id + "']").removeClass( "sidebar-hidden" );
-    })
+    } )
 
+    //hacky
+    $( "#spk-save-widget" ).find( ".save-config" ).click( function () { 
+
+      $( "#spk-save-widget" ).find( "form" ).toggleClass( "closed" );
+      
+      if(! $( "#spk-save-widget" ).find( "form" ).hasClass( "closed" ) ) 
+        $( "#spk-save-widget" ).find( "input" ).focus();
+    } )
 
     // set up form submit and key press ease
-    $(SPKCommentsControl.form).find( "textarea" ).keypress(function(event) {
-      console.log("enter has been hit")
+    $(SPKCommentsControl.form).find( "input" ).keypress(function(event) {
       if (event.which == 13) {
           event.preventDefault();
           $(SPKCommentsControl.form).submit();
+          $(SPKCommentsControl.form).addClass("closed");
       }
     });
 
     // form submitting event: 
     $( SPKCommentsControl.form ).on( "submit", function ( e ) {
       e.preventDefault();
-
-      var lookAtVector = new THREE.Vector3(0,0, -1);
-      lookAtVector.applyQuaternion(SPKCommentsControl.SPK.VIEWER.controls.object.quaternion);
 
       var camToSave = { };
       camToSave.position = SPKCommentsControl.SPK.VIEWER.controls.object.position.clone();
@@ -50853,7 +50860,7 @@ var SPKCommentsControl = function ( options ) {
         type : "addnew",
         model: SPKCommentsControl.SPK.GLOBALS.model, 
         key : SPKCommentsControl.SPK.GLOBALS.currentKey,
-        description: $(SPKCommentsControl.form).find("textarea").val(),
+        description: $(SPKCommentsControl.form).find("input").val(),
         camerapos: JSON.stringify(camToSave)
       }
       
@@ -50861,14 +50868,10 @@ var SPKCommentsControl = function ( options ) {
         return;
       }
       
-      $(SPKCommentsControl.form).find("textarea").val("");
-
-      //return;
+      $(SPKCommentsControl.form).find("input").val("");
 
       $.post(SPKConfig.INSTAPI, dataToSubmit, function(data) {
-
         SPKCommentsControl.refreshList();
-
       })
 
     });
@@ -51021,7 +51024,7 @@ var SPKHelpControl = function ( options ) {
     $( SPKHelpControl.Wrapper ).attr( "spktabid", SPKHelpControl.id );
 
     var uitabs = $( "#" + options.uitabid );
-    var icon = "<div class='icon' spkuiid='" + SPKHelpControl.id + "'><i class='fa " + options.icon + "'></div>";
+    var icon = "<div class='icon' spkuiid='" + SPKHelpControl.id + "'><span class='hint--right' data-hint='Help and Info'><i class='fa " + options.icon + "'></span></div>";
     $(uitabs).append(icon);
 
     $("[spkuiid='"+ SPKHelpControl.id + "']").click( function() {
@@ -51038,6 +51041,50 @@ var SPKHelpControl = function ( options ) {
 
 module.exports = SPKHelpControl;
 },{"jquery":1,"shortid":3}],20:[function(require,module,exports){
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
+ */
+
+var $               = require('jquery');
+
+var SPKKeyHandler = function( options ) {
+  
+  var SPKKeyHandler = this;
+  SPKKeyHandler.SPK = {}
+
+  SPKKeyHandler.init = function( options ) {
+    
+    SPKKeyHandler.SPK = options.spk;
+
+    $( window ).keypress( function ( event ) {
+
+      console.log( event.which )
+      switch( event.which ) {
+        case 122: // 'z'
+          SPKKeyHandler.SPK.zoomExtents( )
+        break
+
+        case 115: // 's'
+          SPKKeyHandler.SPK.SCENE.shadowlight.shadow.darkness = SPKKeyHandler.SPK.SCENE.shadowlight.shadow.darkness === 0.5 ? 0 : 0.5;
+          SPKKeyHandler.SPK.SCENE.plane.visible = !SPKKeyHandler.SPK.SCENE.plane.visible;
+        break
+
+        case 103: // 'g'
+          SPKKeyHandler.SPK.SCENE.grid.visible = !SPKKeyHandler.SPK.SCENE.grid.visible;
+        break;
+
+      }
+
+    })
+
+  } 
+
+  SPKKeyHandler.init( options );
+}
+
+module.exports = SPKKeyHandler;
+},{"jquery":1}],21:[function(require,module,exports){
 /*
  * The MIT License (MIT)
  * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
@@ -51162,7 +51209,7 @@ var SPKLoader = function () {
 }
 
 module.exports = new SPKLoader();
-},{"three":13}],21:[function(require,module,exports){
+},{"three":13}],22:[function(require,module,exports){
 /*
  * The MIT License (MIT)
  * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
@@ -51185,7 +51232,7 @@ var SPKMetaDisplay = function ( options ) {
 }
 
 module.exports = SPKMetaDisplay;
-},{"jquery":1}],22:[function(require,module,exports){
+},{"jquery":1}],23:[function(require,module,exports){
 /*
  * The MIT License (MIT)
  * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
@@ -51242,7 +51289,7 @@ var SPKObjectMaker = function() {
 
   SPKObjectMaker.makeMesh = function( data, key, callback ) {
 
-    var material = new THREE.MeshPhongMaterial( { color: 0xCACACA, specular: 0xD1ECFF, shininess: 20, shading: THREE.FlatShading } );
+    var material = new THREE.MeshPhongMaterial( { color: 0xBABABA, specular: 0xD1ECFF, shininess: 10, shading: THREE.FlatShading } );
     //var material = new THREE.MeshNormalMaterial();
     
     material.side = THREE.DoubleSide; material.transparent = true; material.opacity = 0;
@@ -51257,7 +51304,7 @@ var SPKObjectMaker = function() {
 
     myObj.instance = key;
 
-    var myEdges = new THREE.EdgesHelper( myObj, 0x4D4D4D, 30 );
+    var myEdges = new THREE.EdgesHelper( myObj, 0xA1A1A1, 30 );
     
     myEdges.removable = true; myEdges.material.transparent = true;
     
@@ -51342,7 +51389,7 @@ var SPKObjectMaker = function() {
 }
 
 module.exports = new SPKObjectMaker();
-},{"three":13}],23:[function(require,module,exports){
+},{"three":13}],24:[function(require,module,exports){
 /*
  * The MIT License (MIT)
  * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
@@ -51375,7 +51422,7 @@ var SPKSliderControl = function ( options ) {
 
     // register 'tab' in ui-tabs
     var uitabs = $( "#" + options.uitabid);
-    var icon = "<div class='icon icon-active' spkuiid='" + SPKSliderControl.id + "'><i class='fa " + options.icon + "'></div>";
+    var icon = "<div class='icon icon-active' spkuiid='" + SPKSliderControl.id + "'><span class='hint--right' data-hint='Paramaters & Performance'><i class='fa " + options.icon + "'></span></div>";
     $(uitabs).append(icon);
     
     // handle the clickie
@@ -51441,7 +51488,7 @@ var SPKSliderControl = function ( options ) {
     for( var i = 0; i < SPKSliderControl.Sliders.length; i++ ) {
       SPKSliderControl.Sliders[i].on( "change", function() { 
         var currentKey = SPKSliderControl.getCurrentKey();
-        SPKSliderControl.SPK.addNewInstance( currentKey );
+        SPKSliderControl.SPK.addNewInstance( currentKey, function() { SPKSliderControl.SPK.zoomExtents(); } );
         SPKSliderControl.setMeasureSliders( currentKey );
         //SPKSliderControl.SPK.zoomExtents()
       } );

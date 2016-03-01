@@ -7,3 +7,7 @@ spkw/.srcbackup/
 spkw/node_modules/
 spkw/*.map/
 **/.sass-cache/*
+
+*.log
+
+*.log

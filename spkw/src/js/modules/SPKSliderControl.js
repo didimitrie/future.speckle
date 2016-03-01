@@ -30,7 +30,7 @@ var SPKSliderControl = function ( options ) {
 
     // register 'tab' in ui-tabs
     var uitabs = $( "#" + options.uitabid);
-    var icon = "<div class='icon icon-active' spkuiid='" + SPKSliderControl.id + "'><i class='fa " + options.icon + "'></div>";
+    var icon = "<div class='icon icon-active' spkuiid='" + SPKSliderControl.id + "'><span class='hint--right' data-hint='Paramaters & Performance'><i class='fa " + options.icon + "'></span></div>";
     $(uitabs).append(icon);
     
     // handle the clickie
@@ -96,7 +96,7 @@ var SPKSliderControl = function ( options ) {
     for( var i = 0; i < SPKSliderControl.Sliders.length; i++ ) {
       SPKSliderControl.Sliders[i].on( "change", function() { 
         var currentKey = SPKSliderControl.getCurrentKey();
-        SPKSliderControl.SPK.addNewInstance( currentKey );
+        SPKSliderControl.SPK.addNewInstance( currentKey, function() { SPKSliderControl.SPK.zoomExtents(); } );
         SPKSliderControl.setMeasureSliders( currentKey );
         //SPKSliderControl.SPK.zoomExtents()
       } );

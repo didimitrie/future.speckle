@@ -50063,7 +50063,7 @@ var SPK = function ( options ) {
 
 
   SPK.fadeIn = function ( objects ) {
-      var duration = 300, opacity = 1;
+      var duration = 300, opacity = 0.8;
       
       var tweenIn = new TWEEN.Tween( { x : 0 } )
       .to( { x: opacity }, duration )
@@ -50079,7 +50079,7 @@ var SPK = function ( options ) {
 
   SPK.fadeOut = function ( objects ) {
 
-    var opacity = 1, duration = 200;
+    var opacity = 0.8, duration = 300;
     
     var tweenOut = new TWEEN.Tween( { x: opacity } )
     .to( {x: 0}, duration )
@@ -50137,6 +50137,7 @@ var SPK = function ( options ) {
       }
 
       SPK.fadeIn( iin );
+      //SPK.zoomExtents();
 
       if( callback !== undefined ) callback();
 
@@ -50265,7 +50266,7 @@ var SPK = function ( options ) {
 
     // shadow light
     var light = new THREE.SpotLight(0xffffff, 0.4);
-    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*20, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*20, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*20)
+    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*10, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*10, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*10)
     light.target.position.set( SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z );
     light.castShadow = true;
     
@@ -50273,10 +50274,6 @@ var SPK = function ( options ) {
     light.shadowMapHeight = 2048;
     light.shadowBias = -0.00001;
     light.shadowDarkness = 0.5;
-    //light.onlyShadow = true;
-    
-    
-    light.shadowCameraVisible = true;
     //light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius * 1.7, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius * 3 ,SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius * 1.7); 
 
     SPK.SCENE.shadowlight = light;
@@ -50359,7 +50356,7 @@ var SPK = function ( options ) {
   }
 
   SPK.setCameraTween = function ( where ) {
-     var duration = 400;
+     var duration = 600;
      var cam = JSON.parse( where );
 
      new TWEEN.Tween( SPK.VIEWER.camera.position ).to( {
@@ -50397,15 +50394,15 @@ var SPK = function ( options ) {
     var vector = new THREE.Vector3(0, 0, 1);
     var dir = vector.applyQuaternion(SPK.VIEWER.controls.object.quaternion);
     var newPos = new THREE.Vector3();
-
-    dir.multiplyScalar(offset * 1.05);
-    
+    dir.multiplyScalar(offset * 1.05);    
     newPos.addVectors(SPK.GLOBALS.boundingSphere.center, dir);
 
-    //SPK.moveAndLookAtCCC( SPK.VIEWER.camera, newPos, SPK.GLOBALS.boundingSphere.center);
-    SPK.VIEWER.controls.object.position.set(newPos.x, newPos.y, newPos.z);
-    SPK.VIEWER.controls.target.set(SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z);
-    SPK.VIEWER.controls.update();
+    var futureLocation = { };
+    futureLocation.position = newPos;
+    futureLocation.rotation = SPK.VIEWER.controls.object.rotation.clone();
+    futureLocation.controlCenter = SPK.GLOBALS.boundingSphere.center.clone();
+    SPK.setCameraTween(JSON.stringify(futureLocation));
+    
   }  
 
   SPK.beep = function () {
@@ -50417,7 +50414,7 @@ var SPK = function ( options ) {
   /   SPK INIT
   *************************************************/
     
-  SPK.init(options);
+  SPK.init( options );
 
 }
 
@@ -50628,7 +50625,7 @@ var SPKObjectMaker = function() {
 
   SPKObjectMaker.makeMesh = function( data, key, callback ) {
 
-    var material = new THREE.MeshPhongMaterial( { color: 0xCACACA, specular: 0xD1ECFF, shininess: 20, shading: THREE.FlatShading } );
+    var material = new THREE.MeshPhongMaterial( { color: 0xBABABA, specular: 0xD1ECFF, shininess: 10, shading: THREE.FlatShading } );
     //var material = new THREE.MeshNormalMaterial();
     
     material.side = THREE.DoubleSide; material.transparent = true; material.opacity = 0;
@@ -50643,7 +50640,7 @@ var SPKObjectMaker = function() {
 
     myObj.instance = key;
 
-    var myEdges = new THREE.EdgesHelper( myObj, 0x4D4D4D, 30 );
+    var myEdges = new THREE.EdgesHelper( myObj, 0xA1A1A1, 30 );
     
     myEdges.removable = true; myEdges.material.transparent = true;
     
