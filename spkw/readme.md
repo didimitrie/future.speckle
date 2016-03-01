@@ -74,16 +74,18 @@ You will need to run this command everytime you make a change. Want to automate,
 **Automate the js build**
 In `future.speckle/package.json` add the command to the `build-js` script. It should look something like this: 
 
-`"build-js": "browserify spkw/src/js/Default.js -o spkw/dist/js/Default.js & browserify spkw/src/js/Template.js -o spkw/dist/js/Template.js & browserify spkw/src/js/**MyNewInterface**.js -o spkw/dist/js/**MyNewInterface**.js"`
+```json
+"build-js": "browserify spkw/src/js/Default.js -o spkw/dist/js/Default.js & browserify spkw/src/js/Template.js -o spkw/dist/js/Template.js & browserify spkw/src/js/**MyNewInterface**.js -o spkw/dist/js/**MyNewInterface**.js"
+```
 
 ####3. Adding your template to the server routes
 In future.speckle/app/routes/viewer.js add the following lines of code: 
 
-`  
+```javascript  
 app.get("/view/**YOURPREFIX**/:m", isAuthorized, function(req, res) {
     res.sendfile(appDir + "/spkw/dist/html/**MyNewInterface.html**"); 
 });
-`
+```
 
 Always make sure that **YOURPREFIX** is unique and doesn't confict with any of the previous ones. 
 
