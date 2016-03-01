@@ -59,7 +59,7 @@ Hit me up [@idid](http://twitter.com/idid) or open an issue (preffered).
 
 ##Contribution Guidelines
 
-See the [contribution guidelines](future.speckle/contributing.md).
+See the [contribution guidelines](./contributing.md).
 
 ##The Project, Why FOSS, and Why Contribute
 
