@@ -89,5 +89,3 @@ app.get("/view/**YOURPREFIX**/:m", isAuthorized, function(req, res) {
 
 Always make sure that **YOURPREFIX** is unique and doesn't confict with any of the previous ones. 
 
-
-
