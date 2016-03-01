@@ -1,7 +1,6 @@
+
 var $               = require('jquery');
-
 var shortid         = require('shortid');
-
 
 var SPKHelpControl = function ( options ) {
 

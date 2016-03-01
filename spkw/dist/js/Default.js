@@ -51020,10 +51020,9 @@ var SPKConfig = function () {
 
 module.exports = new SPKConfig();
 },{}],19:[function(require,module,exports){
+
 var $               = require('jquery');
-
 var shortid         = require('shortid');
-
 
 var SPKHelpControl = function ( options ) {
 

@@ -49906,7 +49906,10 @@ var SPK = require('./modules/SPK.js');
 
 // init your magic in here
 $( function() { 
-  
+  var mySPK  = new SPK( 
+  {
+    canvasid : 'spk-canvas'
+  });
 });
 },{"./modules/SPK.js":7,"jquery":1}],7:[function(require,module,exports){
 /*

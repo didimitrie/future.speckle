@@ -50,10 +50,30 @@ Core modules are the ones that provide the basic functionality. Non-core modules
 - **`YOUR NEW STUFF`** - The sky's the limit. 
 
 ###How To Create Your Own Interface
-//TODO 
+####1. Scaffolding your template
 
-Walk through the creation of, say, a new SliderControl.
+- In `spkw/src/jade/` make a copy of `Template.jade` and rename it to `MyNewInterface.jade`. 
+- In `spkw/src/js/` make a copy of `Template.js` and rename it to `MyNewInterface.js`.
+- In `spkw/src/sass/` make a copy of `Template.scss` and rename it to `MyNewInterface.scss`.
 
+Don't forget to update the links to the stylesheet and the script file inside the jade template. 
 
+**Please be consistent with the names to avoid messiness!** 
+
+####2. Building your template
+
+All **jade** and **sass** files are built automatically to `spkw/dist/` (jade > html) and `spkw\dist\css` (sass > css), so you shouldn't worry too much about them. 
+
+You will need to build the js file yourself, I am afraid. Here's how to do it:
+
+**Manually**
+- In the terminal cd to `future.speckle/spkw`
+- Run the following command: 
+`browserify src/js/**MyNewInterface**.js -o dist/js/**MyNewInterface**.js`
+
+**Automate the build**
+In `future.speckle/spkw/package.json` add the command to the `build-js` script. It should look something like this: 
+
+`"build-js": "browserify src/js/Default.js -o dist/js/Default.js & browserify src/js/Template.js -o dist/js/Template.js & browserify src/js/**MyNewInterface**.js -o dist/js/**MyNewInterface**.js"`
 
 
