@@ -50497,6 +50497,7 @@ var SPK = function ( options ) {
       }
 
       SPK.fadeIn( iin );
+      //SPK.zoomExtents();
 
       if( callback !== undefined ) callback();
 
@@ -50753,15 +50754,15 @@ var SPK = function ( options ) {
     var vector = new THREE.Vector3(0, 0, 1);
     var dir = vector.applyQuaternion(SPK.VIEWER.controls.object.quaternion);
     var newPos = new THREE.Vector3();
-
-    dir.multiplyScalar(offset * 1.05);
-    
+    dir.multiplyScalar(offset * 1.05);    
     newPos.addVectors(SPK.GLOBALS.boundingSphere.center, dir);
 
-    //SPK.moveAndLookAtCCC( SPK.VIEWER.camera, newPos, SPK.GLOBALS.boundingSphere.center);
-    SPK.VIEWER.controls.object.position.set(newPos.x, newPos.y, newPos.z);
-    SPK.VIEWER.controls.target.set(SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z);
-    SPK.VIEWER.controls.update();
+    var futureLocation = { };
+    futureLocation.position = newPos;
+    futureLocation.rotation = SPK.VIEWER.controls.object.rotation.clone();
+    futureLocation.controlCenter = SPK.GLOBALS.boundingSphere.center.clone();
+    SPK.setCameraTween(JSON.stringify(futureLocation));
+    
   }  
 
   SPK.beep = function () {
@@ -51487,7 +51488,7 @@ var SPKSliderControl = function ( options ) {
     for( var i = 0; i < SPKSliderControl.Sliders.length; i++ ) {
       SPKSliderControl.Sliders[i].on( "change", function() { 
         var currentKey = SPKSliderControl.getCurrentKey();
-        SPKSliderControl.SPK.addNewInstance( currentKey );
+        SPKSliderControl.SPK.addNewInstance( currentKey, function() { SPKSliderControl.SPK.zoomExtents(); } );
         SPKSliderControl.setMeasureSliders( currentKey );
         //SPKSliderControl.SPK.zoomExtents()
       } );

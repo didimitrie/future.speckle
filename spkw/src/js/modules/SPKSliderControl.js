@@ -96,7 +96,7 @@ var SPKSliderControl = function ( options ) {
     for( var i = 0; i < SPKSliderControl.Sliders.length; i++ ) {
       SPKSliderControl.Sliders[i].on( "change", function() { 
         var currentKey = SPKSliderControl.getCurrentKey();
-        SPKSliderControl.SPK.addNewInstance( currentKey );
+        SPKSliderControl.SPK.addNewInstance( currentKey, function() { SPKSliderControl.SPK.zoomExtents(); } );
         SPKSliderControl.setMeasureSliders( currentKey );
         //SPKSliderControl.SPK.zoomExtents()
       } );
