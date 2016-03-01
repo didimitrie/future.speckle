@@ -20,7 +20,7 @@ var SPKHelpControl = function ( options ) {
     $( SPKHelpControl.Wrapper ).attr( "spktabid", SPKHelpControl.id );
 
     var uitabs = $( "#" + options.uitabid );
-    var icon = "<div class='icon' spkuiid='" + SPKHelpControl.id + "'><i class='fa " + options.icon + "'></div>";
+    var icon = "<div class='icon' spkuiid='" + SPKHelpControl.id + "'><span class='hint--right' data-hint='Help and Info'><i class='fa " + options.icon + "'></span></div>";
     $(uitabs).append(icon);
 
     $("[spkuiid='"+ SPKHelpControl.id + "']").click( function() {

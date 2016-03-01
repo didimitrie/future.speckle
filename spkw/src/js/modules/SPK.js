@@ -149,7 +149,7 @@ var SPK = function ( options ) {
 
 
   SPK.fadeIn = function ( objects ) {
-      var duration = 300, opacity = 1;
+      var duration = 300, opacity = 0.8;
       
       var tweenIn = new TWEEN.Tween( { x : 0 } )
       .to( { x: opacity }, duration )
@@ -165,7 +165,7 @@ var SPK = function ( options ) {
 
   SPK.fadeOut = function ( objects ) {
 
-    var opacity = 1, duration = 200;
+    var opacity = 0.8, duration = 300;
     
     var tweenOut = new TWEEN.Tween( { x: opacity } )
     .to( {x: 0}, duration )
@@ -351,7 +351,7 @@ var SPK = function ( options ) {
 
     // shadow light
     var light = new THREE.SpotLight(0xffffff, 0.4);
-    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*20, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*20, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*20)
+    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*10, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*10, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*10)
     light.target.position.set( SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z );
     light.castShadow = true;
     
@@ -359,10 +359,6 @@ var SPK = function ( options ) {
     light.shadowMapHeight = 2048;
     light.shadowBias = -0.00001;
     light.shadowDarkness = 0.5;
-    //light.onlyShadow = true;
-    
-    
-    light.shadowCameraVisible = true;
     //light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius * 1.7, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius * 3 ,SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius * 1.7); 
 
     SPK.SCENE.shadowlight = light;
@@ -445,7 +441,7 @@ var SPK = function ( options ) {
   }
 
   SPK.setCameraTween = function ( where ) {
-     var duration = 400;
+     var duration = 600;
      var cam = JSON.parse( where );
 
      new TWEEN.Tween( SPK.VIEWER.camera.position ).to( {
@@ -503,7 +499,7 @@ var SPK = function ( options ) {
   /   SPK INIT
   *************************************************/
     
-  SPK.init(options);
+  SPK.init( options );
 
 }
 

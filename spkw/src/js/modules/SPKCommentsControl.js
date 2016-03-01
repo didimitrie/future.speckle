@@ -25,40 +25,45 @@ var SPKCommentsControl = function ( options ) {
     SPKCommentsControl.data = options.data;
     SPKCommentsControl.SPK = options.spk;
     SPKCommentsControl.Wrapper = $( "#" + options.wrapperid );
-    SPKCommentsControl.form = $(SPKCommentsControl.Wrapper).find( "form" );
+    SPKCommentsControl.form = $( "#" + options.formid );
     SPKCommentsControl.list = $(SPKCommentsControl.Wrapper).find( "#instance-list" );
 
     $( SPKCommentsControl.Wrapper ).attr( "spktabid", SPKCommentsControl.id );
 
     var uitabs = $( "#" + options.uitabid);
-    var icon = "<div class='icon' spkuiid='" + SPKCommentsControl.id + "'><i class='fa " + options.icon + "'></div>";
+    var icon = "<div class='icon' spkuiid='" + SPKCommentsControl.id + "'><span class='hint--right' data-hint='Saved Instances'><i class='fa " + options.icon + "'></span></div>";
+    
     $( uitabs ).append( icon );
 
     $( "[spkuiid='" + SPKCommentsControl.id + "']").click( function() {
-      //$( "#" + options.wrapperid   ).removeClass( "sidebar-hidden" );
       $( "#spk-ui-tabs").find(".icon").removeClass( "icon-active" );
       $( this ).addClass( "icon-active" );
 
       $( ".sidebar" ).addClass( "sidebar-hidden" );
       $( "[spktabid='"+ SPKCommentsControl.id + "']").removeClass( "sidebar-hidden" );
-    })
+    } )
 
+    //hacky
+    $( "#spk-save-widget" ).find( ".save-config" ).click( function () { 
+
+      $( "#spk-save-widget" ).find( "form" ).toggleClass( "closed" );
+      
+      if(! $( "#spk-save-widget" ).find( "form" ).hasClass( "closed" ) ) 
+        $( "#spk-save-widget" ).find( "input" ).focus();
+    } )
 
     // set up form submit and key press ease
-    $(SPKCommentsControl.form).find( "textarea" ).keypress(function(event) {
-      console.log("enter has been hit")
+    $(SPKCommentsControl.form).find( "input" ).keypress(function(event) {
       if (event.which == 13) {
           event.preventDefault();
           $(SPKCommentsControl.form).submit();
+          $(SPKCommentsControl.form).addClass("closed");
       }
     });
 
     // form submitting event: 
     $( SPKCommentsControl.form ).on( "submit", function ( e ) {
       e.preventDefault();
-
-      var lookAtVector = new THREE.Vector3(0,0, -1);
-      lookAtVector.applyQuaternion(SPKCommentsControl.SPK.VIEWER.controls.object.quaternion);
 
       var camToSave = { };
       camToSave.position = SPKCommentsControl.SPK.VIEWER.controls.object.position.clone();
@@ -71,7 +76,7 @@ var SPKCommentsControl = function ( options ) {
         type : "addnew",
         model: SPKCommentsControl.SPK.GLOBALS.model, 
         key : SPKCommentsControl.SPK.GLOBALS.currentKey,
-        description: $(SPKCommentsControl.form).find("textarea").val(),
+        description: $(SPKCommentsControl.form).find("input").val(),
         camerapos: JSON.stringify(camToSave)
       }
       
@@ -79,14 +84,10 @@ var SPKCommentsControl = function ( options ) {
         return;
       }
       
-      $(SPKCommentsControl.form).find("textarea").val("");
-
-      //return;
+      $(SPKCommentsControl.form).find("input").val("");
 
       $.post(SPKConfig.INSTAPI, dataToSubmit, function(data) {
-
         SPKCommentsControl.refreshList();
-
       })
 
     });

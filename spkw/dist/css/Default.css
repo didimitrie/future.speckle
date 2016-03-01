@@ -821,6 +821,8 @@ body {
       height: 50px;
       display: inline-block;
       text-align: center; } }
+  #spk-ui-tabs span {
+    width: 100%; }
   #spk-ui-tabs .icon {
     width: 100%;
     height: 80px;
@@ -846,6 +848,36 @@ body {
       #spk-ui-tabs .icon-active {
         width: 80px; } }
 
+#spk-parameters #spk-save-widget {
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+  padding: 10px;
+  line-height: 50px;
+  background-color: white;
+  text-align: center; }
+  #spk-parameters #spk-save-widget i {
+    width: 50px; }
+  #spk-parameters #spk-save-widget .save-config {
+    transition: all 0.2s ease; }
+  #spk-parameters #spk-save-widget .save-config:hover {
+    cursor: pointer;
+    color: #00CBB8; }
+  #spk-parameters #spk-save-widget form {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 70px;
+    background-color: white;
+    line-height: 70px;
+    transition: all 0.3s ease; }
+    #spk-parameters #spk-save-widget form .input-hint {
+      width: 80%; }
+    #spk-parameters #spk-save-widget form input {
+      width: 100%; }
+  #spk-parameters #spk-save-widget form.closed {
+    top: -150px;
+    transition: all 0.3s ease; }
 #spk-parameters .slider-group-title {
   width: 100%;
   display: inline-block;
@@ -883,47 +915,51 @@ body {
   font-size: 10px;
   padding: 0px 15px; }
 
-#spk-comments form {
-  box-sizing: border-box;
-  padding: 20px;
-  position: relative;
-  width: 80%;
-  left: 10%; }
-  #spk-comments form textarea {
-    width: 100%;
+#spk-comments {
+  padding-top: 30px; }
+  #spk-comments form {
+    box-sizing: border-box;
+    padding: 20px;
+    position: relative;
+    width: 80%;
+    left: 10%; }
+    #spk-comments form span {
+      width: 100%; }
+    #spk-comments form textarea {
+      width: 100%;
+      display: inline-block;
+      height: 100px; }
+  #spk-comments .instance-element {
+    position: relative;
+    box-sizing: border-box;
+    padding: 20px;
+    width: 80%;
+    left: 10%;
+    border: 2px solid white;
+    transition: all 0.3s ease; }
+  #spk-comments .instance-element:hover {
+    cursor: pointer;
+    border: 2px solid #0000FF; }
+  #spk-comments .instance-element.active {
+    border: 2px solid #00CBB8; }
+  #spk-comments .description {
+    margin: 10px 0px; }
+  #spk-comments .spk-saver-half {
+    width: 45%;
     display: inline-block;
-    height: 100px; }
-#spk-comments .instance-element {
-  position: relative;
-  box-sizing: border-box;
-  padding: 20px;
-  width: 80%;
-  left: 10%;
-  border: 2px solid white;
-  transition: all 0.3s ease; }
-#spk-comments .instance-element:hover {
-  cursor: pointer;
-  border: 2px solid #0000FF; }
-#spk-comments .instance-element.active {
-  border: 2px solid #00CBB8; }
-#spk-comments .description {
-  margin: 10px 0px; }
-#spk-comments .spk-saver-half {
-  width: 45%;
-  display: inline-block;
-  float: left;
-  font-size: 10px; }
-  @media only screen and (max-width: 450px) {
-    #spk-comments .spk-saver-half {
-      width: 100%; } }
-#spk-comments .clear:before,
-#spk-comments .clear:after {
-  content: " ";
-  /* 1 */
-  display: table;
-  /* 2 */ }
-#spk-comments .clear:after {
-  clear: both; }
+    float: left;
+    font-size: 10px; }
+    @media only screen and (max-width: 450px) {
+      #spk-comments .spk-saver-half {
+        width: 100%; } }
+  #spk-comments .clear:before,
+  #spk-comments .clear:after {
+    content: " ";
+    /* 1 */
+    display: table;
+    /* 2 */ }
+  #spk-comments .clear:after {
+    clear: both; }
 
 #spk-help {
   box-sizing: border-box;

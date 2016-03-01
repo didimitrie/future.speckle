@@ -135,6 +135,9 @@ body {
     text-align: center;
   }
 
+  span {
+    width: 100%;
+  }
   .icon {
     width: 100%;
     height: 80px;
@@ -167,6 +170,46 @@ body {
 
 #spk-parameters {
   
+  #spk-save-widget {
+    width: 100%;
+    display: block;
+    box-sizing: border-box;
+    padding: 10px;
+    line-height: 50px;
+    background-color: white;
+    text-align: center;
+    i {
+      width: 50px;
+    }
+    .save-config {
+      transition: all 0.2s ease;
+    }
+    
+    .save-config:hover {
+      cursor: pointer;
+      color: $hoverColour;
+    }
+
+    form {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 70px;
+      background-color: white;
+      line-height: 70px;
+      transition: all 0.3s ease;
+      .input-hint { width: 80%; }
+      input { width: 100%; }
+    }
+
+    form.closed {
+      top: -150px;
+      transition: all 0.3s ease;
+    }
+
+    @include respond-to(800) {
+    }
+  }
   .slider-group-title {
     width: 100%;
     display: inline-block;
@@ -222,12 +265,14 @@ body {
 }
 
 #spk-comments {
+  padding-top: 30px;
   form {
     box-sizing: border-box;
     padding: 20px;
     position: relative;
     width: 80%;
     left: 10%;
+    span { width: 100%; }
     textarea {
       width: 100%;
       display: inline-block; 

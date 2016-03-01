@@ -30,7 +30,7 @@ var SPKSliderControl = function ( options ) {
 
     // register 'tab' in ui-tabs
     var uitabs = $( "#" + options.uitabid);
-    var icon = "<div class='icon icon-active' spkuiid='" + SPKSliderControl.id + "'><i class='fa " + options.icon + "'></div>";
+    var icon = "<div class='icon icon-active' spkuiid='" + SPKSliderControl.id + "'><span class='hint--right' data-hint='Paramaters & Performance'><i class='fa " + options.icon + "'></span></div>";
     $(uitabs).append(icon);
     
     // handle the clickie

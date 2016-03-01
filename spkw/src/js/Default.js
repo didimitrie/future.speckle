@@ -5,6 +5,7 @@ var SPKMeta             = require('./modules/SPKMetaDisplay.js')
 var SPKSliderControl    = require('./modules/SPKSliderControl.js')
 var SPKCommentsControl  = require('./modules/SPKCommentsControl.js')
 var SPKHelpControl      = require('./modules/SPKHelpControl.js')
+var SPKKeyHandler       = require('./modules/SPKKeyHandler.js')
 
 $( function () {
 
@@ -29,6 +30,7 @@ $( function () {
 
       var myCommentCtrl = new SPKCommentsControl ( {
         wrapperid : 'spk-comments',
+        formid : 'instance-saver-form',
         uitabid : 'spk-ui-tabs',
         icon : 'fa-comments',
         data: SPK.PARAMS,
@@ -39,10 +41,13 @@ $( function () {
       var myHelpCtrl = new SPKHelpControl ( {
         wrapperid : 'spk-help',
         uitabid : 'spk-ui-tabs',
-        //icon : 'fa-info-circle'
-        icon : 'fa-cogs'
+        icon : 'fa-info-circle'
+        //icon : 'fa-cogs'
       })
 
+      var myKeyHandler = new SPKKeyHandler ( {
+        spk: SPK
+      })
       //window.SPK = mySPK;
     }
   } )

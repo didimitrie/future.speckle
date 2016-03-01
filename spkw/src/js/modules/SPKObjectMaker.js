@@ -54,7 +54,7 @@ var SPKObjectMaker = function() {
 
   SPKObjectMaker.makeMesh = function( data, key, callback ) {
 
-    var material = new THREE.MeshPhongMaterial( { color: 0xCACACA, specular: 0xD1ECFF, shininess: 20, shading: THREE.FlatShading } );
+    var material = new THREE.MeshPhongMaterial( { color: 0xBABABA, specular: 0xD1ECFF, shininess: 10, shading: THREE.FlatShading } );
     //var material = new THREE.MeshNormalMaterial();
     
     material.side = THREE.DoubleSide; material.transparent = true; material.opacity = 0;
@@ -69,7 +69,7 @@ var SPKObjectMaker = function() {
 
     myObj.instance = key;
 
-    var myEdges = new THREE.EdgesHelper( myObj, 0x4D4D4D, 30 );
+    var myEdges = new THREE.EdgesHelper( myObj, 0xA1A1A1, 30 );
     
     myEdges.removable = true; myEdges.material.transparent = true;
     
