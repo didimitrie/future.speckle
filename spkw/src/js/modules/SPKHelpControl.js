@@ -1,3 +1,8 @@
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
+ */
+
 
 var $               = require('jquery');
 var shortid         = require('shortid');

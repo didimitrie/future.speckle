@@ -29,8 +29,8 @@ module.exports = function( app, passport, express ) {
     res.sendfile(appDir + "/spkw/dist/html/Default.html");
   });
 
-  app.get("/view/a/:m", isAuthorized, function(req, res) {
-    res.sendfile(appDir + "/spkw/dist/html/Bare.html"); // todo
+  app.get("/view/t/:m", isAuthorized, function(req, res) {
+    res.sendfile(appDir + "/spkw/dist/html/Template.html"); // todo
   });
 
 } // module.exports end

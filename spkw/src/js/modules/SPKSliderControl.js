@@ -1,5 +1,8 @@
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
+ */
 
-// Really not so basic handler
 
 var $               = require('jquery');
 var noUISlider      = require('nouislider');
