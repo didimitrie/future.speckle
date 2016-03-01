@@ -55,6 +55,9 @@ If you want to deploy this to your own server (for various reasons), go ahead! Y
 
 Please give us a heads up if you do this :bow:.
 
+##Need Help?
+Hit me up [@idid](http://twitter.com/idid) or open an issue (preffered). 
+
 ##Contribution Guidelines
 
 See the contribution guidelines.
