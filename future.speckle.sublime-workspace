@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"col-sm-offset",
+				"col-sm-offset-3"
+			],
+			[
 				"Aut",
 				"AuthDetails"
 			],
@@ -376,26 +380,21 @@
 	"buffers":
 	[
 		{
-			"file": "config/database.js",
+			"contents": "/*\n * Beta.Speckle Parametric Model Viewer\n * Copyright (C) 2016 Dimitrie A. Stefanescu (@idid) / The Bartlett School of Architecture, UCL\n *\n * This program is free software: you can redistribute it and/or modify it\n * under the terms of the GNU General Public License as published by the Free\n * Software Foundation, either version 3 of the License, or (at your option)\n * any later version.\n *\n * This program is distributed in the hope that it will be useful, but WITHOUT\n * ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or\n * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for\n * more details.\n *\n * You should have received a copy of the GNU General Public License along with\n * this program.  If not, see <http://www.gnu.org/licenses/>.\n */\n\n\n// general deps\nvar $               = require('jquery');\nvar THREE           = require('three');\nvar OrbitCtrls      = require('three-orbit-controls')(THREE);\nvar noUISlider      = require('nouislider');\nvar TWEEN           = require('tween.js');\n\n// SPK Libs\nvar SPKLoader       = require('./SPKLoader.js');\nvar SPKCache        = require('./SPKCache.js');\nvar SPKMaker        = require('./SPKObjectMaker.js');\nvar SPKSync         = require('./SPKSync.js');\nvar SPKConfig       = require('./SPKConfig.js');\nvar SPKLogger       = require('./SPKLogger.js');\nvar SPKSaver        = require('./SPKSaver.js');\nvar SPKUiManager    = require('./SPKUiManager.js');\nvar SPKMeasures     = require('./SPKMeasures');\n\nvar SPK = function (wrapper, options) {\n\n  /*************************************************\n  /   SPK Global\n  *************************************************/\n  \n  var SPK = this;\n  \n  SPK.Options = null;\n  /*************************************************\n  /   SPK SPK.HMTLs\n  *************************************************/\n\n  SPK.HMTL = { \n    wrapper : \"\" , \n    canvas : \"\", \n    sidebar : \"\",\n    sliderwrapper : \"\",\n    sliders : \"\", \n    meta : \"\"\n  };\n\n  /*************************************************\n  /   SPK Vars\n  *************************************************/\n\n  SPK.GLOBALS = {\n    model : \"\",\n    metadata : {\n      paramsFile : \"\",\n      staticGeoFile : \"\",\n      rootFiles : \"\"\n    },\n    sliders : [],\n    currentKey : \"\",\n    boundingSphere : \"\"\n  }\n\n  /*************************************************\n  /   THREE vars\n  *************************************************/\n\n  SPK.VIEWER = {\n    renderer : null,\n    camera : null,\n    scene : null, \n    controls : null,\n    sunlight : null,\n    raycaster : null,\n  }\n  \n\n  SPK.SCENE = {\n    grid : null,\n    groundplane : null,\n    shadowlight : null,\n    shadows : false\n  }\n  /*************************************************\n  /   SPK Methods\n  *************************************************/\n  \n  /**\n   * Main Init Function\n   */\n  \n  SPK.init = function(wrapper, options) {\n\n    if( wrapper === null ) {\n\n      console.error(\"No parent element found\");\n\n      return;\n    }\n\n    SPK.Options = options;\n\n    // get those elements in place, you cunt\n    SPK.HMTL.wrapper        = $(wrapper);\n    SPK.HMTL.canvas         = $(wrapper).find(\"#spk-canvas\");\n    SPK.HMTL.sliderwrapper  = $(wrapper).find(\"#wrapper-params\");\n    SPK.HMTL.sliders        = $(wrapper).find(\"#spk-sliders\");\n    SPK.HMTL.meta           = $(SPK.HMTL.wrapper).find(\"#spk-metadata\");\n\n    // get the model url\n    var href = window.location.pathname;\n\n    SPK.GLOBALS.model = href.substr(href.lastIndexOf('/') + 1);\n\n    // need to init scene before: \n    // getmodel meta > load params > make scene > load static  & first instance (into scene) > \n    // > compute bounding box > setup environment > renderloop\n    \n    SPK.VIEWER.scene = new THREE.Scene();\n    \n    // load parameters && go!\n    \n    SPK.getModelMeta(function () {\n\n      SPK.loadParameters(function () {\n\n        SPK.loadInstance(-1, function () {\n          \n          SPK.alignSliders();\n\n          SPK.addNewInstance();\n\n          SPK.loadStaticInstance();\n          \n          SPK.setupEnvironment();\n        \n          SPK.render(); \n\n          SPKSync.addInstance(SPK);\n\n          if(options.logger) \n            SPKLogger.newSession(SPK.GLOBALS.model);\n          \n          if(options.saver)\n            SPKSaver.init(SPK);\n\n          SPKUiManager.init();\n\n          SPK.zoomExtents();\n\n        });      \n\n      });\n\n    });\n\n  }\n\n  SPK.getModelMeta = function(callback) {\n\n    $.getJSON(SPKConfig.GEOMAPI + SPK.GLOBALS.model, function (data) {\n      \n      data.deflateLocation = data.deflateLocation.replace(\"./\", \"/\");\n      \n      SPK.GLOBALS.metadata.paramsFile = SPKConfig.APPDIR + data.deflateLocation + \"/params.json\"\n      SPK.GLOBALS.metadata.staticGeoFile = SPKConfig.APPDIR + data.deflateLocation + \"/static.json\"\n      SPK.GLOBALS.metadata.rootFiles = SPKConfig.APPDIR + data.deflateLocation + \"/\";\n\n      $(\".model-name\").html(data.modelName);\n      \n      $(\".model-meta\").html(\"Added on \" + data.dateAdded + \" by \" + data.ownerName);\n\n      callback();\n\n    })\n\n  }\n\n  SPK.loadParameters = function(callback) {\n\n    $.getJSON(SPK.GLOBALS.metadata.paramsFile, function(data) {\n\n      var params = data.parameters;\n\n      SPKMeasures.init(data.properties, data.kvpairs, data.propNames);\n      \n      for( var i = 0; i < params.length; i++ ) {\n        \n        var paramId = $(SPK.HMTL.wrapper).attr(\"id\") + \"_parameter_\" + i;\n        var paramName = params[i].name === \"\" ? \"Unnamed Parameter\" : params[i].name;\n\n        $(SPK.HMTL.sliders).append( $( \"<div>\", { id: paramId, class: \"parameter\" } ) );\n        \n        $( \"#\" + paramId ).append( \"<p class='parameter_name'>\" + paramName + \"</p>\" );\n        \n        var sliderId = paramId + \"_slider_\" + i;\n\n        $( \"#\" + paramId ).append( $( \"<div>\", { id: sliderId, class: \"basic-slider\" } ) );\n\n        var myRange = {}, norm = 100 / (params[i].values.length-1);\n\n        for( var j = 0; j < params[i].values.length; j++ ) {\n\n          myRange[ norm * j + \"%\" ] = params[i].values[j];\n\n        }\n        \n        myRange[\"min\"] = myRange[\"0%\"]; delete myRange[\"0%\"];\n      \n        myRange[\"max\"] = myRange[\"100%\"]; delete  myRange[\"100%\"];\n\n        var sliderElem = $( \"#\" + sliderId )[0];\n        \n        var slider = noUISlider.create( sliderElem, {\n          start : [0],\n          conect : false,\n          tooltips : false,\n          snap : true,\n          range : myRange,\n          pips : {\n            mode : \"values\",\n            values : params[i].values,\n            density : 3\n          }\n        });\n\n        // set the callbacks\n\n        slider.on(\"slide\", SPK.removeCurrentInstance);\n\n        slider.on(\"change\", SPK.addNewInstance);\n\n        slider.on(\"end\", SPK.purgeScene);\n\n        // add to master\n        slider.paramName = params[i].name;\n        SPK.GLOBALS.sliders.push(slider);\n      }\n\n      callback();\n\n    });\n\n  }\n\n  SPK.getCurrentKey = function () {\n    \n    var key = \"\";\n\n    for( var i = 0; i < SPK.GLOBALS.sliders.length; i++ ) {\n\n      key += Number( SPK.GLOBALS.sliders[i].get() ).toString() + \",\"; \n\n    }\n\n    return key;\n\n  }\n\n  SPK.removeCurrentInstance = function () {\n\n    var opacity = 1;\n    var duration = 600;\n    var out = [];\n    \n    for(var i = 0; i < SPK.VIEWER.scene.children.length; i++ ) {\n\n      var myObj = SPK.VIEWER.scene.children[i];\n      \n      if( myObj.removable ) {\n\n          out.push(myObj);\n\n      }\n    }\n\n    var tweenOut = new TWEEN.Tween( { x: opacity } )\n    .to( {x: 0}, duration )\n    .onUpdate( function() {\n\n      for( var i = 0; i < out.length; i++ ) {\n\n        out[i].material.opacity = this.x;\n\n      }\n\n      if(( this.x >= opacity * 0.5 ) && (this.calledNext===undefined))\n      {\n        \n        //this.calledNext = true;\n        //SPK.addNewInstance();\n        \n      }\n\n    })\n    .onComplete( function() {\n\n      for( var i = 0; i < out.length; i++ ) {\n\n        SPK.VIEWER.scene.remove(out[i]);\n        out[i].geometry.dispose();\n        out[i].material.dispose();\n\n      }\n\n      SPK.addNewInstance(); // on  because we didnt' call half way through in the opacity out \n\n    })  ;\n\n    tweenOut.start();\n\n  }\n\n  SPK.purgeScene = function() {\n    \n    // theoretically should do nothing; but we do have cases when we have overlapping instances\n    // due to \"quickness\" of slider drag, and the way we handle object loading. yoop. \n\n    var opacity = 1;\n    var duration = 200;\n    var out = [];\n    \n    for(var i = 0; i < SPK.VIEWER.scene.children.length; i++ ) {\n\n      var myObj = SPK.VIEWER.scene.children[i];\n      \n      if( (myObj.removable) && (myObj.instance != SPK.GLOBALS.currentKey) ) {\n\n          out.push(myObj);\n\n      }\n    }\n\n    var tweenOut = new TWEEN.Tween( { x: opacity } )\n    .to( {x: 0}, duration )\n    .onUpdate( function() {\n\n      for( var i = 0; i < out.length; i++ ) {\n\n        out[i].material.opacity = this.x;\n\n      }\n\n      if(( this.x >= opacity * 0.5 ) && (this.calledNext===undefined))\n      {\n        \n        this.calledNext = true;\n        \n      }\n\n    })\n    .onComplete( function() {\n\n      for( var i = 0; i < out.length; i++ ) {\n\n        SPK.VIEWER.scene.remove(out[i]);\n        out[i].geometry.dispose();\n        out[i].material.dispose();\n\n      }\n\n    })  ;\n\n    tweenOut.start();\n\n  }\n\n  SPK.addNewInstance = function() {\n\n    var key = SPK.getCurrentKey();\n\n    if(SPK.GLOBALS.currentKey === key) {\n    \n      SPK.purgeScene();\n      return;\n    }\n\n    SPKMeasures.setKey(key);\n\n    SPK.GLOBALS.currentKey = key;\n    SPK.loadInstance( key, function() {\n\n      var iin = [];\n\n      for(var i = 0; i < SPK.VIEWER.scene.children.length; i++ ) {\n\n        var myObj = SPK.VIEWER.scene.children[i];\n        \n        if( myObj.removable ) {\n          \n          if( myObj.instance === SPK.GLOBALS.currentKey ) {\n\n            iin.push(myObj);\n\n          } \n        }\n      }\n\n      var duration = 300, opacity = 1;\n      \n      var tweenIn = new TWEEN.Tween( { x : 0 } )\n      .to( { x: opacity }, duration )\n      .onUpdate( function() {\n        for( var i = 0; i < iin.length; i++ ) {\n\n          iin[i].material.opacity = this.x;\n\n        }\n      })\n\n      tweenIn.start();\n\n    });\n\n  }\n\n  SPK.computeBoundingSphere = function() {\n\n    var geometry = new THREE.Geometry();\n\n    for(var i = 0; i < SPK.VIEWER.scene.children.length; i++) {\n\n      if(SPK.VIEWER.scene.children[i].selectable) {\n        \n        geometry.merge(SPK.VIEWER.scene.children[i].geometry);\n      \n      }\n    }\n\n\n    geometry.computeBoundingSphere();\n\n    SPK.GLOBALS.boundingSphere = geometry.boundingSphere;\n    \n    geometry.dispose();\n\n  }\n\n  SPK.setupEnvironment = function () {\n    // TODO: Grids, etc.\n    // \n    // make the scene + renderer\n\n    SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : true, alpha: true} );\n\n    SPK.VIEWER.renderer.setClearColor( 0xF2F2F2 ); \n\n    SPK.VIEWER.renderer.setPixelRatio( 1 );  // change to window.devicePixelRatio \n    //SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );  // change to window.devicePixelRatio \n    \n    SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); \n\n    SPK.VIEWER.renderer.shadowMap.enabled = true;\n    \n    $(SPK.HMTL.canvas).append( SPK.VIEWER.renderer.domElement );\n\n    SPK.VIEWER.camera = new THREE.PerspectiveCamera( 40, $(SPK.HMTL.canvas).innerWidth() * 1 / $(SPK.HMTL.canvas).innerHeight(), 1, SPK.GLOBALS.boundingSphere.radius * 100 );\n\n    SPK.VIEWER.camera.position.z = -SPK.GLOBALS.boundingSphere.radius*1.8; \n\n    SPK.VIEWER.camera.position.y = SPK.GLOBALS.boundingSphere.radius*1.8;\n    \n    SPK.VIEWER.controls = new OrbitCtrls( SPK.VIEWER.camera, SPK.VIEWER.renderer.domElement );\n\n    SPK.VIEWER.controls.addEventListener( 'change', function () {\n\n      SPKSync.syncCamera(SPK.VIEWER.camera) ;\n\n    });\n\n\n    // shadow light\n    var light = new THREE.DirectionalLight(0xffffff, 1);\n    light.castShadow = true;\n    light.shadowCameraNear = 0;\n    light.shadowCameraFar = SPK.GLOBALS.boundingSphere.radius * 6;\n    light.shadowCameraLeft = -SPK.GLOBALS.boundingSphere.radius * 2; \n    light.shadowCameraRight = SPK.GLOBALS.boundingSphere.radius * 2; \n    light.shadowCameraTop = SPK.GLOBALS.boundingSphere.radius * 2; \n    light.shadowCameraBottom = -SPK.GLOBALS.boundingSphere.radius * 2; \n    light.shadowMapWidth = 1024;\n    light.shadowMapHeight = 1024;\n    light.shadowBias = -0.0000022;\n    light.shadowDarkness = 0;\n    light.onlyShadow = true;\n    \n    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius * 1.7, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius * 3 ,SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius * 1.7); \n\n    SPK.SCENE.shadowlight = light;\n    SPK.VIEWER.scene.add(light);\n\n    // camera light\n    \n    SPK.VIEWER.scene.add( new THREE.AmbientLight( 0xD8D8D8 ) );\n   \n    var flashlight = new THREE.PointLight( 0xffffff, 0.8, SPK.GLOBALS.boundingSphere.radius * 12, 1);\n    \n    SPK.VIEWER.camera.add( flashlight );\n    \n    SPK.VIEWER.scene.add( SPK.VIEWER.camera );\n\n    // grids\n    \n    SPK.makeContext();\n\n    // resize events\n    \n    $(window).resize( function() { \n      \n      SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth()-1, $(SPK.HMTL.canvas).innerHeight()-5 ); \n      \n      SPK.VIEWER.camera.aspect = ($(SPK.HMTL.canvas).innerWidth()-1) / ($(SPK.HMTL.canvas).innerHeight()-5);\n      \n      SPK.VIEWER.camera.updateProjectionMatrix();\n    \n    } );\n\n    window.scene = SPK.VIEWER.scene;\n  }\n\n  SPK.loadInstance = function(key, callback) {\n    \n    key = key != -1 ? key : SPK.getCurrentKey();\n\n    SPKLoader.load( SPK.GLOBALS.metadata.rootFiles + key + \".json\", function (obj) {\n\n      for( var i = 0; i < obj.geometries.length; i++ ) {\n\n        SPKMaker.make( obj.geometries[i], key, function( obj ) { \n          \n          SPK.VIEWER.scene.add(obj);\n\n        });\n\n      }\n\n      SPKLogger.addUsedInstance(key);\n\n      SPK.computeBoundingSphere();\n      \n      if( callback != undefined )\n\n        callback();\n\n    });\n\n  }\n\n  SPK.loadStaticInstance = function() {\n\n    SPKLoader.load( SPK.GLOBALS.metadata.staticGeoFile, function( obj ) {\n\n      for( var i = 0; i < obj.geometries.length; i++ ) {\n\n        SPKMaker.make(obj.geometries[i], \"static\", function( obj ) { \n          \n          // TODO : Make unremovable\n          \n          obj.removable = false;\n\n          obj.material.opacity = 1;\n          \n          SPK.VIEWER.scene.add(obj);\n          \n        });\n\n      }\n\n    });\n\n  }\n\n  SPK.loadInstanceForced = function(key) {\n\n    if( SPK.GLOBALS.currentKey === key) return;\n\n    SPK.removeCurrentInstance();\n\n    var params = key.split(\",\");\n    \n    for( var i = 0; i < params.length - 1; i++ ) {\n\n      SPK.GLOBALS.sliders[i].set(params[i]);\n\n    }\n\n    //SPK.GLOBALS.currentKey = key;\n\n    SPK.addNewInstance();\n\n  }\n\n  SPK.render = function() {\n\n    requestAnimationFrame( SPK.render );\n\n    TWEEN.update();\n\n    SPK.VIEWER.renderer.render(SPK.VIEWER.scene, SPK.VIEWER.camera);\n\n  }\n\n  SPK.makeContext = function() {\n\n    var multiplier = 10;\n\n    var planeGeometry = new THREE.PlaneGeometry( SPK.GLOBALS.boundingSphere.radius * multiplier * 2 , SPK.GLOBALS.boundingSphere.radius * multiplier * 2, 2, 2 ); //three.THREE.PlaneGeometry( width, depth, segmentsWidth, segmentsDepth );\n    planeGeometry.rotateX( - Math.PI / 2 );\n    var planeMaterial = new THREE.MeshBasicMaterial( { color: 0xEEEEEE } ); //0xEEEEEE #D7D7D7\n    plane = new THREE.Mesh( planeGeometry, planeMaterial );\n    plane.receiveShadow = true;\n    plane.position.set(SPK.GLOBALS.boundingSphere.center.x, -0.1, SPK.GLOBALS.boundingSphere.center.z );\n    plane.visible = false;\n\n    SPK.VIEWER.scene.add( plane );\n    SPK.SCENE.plane = plane;\n\n    if(SPK.GLOBALS.boundingSphere.radius === 0) {\n      console.error(\"ERR: Failed to calculate bounding sphere. This is a known bug and it happens when there's no valid geometry in the scene.\");\n      //$(\".model-name\").append(\n      $(SPK.HMTL.sliders).html(\n      \"<br><p style='color: red'>Failed to load model. <strong>Check the console for details (if you feel like a hacker), and send a shout over to <a href='mailto:contact@dimitrie.org?subject=Model \" + SPK.GLOBALS.model + \" failed to load'>contact@dimitrie.org.</a> so we can look into it. Thanks!</p>\")\n    } else {\n      grid = new THREE.GridHelper( SPK.GLOBALS.boundingSphere.radius * multiplier, SPK.GLOBALS.boundingSphere.radius*multiplier/30);\n      grid.material.opacity = 0.15;\n      grid.material.transparent = true;\n      grid.position.set(SPK.GLOBALS.boundingSphere.center.x, -0.1, SPK.GLOBALS.boundingSphere.center.z );\n      grid.setColors( 0x0000ff, 0x808080 ); \n      SPK.VIEWER.scene.add( grid );\n      SPK.SCENE.grid = grid;\n   }\n   \n   \n    \n\n  }\n\n\n  /*************************************************\n  /   SPK Random functions that should probs go somewehere else\n  *************************************************/\n\n  SPK.zoomExtents = function () {\n\n    var r = SPK.GLOBALS.boundingSphere.radius;\n    var offset = r / Math.tan(Math.PI / 180.0 * SPK.VIEWER.controls.object.fov * 0.5);\n    var vector = new THREE.Vector3(0, 0, 1);\n    var dir = vector.applyQuaternion(SPK.VIEWER.controls.object.quaternion);\n    var newPos = new THREE.Vector3();\n    dir.multiplyScalar(offset * 1.05);\n    newPos.addVectors(SPK.GLOBALS.boundingSphere.center, dir);\n    SPK.VIEWER.controls.object.position.set(newPos.x, newPos.y, newPos.z);\n    SPK.VIEWER.controls.target.set(SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z);\n\n  }\n\n  SPK.alignSliders = function () {\n    \n    return;\n\n  }\n\n  SPK.beep = function () {\n\n    return \"boop\";\n\n  }\n\n\n  /*************************************************\n  /   SPK INIT\n  *************************************************/\n    \n  SPK.init(wrapper, options);\n\n}\n\nmodule.exports = SPK;\n\n",
+			"file": "spkw/src/js/SPK.js",
+			"file_size": 17898,
+			"file_write_time": 131002114470000000,
 			"settings":
 			{
-				"buffer_size": 307,
+				"buffer_size": 17898,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "config.local/auth-config.js",
+			"file": "spkw/package.json",
 			"settings":
 			{
-				"buffer_size": 386,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "app/routes.js",
-			"settings":
-			{
-				"buffer_size": 13892,
+				"buffer_size": 914,
 				"line_ending": "Unix"
 			}
 		},
@@ -403,15 +402,15 @@
 			"file": "views/index.jade",
 			"settings":
 			{
-				"buffer_size": 5108,
+				"buffer_size": 5496,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "views/layout.jade",
+			"file": "app/models/models.js",
 			"settings":
 			{
-				"buffer_size": 742,
+				"buffer_size": 1499,
 				"line_ending": "Unix"
 			}
 		},
@@ -419,15 +418,15 @@
 			"file": "views/partials/footer.jade",
 			"settings":
 			{
-				"buffer_size": 1449,
+				"buffer_size": 1456,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "server.js",
+			"file": "assets/scss/main.scss",
 			"settings":
 			{
-				"buffer_size": 2576,
+				"buffer_size": 1184,
 				"line_ending": "Unix"
 			}
 		}
@@ -479,16 +478,40 @@
 	[
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/app",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config.local",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/uploads/deflated",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/app/models",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/app/routes",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/assets",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/assets/scss",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views"
 	],
 	"file_history":
 	[
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/app/routes/modelmanager.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/app/routes/modelapi.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/.gitignore",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKConfig.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPK.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/server.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/.gitignore",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/readme.md",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/future.speckle.sublime-project",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/app/routes/frontend.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/app/routes/viewer.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/readme.md",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config/readme.md",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config/auth-config.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/app/routes.js",
+		"/Users/Bender/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/layout.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config/database.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config/passport.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config.local/passport.js",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config.local/readme.md",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/partials/footer.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/index.jade",
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config.local/auth-config.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/login.jade",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/signup.jade",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config.local/passport.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/profile.jade",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/package.json",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config.local/database.js",
@@ -497,23 +520,16 @@
 		"/Volumes/Feral/.nginx/conf.d/speckle.xyz.conf",
 		"/Volumes/Feral/.nginx/conf.d/research.dimitrie.org.conf",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/device.orientations/index.html",
-		"/Users/Bender/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/dist/js/SPKDouble.js",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKConfig.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/assets/scss/_variables.scss",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/partials/footer.jade",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/partials/analytics.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/jade/SPKSingle.jade",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/server.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/package.json",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/jade/hc.html",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/terms.jade",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/assets/scss/main.scss",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/jade/headercomment.html",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/layout.jade",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/index.jade",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKSync.js",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPK.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKSaver.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKObjectMaker.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKMeasures.js",
@@ -521,14 +537,12 @@
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKLoader.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKDouble.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKCache.js",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/readme.md",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKUiManager.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/js/SPKSingle.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/dist/js/SPKSingle.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/sass/_sliders.scss",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/sass/SPKSingle.scss",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/cookies.jade",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/app/routes.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/sass/_app.scss",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/spkw/src/sass/_typebase.scss",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/.gitmodules",
@@ -560,7 +574,6 @@
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/spkw/src/js/SPKCache.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/viewer_online/static/css/nouislider.css",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/license.txt",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/readme.md",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/uploads/deflated/userModel-1452799030864-auth0|567a821443f64d5619edff31/CustomFileInputs/fonts/codropsicons/license.txt",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/licence.txt",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/assets/css/main.css",
@@ -568,13 +581,11 @@
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/bin/watch-css",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/src/scss/main.scss",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/gulpfile.js",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/config/database.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/modelviewer/test.jade",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/app/models/models.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/app/models/user.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/modelviewer/index.html",
 		"/Users/Bender/Library/Application Support/Sublime Text 3/Packages/User/Default (OSX).sublime-keymap",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/.gitignore",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/scripts/helpers.js",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/future.speckle/views/scripts/custom-file-input.js",
 		"/Users/Bender/Desktop/Sublime Text/Red.icns",
@@ -602,12 +613,11 @@
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/super-rentals/app/templates/about.hbs",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/super-rentals/app/templates/contact.hbs",
 		"/Users/Bender/Dropbox (Dimitrie)/02 Development/super-rentals/app/router.js",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/05 Auth Test/views/profile.ejs",
-		"/Users/Bender/Dropbox (Dimitrie)/02 Development/05 Auth Test/views/index.ejs"
+		"/Users/Bender/Dropbox (Dimitrie)/02 Development/05 Auth Test/views/profile.ejs"
 	],
 	"find":
 	{
-		"height": 50.0
+		"height": 51.0
 	},
 	"find_in_files":
 	{
@@ -622,6 +632,61 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"xdata-icon='octicon-repo-forked'",
+			"double",
+			"( err, session )",
+			"err",
+			"METAAPI",
+			"// load ",
+			"= ",
+			"     ",
+			"    ",
+			"= ",
+			"deflateLocation",
+			"req, res",
+			"break",
+			"sessionend",
+			"shortid",
+			"Medium",
+			"6",
+			"User",
+			"./app",
+			"app",
+			"odel",
+			"session",
+			"Session",
+			"session",
+			"Session",
+			"isLoggedIn",
+			"isAuthorized",
+			"user",
+			"User",
+			"user",
+			"User",
+			"analytics",
+			"express",
+			"model",
+			"Model",
+			"express",
+			"appDir",
+			"path",
+			"fs",
+			"shortid",
+			"DecompressZip",
+			"Session",
+			"session",
+			"Session",
+			"session",
+			"Session",
+			"list",
+			"app",
+			"passport",
+			"Passport",
+			"passport",
+			"express",
+			"getFormatedDate",
+			"appDir",
+			"passport",
 			"login",
 			"\"",
 			"gamma",
@@ -694,62 +759,7 @@
 			"wrappers",
 			"name",
 			"Vk_cVx1Fe",
-			"analytics",
-			"get",
-			"nothing",
-			"/api/model/metadata/update/",
-			"key",
-			"bcrypt",
-			"SPK.GLOBALS.model",
-			"Config",
-			"SPKConfig",
-			"appDir",
-			"path",
-			"fs",
-			"bcrypt",
-			"plainInstance",
-			"name",
-			"simple",
-			"savedInstance",
-			"toggleShadows",
-			"2048",
-			"light",
-			"boundingSphere",
-			"controls",
-			"myBoundingSphere",
-			"toggleGrid",
-			".text-center",
-			"grid",
-			"alignSliders",
-			"dist",
-			"src",
-			"assets",
-			"view",
-			"viewer",
-			"assets",
-			"swap",
-			"swapInstances",
-			"updateInstances",
-			"swapInstances",
-			"addNewInstance",
-			"updateInstances",
-			"swapInstances",
-			"33",
-			"50",
-			"_w",
-			"x",
-			"(\"///////////////////////////////////////\")\n",
-			"instances",
-			"sliderId",
-			"SPKSingle",
-			"app",
-			"top",
-			"p>",
-			"<p",
-			"GLOBALS",
-			"SPKL",
-			"in",
-			"log"
+			"analytics"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -778,52 +788,56 @@
 			[
 				{
 					"buffer": 0,
-					"file": "config/database.js",
+					"file": "spkw/src/js/SPK.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 307,
+						"buffer_size": 17898,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								108,
-								108
+								13458,
+								13458
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 13785.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "config.local/auth-config.js",
+					"file": "spkw/package.json",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 386,
+						"buffer_size": 914,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								137,
-								137
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
+							"syntax": "Packages/Theme - Cyanide/Cyanide/file_types/npm JSON.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -834,19 +848,50 @@
 				},
 				{
 					"buffer": 2,
-					"file": "app/routes.js",
+					"file": "views/index.jade",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13892,
+						"buffer_size": 5496,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								183,
-								183
+								4078,
+								4078
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Theme - Cyanide/Cyanide/file_types/Jade.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"word_wrap": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2807.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "app/models/models.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1499,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								221,
+								221
 							]
 						],
 						"settings":
@@ -859,84 +904,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "views/index.jade",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5108,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2556,
-								2556
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Theme - Cyanide/Cyanide/file_types/Jade.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1387.0,
-						"zoom_level": 1.0
-					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "views/layout.jade",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 742,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								17,
-								17
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Theme - Cyanide/Cyanide/file_types/Jade.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
 					"file": "views/partials/footer.jade",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1449,
+						"buffer_size": 1456,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								155,
-								155
+								192,
+								192
 							]
 						],
 						"settings":
@@ -946,39 +931,40 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 52.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "server.js",
+					"buffer": 5,
+					"file": "assets/scss/main.scss",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2576,
+						"buffer_size": 1184,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								534,
-								534
+								1184,
+								1184
 							]
 						],
 						"settings":
 						{
-							"history_list_is_closing": true,
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
+							"syntax": "Packages/Theme - Cyanide/Cyanide/file_types/SCSS.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1626.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -991,7 +977,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 34.0
+		"height": 35.0
 	},
 	"input":
 	{
@@ -1017,7 +1003,7 @@
 		"cols":
 		[
 			0.0,
-			0.661832272016,
+			0.633569074152,
 			1.0
 		],
 		"rows":
@@ -1035,7 +1021,7 @@
 	"project": "future.speckle.sublime-project",
 	"replace":
 	{
-		"height": 64.0
+		"height": 66.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1289,7 +1275,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 234.0,
+	"side_bar_width": 264.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

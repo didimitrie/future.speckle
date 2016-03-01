@@ -4,6 +4,15 @@
 @import 'sliders';
 @import 'formreset';
 
+@mixin respond-to($breakpoint) {
+    @media only screen and (max-width: $breakpoint + px) { @content; }
+}
+
+@mixin boxshadow-right() {
+  box-shadow: 1px 1px 12px 0px rgba(0,0,0,0.25);
+}
+
+
 body {
   background-color: $bgColour;
   color : $txtColour;
@@ -23,6 +32,11 @@ a {
 
 a:hover {
   color: $hoverColour;
+}
+
+a.logo {
+  text-decoration: none;
+  font-weight: 300;
 }
 
 hr {

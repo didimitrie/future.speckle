@@ -25,10 +25,36 @@ a:hover {
   color: $hoverColour;
 }
 
+a.logo {
+  text-decoration: none;
+  font-weight: 300;
+}
+
 hr {
   border: 0;
   border-bottom: 1px dashed #C3C3C3;
   margin: 20px 0;
+}
+
+p.parameter_name {
+  display: relative;
+  width: 100%;
+  float: left;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: white;
+  text-align: center;
+}
+
+.parameter {
+  margin-bottom: 30px;
+}
+
+.basic-slider {
+  width: 90%;
+  margin-left: 5%;
+  display: inline-block;
+  margin-top: 10px;
 }
 
 .text-center {

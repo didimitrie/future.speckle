@@ -1,0 +1,47 @@
+extends ./layout/layout.jade
+
+block header
+  // add the custom stylesheet and scripts here
+  link(rel='stylesheet' href="./../css/Default.css")
+  script(src="./../js/Default.js")
+
+block content
+  #spk-canvas
+  #spk-metadata
+    .logo
+      //img(src="http://beta.speckle.xyz/img/SPKLogo.svg")
+      i.fa.fa-angle-double-right
+      p Made with #[a(href="/") Speckle]
+    .metadata
+      span.name.
+        Loading...
+      span.author-date.
+  #spk-ui-tabs
+  #spk-parameters.sidebar
+    br
+    br
+  #spk-comments.sidebar.sidebar-hidden
+    form
+      textarea(placeholder="To save a configuration, give it a description and hit enter." rows=3)
+    #instance-list
+  #spk-help.sidebar.sidebar-hidden
+    h1 Basic Functionality:
+    .shortcut
+      .half-1
+        p Zoom All Objects 
+      .half-2
+        p Z
+    .shortcut
+      .half-1
+        p Toggle Ground Shadows
+      .half-2
+        p S
+    .shortcut
+      .half-1
+        p Toggle Grid
+      .half-2
+        p G
+  
+  
+  
+  

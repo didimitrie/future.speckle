@@ -52,10 +52,8 @@ app.use(passport.session());
 // get the static routes up - i have a feel this is somewhat stupidly done
 app.use(express.static('assets'));
 app.use('/uploads', express.static('uploads'));
-app.use('/view/s/css', express.static('spkw/dist/css'));
-app.use('/view/d/css', express.static('spkw/dist/css'));
-app.use('/view/s/js', express.static('spkw/dist/js'));
-app.use('/view/d/js', express.static('spkw/dist/js'));
+app.use('/view/css', express.static('spkw/dist/css'));
+app.use('/view/js', express.static('spkw/dist/js'));
 
 // dynamic routes come here, after static ones
 // there was some trouble with this before

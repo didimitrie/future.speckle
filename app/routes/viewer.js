@@ -12,14 +12,25 @@
 var path            = require('path')
 var appDir          = path.dirname(require.main.filename);
 
+// functionality sketch; register dashboards somewhere...
+var dashboards = [
+{
+  urlprefix : "s",
+  location : "Default.html"
+},
+{
+  urlprefix : "a",
+  location : "Default.html"
+}];
+
 module.exports = function( app, passport, express ) { 
   
   app.get("/view/s/:m", isAuthorized, function(req, res) {
-    res.sendfile(appDir + "/spkw/dist/SPKSingle.html");
+    res.sendfile(appDir + "/spkw/dist/html/Default.html");
   });
 
-  app.get("/view/d/:m", isAuthorized, function(req, res) {
-    res.sendfile(appDir + "/spkw/dist/SPKDouble.html");
+  app.get("/view/a/:m", isAuthorized, function(req, res) {
+    res.sendfile(appDir + "/spkw/dist/html/Bare.html"); // todo
   });
 
 } // module.exports end

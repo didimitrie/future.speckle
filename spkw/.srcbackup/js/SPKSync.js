@@ -72,7 +72,7 @@ var SPKSync = function () {
 
   SPKSync.toggleGroundShadows = function() {
     SPKSync.toggleShadows();
-    SPKSync.toggleGroundplane();
+    //SPKSync.toggleGroundplane();
   }
 
   SPKSync.toggleShadows = function() {
@@ -81,10 +81,12 @@ var SPKSync = function () {
       if( SPKSync.instances[i].SCENE.shadows ) {
         SPKSync.instances[i].SCENE.shadowlight.shadowDarkness = 0;
         SPKSync.instances[i].SCENE.shadows = false;
+        SPKSync.instances[i].SCENE.plane.visible = false;
       }
       else {
-        SPKSync.instances[i].SCENE.shadowlight.shadowDarkness = 0.15;
+        SPKSync.instances[i].SCENE.shadowlight.shadowDarkness = 0.5;
         SPKSync.instances[i].SCENE.shadows = true;
+        SPKSync.instances[i].SCENE.plane.visible = true;
       }
 
     }
@@ -123,7 +125,7 @@ var SPKSync = function () {
       SPKSync.toggleGrid();
 
     if(e.keyCode == 83)
-      {SPKSync.toggleShadows();SPKSync.toggleGroundplane();}
+      SPKSync.toggleShadows(); //SPKSync.toggleGroundplane();
 
     if(e.keyCode == 32) 
       SPKSync.zoomExtents();

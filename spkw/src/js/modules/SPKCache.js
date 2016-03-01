@@ -17,13 +17,32 @@
  */
 
 
-var $   = require('jquery'); 
-var SPK = require('./SPK.js');
+var SPKCache = function() {
+  
+  var SPKCache = this;
 
-$( function() {
+  SPKCache.instances = [];
 
-  var mySPK1  = new SPK( $( '#spk-viewer-1' ) );
-  var mySPK2  = new SPK( $( '#spk-viewer-2' ) );
+  SPKCache.add = function(instance, key) {
+    // TODO
+  } 
 
-});
+  SPKCache.get = function(key) {
+    
+    for( var i = 0; i < SPKCache.instances.length; i++ ) {
+    
+      if( SPKCache.instances[i].key === key ) 
+    
+        return SPKCache.instances[i];
+    
+    }
+    
+    return null;
+  }
 
+  SPKCache.clear = function() {
+    // TODO 
+  }
+}
+
+module.exports = new SPKCache();
