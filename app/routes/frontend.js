@@ -1,6 +1,5 @@
 /**
  *
- *  authors @idid
  *  
  *  Frontend routes:
  *  - homepage

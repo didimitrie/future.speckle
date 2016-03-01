@@ -158,3 +158,21 @@ function getQouta( usedStorage ) {
   var maxStorage = 1073741824; // 1 GB
   return (usedStorage / maxStorage * 100);
 }
+
+function getFormatedDate() {
+  var date = new Date();
+
+  var year = date.getUTCFullYear();
+  var month = date.getUTCMonth();
+  var day = date.getUTCDate();
+
+  //month 2 digits
+  month = ("0" + (month + 1)).slice(-2);
+
+  //year 2 digits
+  year = year.toString().substr(2,2);
+
+  var formattedDate = day + '/' + month + "/" + year;
+
+  return formattedDate;
+}

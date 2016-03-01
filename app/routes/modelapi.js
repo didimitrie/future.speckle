@@ -43,7 +43,8 @@ module.exports = function( app, passport, express ) {
     switch( type ) {
       case "newSession":
         var mySession = new Session();
-        mySession.ip = req.ip; mySession.modelid = req.body.modelid;
+        mySession.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;        
+        mySession.modelid = req.body.modelid;
         mySession.save( function (err, session) { res.send(session._id) });
       break
       
