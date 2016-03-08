@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-
-  'url' : 'mongodb://didimitrie:Vict2Obor@ds041683.mongolab.com:41683/auth-testing'
-  
+  //  mongodb://<dbuser>:<dbpassword>@ds041683.mlab.com:41683/auth-testing
+  'url' : 'mongodb://didimitrie:Vict2Obor@ds041683.mlab.com:41683/auth-testing'
+  //'url' : 'mongodb://didimitrie:Brussels2London@ds053305.mongolab.com:53305/futurespeckle'
 }
