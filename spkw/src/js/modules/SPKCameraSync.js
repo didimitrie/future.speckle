@@ -14,29 +14,26 @@ var SPKCameraSync = function () {
 
   SPKCameraSync.register = function ( spk ) {
     SPKCameraSync.SPKs.push( spk );
+
+    spk.VIEWER.controls.addEventListener("change", function () {
+        var mylocation = { }
+        mylocation.position = spk.VIEWER.controls.object.position.clone()
+        mylocation.rotation = spk.VIEWER.controls.object.rotation.clone()
+        mylocation.controlCenter = spk.VIEWER.controls.center.clone()
+        SPKCameraSync.sync( spk, mylocation)
+      })
+  }
+
+  SPKCameraSync.sync = function (originator, location) {
+    for( var i = 0; i < SPKCameraSync.SPKs.length; i++ ) {
+      var mySPK = SPKCameraSync.SPKs[i]
+      if( originator !== mySPK) 
+        mySPK.setCamera( JSON.stringify( location) )
+    }
   }
 
   SPKCameraSync.init = function ( spk ) {
-    for( var i = 0; i < SPKCameraSync.SPKs.length; i++ ) {
-      var mySPK = SPKCameraSync.SPKs[i];
-      console.log( mySPK.VIEWER.controls );
-      
-      mySPK.VIEWER.controls.addEventListener("change", function () {
-        //console.log(this);
-        var mylocation = { }
-        mylocation.position = mySPK.VIEWER.controls.object.position.clone()
-        mylocation.rotation = mySPK.VIEWER.controls.object.rotation.clone()
-        mylocation.controlCenter = mySPK.VIEWER.controls.center.clone()
-
-        //console.log(mylocation)
-
-        for( var j = 0; j < SPKCameraSync.SPKs.length; j++ ) {
-          if(i != j) 
-            SPKCameraSync.SPKs[j].setCamera( JSON.stringify( mylocation ) )
-        }
-
-       })
-    }
+    
   }
 }
 

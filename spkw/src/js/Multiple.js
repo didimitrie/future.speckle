@@ -33,7 +33,6 @@ $( function () {
         open: false,
         spk : SPK
       } );
-       camsync.init();
     }
   } )
 
@@ -56,7 +55,6 @@ $( function () {
       } );
       
       keyhandler.init();
-      camsync.init();
     }
   } )    
 
