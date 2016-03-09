@@ -50269,31 +50269,10 @@ $( function () {
         open: false,
         spk : SPK
       } );
+      
+      keyhandler.init();
     }
   } )    
-
-  var myThirdSPK  = new SPK( 
-  {
-    canvasid : 'spk-canvas-3',
-    zoomonchange : false,
-    onInitEnd : function ( SPK ) { 
-
-      keyhandler.register( SPK );
-      camsync.register( SPK );
-      
-      var mySliderCtrl = new SPKSliderControl ( { 
-        wrapperid : 'spk-parameters-3',
-        uitabid : 'spk-ui-tabs',
-        icon : 'fa-sliders',
-        data: SPK.PARAMS, 
-        open: false,
-        spk : SPK
-      } );
-
-      keyhandler.init();
-
-    }
-  } )  
 
 } )
 
@@ -50804,6 +50783,7 @@ module.exports = SPK;
 
 // Globally Unique Module
 
+var $               = require('jquery');
 
 var SPKCameraSync = function () {
 
@@ -50811,13 +50791,32 @@ var SPKCameraSync = function () {
   SPKCameraSync.SPKs = [];
 
   SPKCameraSync.register = function ( spk ) {
-    SPKCameraSync.SPKs.push( spk )
+    SPKCameraSync.SPKs.push( spk );
+
+    spk.VIEWER.controls.addEventListener("change", function () {
+        var mylocation = { }
+        mylocation.position = spk.VIEWER.controls.object.position.clone()
+        mylocation.rotation = spk.VIEWER.controls.object.rotation.clone()
+        mylocation.controlCenter = spk.VIEWER.controls.center.clone()
+        SPKCameraSync.sync( spk, mylocation)
+      })
   }
 
+  SPKCameraSync.sync = function (originator, location) {
+    for( var i = 0; i < SPKCameraSync.SPKs.length; i++ ) {
+      var mySPK = SPKCameraSync.SPKs[i]
+      if( originator !== mySPK) 
+        mySPK.setCamera( JSON.stringify( location) )
+    }
+  }
+
+  SPKCameraSync.init = function ( spk ) {
+    
+  }
 }
 
 module.exports = new SPKCameraSync();
-},{}],18:[function(require,module,exports){
+},{"jquery":1}],18:[function(require,module,exports){
 /*
  * The MIT License (MIT)
  * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)

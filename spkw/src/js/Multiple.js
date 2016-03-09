@@ -53,31 +53,10 @@ $( function () {
         open: false,
         spk : SPK
       } );
+      
+      keyhandler.init();
     }
   } )    
-
-  var myThirdSPK  = new SPK( 
-  {
-    canvasid : 'spk-canvas-3',
-    zoomonchange : false,
-    onInitEnd : function ( SPK ) { 
-
-      keyhandler.register( SPK );
-      camsync.register( SPK );
-      
-      var mySliderCtrl = new SPKSliderControl ( { 
-        wrapperid : 'spk-parameters-3',
-        uitabid : 'spk-ui-tabs',
-        icon : 'fa-sliders',
-        data: SPK.PARAMS, 
-        open: false,
-        spk : SPK
-      } );
-
-      keyhandler.init();
-
-    }
-  } )  
 
 } )
 
