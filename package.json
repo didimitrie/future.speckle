@@ -31,7 +31,7 @@
   "scripts": {
     "watch-sass": "sass --watch spkw/src/sass/:spkw/dist/css/",
     "watch-jade": "jade --watch spkw/src/jade/*.jade -o spkw/dist/html/",
-    "build-js": "browserify spkw/src/js/Default.js -o spkw/dist/js/Default.js & browserify spkw/src/js/Template.js -o spkw/dist/js/Template.js",
+    "build-js": "browserify spkw/src/js/Default.js -o spkw/dist/js/Default.js & browserify spkw/src/js/Template.js -o spkw/dist/js/Template.js & browserify spkw/src/js/Multiple.js -o spkw/dist/js/Multiple.js",
     "watch-js": "nodemon -e js -w spkw/src/js -x 'npm run build-js'",
     "watch": "npm run watch-sass & npm run watch-jade & npm run watch-js & nodemon server.js --ignore 'uploads' --ignore 'spkw' "
   }

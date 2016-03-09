@@ -223,7 +223,6 @@ var SPK = function ( options ) {
       }
 
       SPK.fadeIn( iin );
-      //SPK.zoomExtents();
 
       if( callback !== undefined ) callback();
 
@@ -247,17 +246,6 @@ var SPK = function ( options ) {
     geometry.computeBoundingSphere();
     SPK.GLOBALS.boundingSphere = geometry.boundingSphere;
     geometry.dispose();
-
-    //var geometry = new THREE.SphereGeometry( SPK.GLOBALS.boundingSphere.radius, 32, 32 );
-    //var material = new THREE.MeshBasicMaterial( {color: 0xffff00, wireframe: true} );
-    //var sphere = new THREE.Mesh( geometry, material );
-    //sphere.position.x = SPK.GLOBALS.boundingSphere.center.x;
-    //sphere.position.y = SPK.GLOBALS.boundingSphere.center.y;
-    //sphere.position.z = SPK.GLOBALS.boundingSphere.center.z;
-
-    //var MyMesh = new THREE.Mesh( SPK.GLOBALS.boundingSphere, new THREE.MeshBasicMaterial( { color: 0x0093A0}));
-    //console.log(sphere);
-    //SPK.VIEWER.scene.add( sphere );
   }
 
   // Tells file.json > SPKLoader > SPKMaker > objects > adds them to scene

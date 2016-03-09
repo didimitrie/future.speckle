@@ -50497,7 +50497,6 @@ var SPK = function ( options ) {
       }
 
       SPK.fadeIn( iin );
-      //SPK.zoomExtents();
 
       if( callback !== undefined ) callback();
 
@@ -50521,17 +50520,6 @@ var SPK = function ( options ) {
     geometry.computeBoundingSphere();
     SPK.GLOBALS.boundingSphere = geometry.boundingSphere;
     geometry.dispose();
-
-    //var geometry = new THREE.SphereGeometry( SPK.GLOBALS.boundingSphere.radius, 32, 32 );
-    //var material = new THREE.MeshBasicMaterial( {color: 0xffff00, wireframe: true} );
-    //var sphere = new THREE.Mesh( geometry, material );
-    //sphere.position.x = SPK.GLOBALS.boundingSphere.center.x;
-    //sphere.position.y = SPK.GLOBALS.boundingSphere.center.y;
-    //sphere.position.z = SPK.GLOBALS.boundingSphere.center.z;
-
-    //var MyMesh = new THREE.Mesh( SPK.GLOBALS.boundingSphere, new THREE.MeshBasicMaterial( { color: 0x0093A0}));
-    //console.log(sphere);
-    //SPK.VIEWER.scene.add( sphere );
   }
 
   // Tells file.json > SPKLoader > SPKMaker > objects > adds them to scene
@@ -51445,14 +51433,14 @@ var SPKSliderControl = function ( options ) {
 
     for( var i = 0; i < params.length; i++ ) {
         
-        var paramId = "parameter_" + i;
+        var paramId = "parameter_" + i + shortid.generate();
         var paramName = params[i].name === "" ? "Unnamed Parameter" : params[i].name;
 
         $( SPKSliderControl.Wrapper ).append( $( "<div>", { id: paramId, class: "parameter" } ) );
         
         $( "#" + paramId ).append( "<p class='parameter_name'>" + paramName + "</p>" );
         
-        var sliderId = paramId + "_slider_" + i;
+        var sliderId = paramId + "_slider_" + i + "_" ;
 
         $( "#" + paramId ).append( $( "<div>", { id: sliderId, class: "basic-slider" } ) );
 
@@ -51488,7 +51476,10 @@ var SPKSliderControl = function ( options ) {
     for( var i = 0; i < SPKSliderControl.Sliders.length; i++ ) {
       SPKSliderControl.Sliders[i].on( "change", function() { 
         var currentKey = SPKSliderControl.getCurrentKey();
-        SPKSliderControl.SPK.addNewInstance( currentKey, function() { SPKSliderControl.SPK.zoomExtents(); } );
+        SPKSliderControl.SPK.addNewInstance( currentKey, function() { 
+          if( ! ( SPKSliderControl.SPK.Options.zoomonchange === false ) )
+            SPKSliderControl.SPK.zoomExtents(); 
+        } );
         SPKSliderControl.setMeasureSliders( currentKey );
         //SPKSliderControl.SPK.zoomExtents()
       } );
@@ -51511,13 +51502,15 @@ var SPKSliderControl = function ( options ) {
         "min" : Number(myRange[0]),
         "max" : Number(myRange[myRange.length-1])
       }
-
+      
+      var wrpName = "measure-wrapper-" + i + "_" + shortid.generate();
       var container = $( SPKSliderControl.Wrapper ); 
-      var myMeasureWrapper = $( container ).append( $("<div>", {id:"measure-wrapper-" + i, class:"measure parameter"}) );
+      
+      var myMeasureWrapper = $( container ).append( $("<div>", {id: wrpName, class:"measure parameter"}) );
       var finalFuckingName = "<p>" + param.name  + "</p><p> <span class='pull-left'>(MIN) " + myRange[0] + "</span> " + " <span class='pull-right'>" + myRange[myRange.length-1] + " (MAX)</span></p>";
-      $( "#measure-wrapper-" + i ).append( $( "<p>", { class: "measure-name parameter_name text-center", html: finalFuckingName } ) );
-      var sliderId = "measure-" + i;
-      $( "#measure-wrapper-" + i ).append( $("<div>", { id: sliderId, class: "basic-slider measure-slider" } ) );
+      $( "#" + wrpName ).append( $( "<p>", { class: "measure-name parameter_name text-center", html: finalFuckingName } ) );
+      var sliderId = "measure-" + i + "_" + shortid.generate();
+      $( "#" + wrpName ).append( $("<div>", { id: sliderId, class: "basic-slider measure-slider" } ) );
     
   
     var slider = noUISlider.create( $("#"+sliderId)[0], {
