@@ -50249,6 +50249,7 @@ $( function () {
         open: false,
         spk : SPK
       } );
+       camsync.init();
     }
   } )
 
@@ -50269,31 +50270,11 @@ $( function () {
         open: false,
         spk : SPK
       } );
+      
+      keyhandler.init();
+      camsync.init();
     }
   } )    
-
-  var myThirdSPK  = new SPK( 
-  {
-    canvasid : 'spk-canvas-3',
-    zoomonchange : false,
-    onInitEnd : function ( SPK ) { 
-
-      keyhandler.register( SPK );
-      camsync.register( SPK );
-      
-      var mySliderCtrl = new SPKSliderControl ( { 
-        wrapperid : 'spk-parameters-3',
-        uitabid : 'spk-ui-tabs',
-        icon : 'fa-sliders',
-        data: SPK.PARAMS, 
-        open: false,
-        spk : SPK
-      } );
-
-      keyhandler.init();
-
-    }
-  } )  
 
 } )
 
@@ -50804,6 +50785,7 @@ module.exports = SPK;
 
 // Globally Unique Module
 
+var $               = require('jquery');
 
 var SPKCameraSync = function () {
 
@@ -50811,13 +50793,35 @@ var SPKCameraSync = function () {
   SPKCameraSync.SPKs = [];
 
   SPKCameraSync.register = function ( spk ) {
-    SPKCameraSync.SPKs.push( spk )
+    SPKCameraSync.SPKs.push( spk );
   }
 
+  SPKCameraSync.init = function ( spk ) {
+    for( var i = 0; i < SPKCameraSync.SPKs.length; i++ ) {
+      var mySPK = SPKCameraSync.SPKs[i];
+      console.log( mySPK.VIEWER.controls );
+      
+      mySPK.VIEWER.controls.addEventListener("change", function () {
+        //console.log(this);
+        var mylocation = { }
+        mylocation.position = mySPK.VIEWER.controls.object.position.clone()
+        mylocation.rotation = mySPK.VIEWER.controls.object.rotation.clone()
+        mylocation.controlCenter = mySPK.VIEWER.controls.center.clone()
+
+        //console.log(mylocation)
+
+        for( var j = 0; j < SPKCameraSync.SPKs.length; j++ ) {
+          if(i != j) 
+            SPKCameraSync.SPKs[j].setCamera( JSON.stringify( mylocation ) )
+        }
+
+       })
+    }
+  }
 }
 
 module.exports = new SPKCameraSync();
-},{}],18:[function(require,module,exports){
+},{"jquery":1}],18:[function(require,module,exports){
 /*
  * The MIT License (MIT)
  * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
