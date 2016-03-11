@@ -50290,7 +50290,10 @@ $( function () {
         spk : SPK
       } );
       
-      keyhandler.init();
+      keyhandler.init({
+        shadows: false,
+        grid: true
+      });
     },
     onInstanceChange : function ( data, key ) { 
       var mymeasures = "";
@@ -50665,7 +50668,7 @@ var SPK = function ( options ) {
 
     // shadow light
     var light = new THREE.SpotLight( 0xffffff, lightintensity );
-    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*10, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*10, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*10)
+    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*15, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*15, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*15)
     light.target.position.set( SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z );
     light.castShadow = true;
     
@@ -51282,7 +51285,7 @@ var SPKMKeyHandler = function( options ) {
     console.log( SPKMKeyHandler.SPKs.length );
   }
 
-  SPKMKeyHandler.init = function( ) {
+  SPKMKeyHandler.init = function( options ) {
 
     for( var i = 0; i < SPKMKeyHandler.SPKs.length; i++ )
     {
@@ -51290,6 +51293,11 @@ var SPKMKeyHandler = function( options ) {
       var mySPK = SPKMKeyHandler.SPKs[i];
 
     }
+
+    if( options.shadows === false ) 
+      SPKMKeyHandler.setShadows( false );
+    if( options.grid === false )
+      SPKMKeyHandler.setGrid ( false );
 
     $( window ).keypress( function ( event ) {
       
@@ -51314,6 +51322,21 @@ var SPKMKeyHandler = function( options ) {
       }// end for
     })
   } 
+
+  SPKMKeyHandler.setShadows = function ( value ) {
+    for( var i = 0; i < SPKMKeyHandler.SPKs.length; i++ ) {
+      var mySPK = SPKMKeyHandler.SPKs[i];
+      mySPK.SCENE.shadowlight.shadow.darkness = value === true ? 0.5 : 0;
+      mySPK.SCENE.plane.visible = value;
+    }
+  } 
+  
+  SPKMKeyHandler.setGrid = function ( value ) {
+    for( var i = 0; i < SPKMKeyHandler.SPKs.length; i++ ) {
+      var mySPK = SPKMKeyHandler.SPKs[i];
+      mySPK.SCENE.grid.visible = value;
+    }
+  }
 }
 
 module.exports = new SPKMKeyHandler();

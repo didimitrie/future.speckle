@@ -74,7 +74,10 @@ $( function () {
         spk : SPK
       } );
       
-      keyhandler.init();
+      keyhandler.init({
+        shadows: false,
+        grid: true
+      });
     },
     onInstanceChange : function ( data, key ) { 
       var mymeasures = "";

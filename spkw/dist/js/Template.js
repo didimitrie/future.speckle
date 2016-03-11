@@ -50263,7 +50263,7 @@ var SPK = function ( options ) {
 
     // shadow light
     var light = new THREE.SpotLight( 0xffffff, lightintensity );
-    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*10, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*10, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*10)
+    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*15, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*15, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*15)
     light.target.position.set( SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z );
     light.castShadow = true;
     

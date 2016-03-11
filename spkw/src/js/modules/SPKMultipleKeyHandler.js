@@ -17,7 +17,7 @@ var SPKMKeyHandler = function( options ) {
     console.log( SPKMKeyHandler.SPKs.length );
   }
 
-  SPKMKeyHandler.init = function( ) {
+  SPKMKeyHandler.init = function( options ) {
 
     for( var i = 0; i < SPKMKeyHandler.SPKs.length; i++ )
     {
@@ -25,6 +25,11 @@ var SPKMKeyHandler = function( options ) {
       var mySPK = SPKMKeyHandler.SPKs[i];
 
     }
+
+    if( options.shadows === false ) 
+      SPKMKeyHandler.setShadows( false );
+    if( options.grid === false )
+      SPKMKeyHandler.setGrid ( false );
 
     $( window ).keypress( function ( event ) {
       
@@ -49,6 +54,21 @@ var SPKMKeyHandler = function( options ) {
       }// end for
     })
   } 
+
+  SPKMKeyHandler.setShadows = function ( value ) {
+    for( var i = 0; i < SPKMKeyHandler.SPKs.length; i++ ) {
+      var mySPK = SPKMKeyHandler.SPKs[i];
+      mySPK.SCENE.shadowlight.shadow.darkness = value === true ? 0.5 : 0;
+      mySPK.SCENE.plane.visible = value;
+    }
+  } 
+  
+  SPKMKeyHandler.setGrid = function ( value ) {
+    for( var i = 0; i < SPKMKeyHandler.SPKs.length; i++ ) {
+      var mySPK = SPKMKeyHandler.SPKs[i];
+      mySPK.SCENE.grid.visible = value;
+    }
+  }
 }
 
 module.exports = new SPKMKeyHandler();

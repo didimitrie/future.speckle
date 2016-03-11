@@ -35,6 +35,15 @@ var SPKKeyHandler = function( options ) {
 
     })
 
+    if( options.shadows === false ) {
+      SPKKeyHandler.SPK.SCENE.shadowlight.shadow.darkness = SPKKeyHandler.SPK.SCENE.shadowlight.shadow.darkness === 0.5 ? 0 : 0.5;
+      SPKKeyHandler.SPK.SCENE.plane.visible = !SPKKeyHandler.SPK.SCENE.plane.visible;
+    }
+
+    if( options.grid === false ) {
+      SPKKeyHandler.SPK.SCENE.grid.visible = !SPKKeyHandler.SPK.SCENE.grid.visible;
+    }
+
   } 
 
   SPKKeyHandler.init( options );

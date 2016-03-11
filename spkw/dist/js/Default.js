@@ -50624,7 +50624,7 @@ var SPK = function ( options ) {
 
     // shadow light
     var light = new THREE.SpotLight( 0xffffff, lightintensity );
-    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*10, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*10, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*10)
+    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*15, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*15, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*15)
     light.target.position.set( SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z );
     light.castShadow = true;
     
@@ -51075,6 +51075,15 @@ var SPKKeyHandler = function( options ) {
       }
 
     })
+
+    if( options.shadows === false ) {
+      SPKKeyHandler.SPK.SCENE.shadowlight.shadow.darkness = SPKKeyHandler.SPK.SCENE.shadowlight.shadow.darkness === 0.5 ? 0 : 0.5;
+      SPKKeyHandler.SPK.SCENE.plane.visible = !SPKKeyHandler.SPK.SCENE.plane.visible;
+    }
+
+    if( options.grid === false ) {
+      SPKKeyHandler.SPK.SCENE.grid.visible = !SPKKeyHandler.SPK.SCENE.grid.visible;
+    }
 
   } 
 
