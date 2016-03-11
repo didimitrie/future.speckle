@@ -15,6 +15,8 @@ $( function () {
   {
     canvasid : 'spk-canvas-1', 
     zoomonchange : false,
+    camerafov : 10,
+    lightintensity: 0.9,
     onInitEnd : function ( SPK ) {
 
       keyhandler.register( SPK );
@@ -30,9 +32,25 @@ $( function () {
         uitabid : 'spk-ui-tabs',
         icon : 'fa-sliders',
         data: SPK.PARAMS, 
-        open: false,
+        showmeasures: false,
         spk : SPK
       } );
+    },
+    onInstanceChange : function ( data, key ) { 
+      var mymeasures = "";
+      var found = false;
+      for( var i =0; i< data.kvpairs.length && !found; i++ )
+        if( data.kvpairs[i].key === key ) {
+          mymeasures = data.kvpairs[i].values;
+          found = true;
+        }
+      //console.log(mymeasures)
+      var mysplits = mymeasures.split(",");
+      var formattedMeasure = "";
+      for( var i = 0; i < mysplits.length - 1; i++ ) {
+        formattedMeasure += "<strong>" + data.propNames[i] + ": </strong>" + mysplits[i] + " ";
+      }
+      $("#spk-measures-1").html(formattedMeasure);
     }
   } )
 
@@ -40,6 +58,8 @@ $( function () {
   {
     canvasid : 'spk-canvas-2', 
     zoomonchange : false,
+    camerafov : 10,
+    lightintensity: 0.9,
     onInitEnd : function ( SPK ) { 
 
       keyhandler.register( SPK );
@@ -50,13 +70,29 @@ $( function () {
         uitabid : 'spk-ui-tabs',
         icon : 'fa-sliders',
         data: SPK.PARAMS, 
-        open: false,
+        showmeasures: false,
         spk : SPK
       } );
       
       keyhandler.init();
+    },
+    onInstanceChange : function ( data, key ) { 
+      var mymeasures = "";
+      var found = false;
+      for( var i =0; i< data.kvpairs.length && !found; i++ )
+        if( data.kvpairs[i].key === key ) {
+          mymeasures = data.kvpairs[i].values;
+          found = true;
+        }
+      //console.log(mymeasures)
+      var mysplits = mymeasures.split(",");
+      var formattedMeasure = "";
+      for( var i = 0; i < mysplits.length - 1; i++ ) {
+        formattedMeasure += "<strong>" + data.propNames[i] + ": </strong>" + mysplits[i] + " ";
+      }
+      $("#spk-measures-2").html(formattedMeasure);
     }
-  } )    
+  })
 
 } )
 

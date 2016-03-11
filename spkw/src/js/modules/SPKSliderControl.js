@@ -14,6 +14,7 @@ var SPKSliderControl = function ( options ) {
   var SPKSliderControl = this;
   
   SPKSliderControl.id = shortid.generate();
+  SPKSliderControl.Options = {};
   SPKSliderControl.Data = {};
   SPKSliderControl.Wrapper = {};
   SPKSliderControl.SPK = {};
@@ -22,6 +23,7 @@ var SPKSliderControl = function ( options ) {
 
   SPKSliderControl.init = function ( options ) {
 
+    SPKSliderControl.Options = options;
     SPKSliderControl.Wrapper = $( "#" + options.wrapperid );
     SPKSliderControl.SPK = options.spk;
     SPKSliderControl.Data = options.data;
@@ -33,10 +35,7 @@ var SPKSliderControl = function ( options ) {
     var icon = "<div class='icon icon-active' spkuiid='" + SPKSliderControl.id + "'><span class='hint--right' data-hint='Paramaters & Performance'><i class='fa " + options.icon + "'></span></div>";
     $(uitabs).append(icon);
     
-    // handle the clickie
     $("[spkuiid='"+ SPKSliderControl.id + "']").click( function() {
-      //$( SPKSliderControl.Wrapper ).slideToggle()
-      //$( SPKSliderControl.Wrapper ).toggleClass( "sidebar-hidden" );
       $( "#spk-ui-tabs").find(".icon").removeClass( "icon-active" );
       $( this ).addClass( "icon-active" );
       $( ".sidebar" ).addClass( "sidebar-hidden" );
@@ -44,13 +43,17 @@ var SPKSliderControl = function ( options ) {
     } )
 
     SPKSliderControl.makeSliders( options.data.parameters );
-    SPKSliderControl.makeMeasureSliders( options.data.properties );
+    
+    if( options.showmeasures === true ) 
+      SPKSliderControl.makeMeasureSliders( options.data.properties );
   }
 
   SPKSliderControl.makeSliders = function ( params ) {
     
-    $( SPKSliderControl.Wrapper ).append("<h1 class='slider-group-title'>Model Parameters</h1>")
-
+    if( SPKSliderControl.Options.showmeasures ) 
+      $( SPKSliderControl.Wrapper ).append("<h1 class='slider-group-title'>Model Parameters</h1>")
+    else 
+      $( SPKSliderControl.Wrapper ).append( "<br>" );
     for( var i = 0; i < params.length; i++ ) {
         
         var paramId = "parameter_" + i + shortid.generate();

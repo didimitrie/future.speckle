@@ -50239,8 +50239,9 @@ $( function () {
         wrapperid : 'spk-parameters',
         uitabid : 'spk-ui-tabs',
         icon : 'fa-sliders',
-        data: SPK.PARAMS, 
+        data: SPK.PARAMS,
         open: false,
+        showmeasures: true,
         spk : SPK
       } );
 
@@ -50423,7 +50424,7 @@ var SPK = function ( options ) {
 
 
   SPK.fadeIn = function ( objects ) {
-      var duration = 300, opacity = 0.8;
+      var duration = 300, opacity = 0.95;
       
       var tweenIn = new TWEEN.Tween( { x : 0 } )
       .to( { x: opacity }, duration )
@@ -50439,7 +50440,7 @@ var SPK = function ( options ) {
 
   SPK.fadeOut = function ( objects ) {
 
-    var opacity = 0.8, duration = 300;
+    var opacity = 0.95, duration = 300;
     
     var tweenOut = new TWEEN.Tween( { x: opacity } )
     .to( {x: 0}, duration )
@@ -50499,6 +50500,7 @@ var SPK = function ( options ) {
       SPK.fadeIn( iin );
 
       if( callback !== undefined ) callback();
+      if( SPK.Options.onInstanceChange !== undefined) SPK.Options.onInstanceChange( SPK.PARAMS, key);
 
     });
 
@@ -50586,12 +50588,19 @@ var SPK = function ( options ) {
     // TODO: Grids, etc.
     // make the scene + renderer
 
+    var fov = 30; // default fov
+    if( typeof SPK.Options.camerafov !== 'undefined' || SPK.Options.camerafov !== null )
+      fov = SPK.Options.camerafov;
+
+    var lightintensity = 0.4; // default light intensity
+    if( typeof SPK.Options.lightintensity !== 'undefined' || SPK.Options.lightintensity !== null )
+      lightintensity = SPK.Options.lightintensity;
+
     SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : true, alpha: true} );
 
     SPK.VIEWER.renderer.setClearColor( 0xF2F2F2 ); 
 
     SPK.VIEWER.renderer.setPixelRatio( 1 );  // change to window.devicePixelRatio 
-    //SPK.VIEWER.renderer.setPixelRatio( window.devicePixelRatio );  // change to window.devicePixelRatio 
     
     SPK.VIEWER.renderer.setSize( $(SPK.HMTL.canvas).innerWidth(), $(SPK.HMTL.canvas).innerHeight() ); 
 
@@ -50600,8 +50609,9 @@ var SPK = function ( options ) {
 
     $(SPK.HMTL.canvas).append( SPK.VIEWER.renderer.domElement );
 
-    SPK.VIEWER.camera = new THREE.PerspectiveCamera( 40, $(SPK.HMTL.canvas).innerWidth() * 1 / $(SPK.HMTL.canvas).innerHeight(), 1, SPK.GLOBALS.boundingSphere.radius * 100 );
-
+    SPK.VIEWER.camera = new THREE.PerspectiveCamera( fov, $(SPK.HMTL.canvas).innerWidth() * 1 / $(SPK.HMTL.canvas).innerHeight(), 1, SPK.GLOBALS.boundingSphere.radius * 100 );
+    //SPK.VIEWER.camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, - 500, 1000 );
+    
     SPK.VIEWER.camera.position.z = -SPK.GLOBALS.boundingSphere.radius*1.8; 
 
     SPK.VIEWER.camera.position.y = SPK.GLOBALS.boundingSphere.radius*1.8;
@@ -50613,7 +50623,7 @@ var SPK = function ( options ) {
     });
 
     // shadow light
-    var light = new THREE.SpotLight(0xffffff, 0.4);
+    var light = new THREE.SpotLight( 0xffffff, lightintensity );
     light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*10, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*10, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*10)
     light.target.position.set( SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z );
     light.castShadow = true;
@@ -50631,7 +50641,7 @@ var SPK = function ( options ) {
     
     SPK.VIEWER.scene.add( new THREE.AmbientLight( 0xD8D8D8 ) );
    
-    var flashlight = new THREE.PointLight( 0xffffff, 0.8, SPK.GLOBALS.boundingSphere.radius * 12, 1);
+    var flashlight = new THREE.PointLight( 0xCFCFCF, 0.8, SPK.GLOBALS.boundingSphere.radius * 12, 1);
     
     SPK.VIEWER.camera.add( flashlight );
     
@@ -50666,7 +50676,7 @@ var SPK = function ( options ) {
     var planeMaterial = new THREE.MeshBasicMaterial( { color: 0xEEEEEE } ); //0xEEEEEE #D7D7D7
     plane = new THREE.Mesh( planeGeometry, planeMaterial );
     plane.receiveShadow = true;
-    plane.position.set(SPK.GLOBALS.boundingSphere.center.x, -0.1, SPK.GLOBALS.boundingSphere.center.z );
+    plane.position.set(SPK.GLOBALS.boundingSphere.center.x, -0.21, SPK.GLOBALS.boundingSphere.center.z );
     plane.visible = true;
 
     SPK.VIEWER.scene.add( plane );
@@ -50681,7 +50691,7 @@ var SPK = function ( options ) {
       grid = new THREE.GridHelper( SPK.GLOBALS.boundingSphere.radius * multiplier, SPK.GLOBALS.boundingSphere.radius*multiplier/30);
       grid.material.opacity = 0.15;
       grid.material.transparent = true;
-      grid.position.set(SPK.GLOBALS.boundingSphere.center.x, -0.1, SPK.GLOBALS.boundingSphere.center.z );
+      grid.position.set(SPK.GLOBALS.boundingSphere.center.x, -0.2, SPK.GLOBALS.boundingSphere.center.z );
       grid.setColors( 0x0000ff, 0x808080 ); 
       SPK.VIEWER.scene.add( grid );
       SPK.SCENE.grid = grid;
@@ -51088,12 +51098,6 @@ var SPKLoader = function () {
   
   var SPKLoader = this;
 
-  /**
-   * [load description]
-   * @param  {[type]} url          [description]
-   * @param  {[type]} onLoadAction [This is where the magic happens. It's passed around! ]
-   * @return {[type]}              [description]
-   */
   SPKLoader.load = function(url, onLoadAction) {
 
     var loader = new THREE.XHRLoader();
@@ -51394,6 +51398,7 @@ var SPKSliderControl = function ( options ) {
   var SPKSliderControl = this;
   
   SPKSliderControl.id = shortid.generate();
+  SPKSliderControl.Options = {};
   SPKSliderControl.Data = {};
   SPKSliderControl.Wrapper = {};
   SPKSliderControl.SPK = {};
@@ -51402,6 +51407,7 @@ var SPKSliderControl = function ( options ) {
 
   SPKSliderControl.init = function ( options ) {
 
+    SPKSliderControl.Options = options;
     SPKSliderControl.Wrapper = $( "#" + options.wrapperid );
     SPKSliderControl.SPK = options.spk;
     SPKSliderControl.Data = options.data;
@@ -51413,10 +51419,7 @@ var SPKSliderControl = function ( options ) {
     var icon = "<div class='icon icon-active' spkuiid='" + SPKSliderControl.id + "'><span class='hint--right' data-hint='Paramaters & Performance'><i class='fa " + options.icon + "'></span></div>";
     $(uitabs).append(icon);
     
-    // handle the clickie
     $("[spkuiid='"+ SPKSliderControl.id + "']").click( function() {
-      //$( SPKSliderControl.Wrapper ).slideToggle()
-      //$( SPKSliderControl.Wrapper ).toggleClass( "sidebar-hidden" );
       $( "#spk-ui-tabs").find(".icon").removeClass( "icon-active" );
       $( this ).addClass( "icon-active" );
       $( ".sidebar" ).addClass( "sidebar-hidden" );
@@ -51424,13 +51427,17 @@ var SPKSliderControl = function ( options ) {
     } )
 
     SPKSliderControl.makeSliders( options.data.parameters );
-    SPKSliderControl.makeMeasureSliders( options.data.properties );
+    
+    if( options.showmeasures === true ) 
+      SPKSliderControl.makeMeasureSliders( options.data.properties );
   }
 
   SPKSliderControl.makeSliders = function ( params ) {
     
-    $( SPKSliderControl.Wrapper ).append("<h1 class='slider-group-title'>Model Parameters</h1>")
-
+    if( SPKSliderControl.Options.showmeasures ) 
+      $( SPKSliderControl.Wrapper ).append("<h1 class='slider-group-title'>Model Parameters</h1>")
+    else 
+      $( SPKSliderControl.Wrapper ).append( "<br>" );
     for( var i = 0; i < params.length; i++ ) {
         
         var paramId = "parameter_" + i + shortid.generate();

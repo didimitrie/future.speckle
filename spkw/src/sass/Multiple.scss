@@ -15,6 +15,10 @@ body {
   width: 50%;
   height: 100%;
 }
+.half:first-of-type {
+  box-sizing: border-box;
+  border-right: 1px solid gray;
+}
 
 .spk-canvas {
   position: absolute;
@@ -35,7 +39,7 @@ body {
   width: 100%;
   height: 30%;
   z-index: 2;
-  overflow-y: scroll;
+  overflow-y: auto;
   background-color: white;
   
   .slider-group-title {
@@ -49,7 +53,7 @@ body {
     font-size: 14px;
   }
   .parameter {
-    margin-bottom: 30px;
+    margin-bottom: 15px;
     float: left;
     padding: 10px;
     box-sizing: border-box;
@@ -66,16 +70,21 @@ body {
   }
 
   .parameter_name {
-    text-align: center;
+    text-align: right;
     margin-bottom: 20px;
     font-size: 12px;
     font-weight: 700;
+    width: 20%;
+    display: inline-block;
+    float: left;
   }
 
   .basic-slider {
     position: relative;
-    width: 80%;
     left: 10%;
+    width: 60%;
+    display: inline-block;
+    float: left;
   }
 
   .measure-slider {
@@ -92,6 +101,20 @@ body {
   }
 }
 
+.measures{
+  @include boxshadow-right();
+  position: absolute;
+  top: 30px;
+  width: 100%;
+  height: 30px;
+  z-index: 2;
+  background-color: white;
+  line-height: 30px;
+  font-size: 12px;
+  text-align: center;
+
+}
+
 #spk-metadata {
   
   @include boxshadow-right();
@@ -104,8 +127,8 @@ body {
   z-index: 2;
   float: left;
   overflow: hidden;
-  height: 50px;
-  line-height: 50px;
+  height: 30px;
+  line-height: 30px;
   
   a {
       color: #C2FFF3;
@@ -128,19 +151,19 @@ body {
   .logo {
     font-size: 10px;
     font-weight: 700;
-    width: 50px;
-    height: 50px;
+    width: 30px;
+    height: 30px;
     overflow: hidden;
     display: inline-block;
     float:left;
     transition: all 0.3s ease;
     i {
-      width: 50px; height: 50px; display: inline-block; float: left;
-      text-align: center; line-height: 50px;
+      width: 30px; height: 30px; display: inline-block; float: left;
+      text-align: center; line-height: 30px;
     }
     img {
-      width: 50px;
-      height: 50px;
+      width: 30px;
+      height: 30px;
       display: inline-block;
       float:left;
     }
@@ -154,99 +177,6 @@ body {
     top:0;
     left:0;
     width: 100%;
-  }
-}
-#spk-comments {
-  padding-top: 30px;
-  form {
-    box-sizing: border-box;
-    padding: 20px;
-    position: relative;
-    width: 80%;
-    left: 10%;
-    span { width: 100%; }
-    textarea {
-      width: 100%;
-      display: inline-block; 
-      height: 100px;
-    }
-  }
-  .instance-element {
-    position: relative;
-    box-sizing: border-box;
-    padding: 20px;
-    width: 80%;
-    left: 10%;
-    border: 2px solid white;
-    transition: all 0.3s ease;
-  }
-
-  .instance-element:hover {
-    //@include boxshadow-right();
-    cursor: pointer;
-    border: 2px solid $accentColour;
-  }
-
-  .instance-element.active {
-    border: 2px solid $hoverColour;
-  }
-  .description {
-    margin: 10px 0px;
-
-  }
-  .spk-saver-half {
-    width: 45%;
-    display: inline-block;
-    float: left;
-    font-size: 10px;
-
-    @include respond-to(450) {
-      width: 100%;
-    }
-
-  }
-  .clear:before,
-  .clear:after {
-      content: " "; /* 1 */
-      display: table; /* 2 */
-  }
-
-  .clear:after {
-      clear: both;
-  }
-}
-
-#spk-help {
-  box-sizing: border-box;
-  padding: 20px;
-  * {
-    margin-bottom: 10px;
-  }
-  h1 {
-    font-size: large;
-  }
-
-  .shortcut { 
-    width: 100%;
-    
-    .half-1, .half-2 {
-      width: 50%;
-      display: inline-block;
-      float: left;
-      height: 40px;
-      line-height: 40px;
-      font-size: 12px;
-    }
-
-    .half-2 {
-      font-weight: 700;
-      font-size: 20px;
-      box-sizing: border-box;
-      //border: 2px solid $hoverColour;
-      color: $hoverColour;
-      text-align: center;
-    }
-
   }
 }
 

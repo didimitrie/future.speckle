@@ -23,8 +23,9 @@ $( function () {
         wrapperid : 'spk-parameters',
         uitabid : 'spk-ui-tabs',
         icon : 'fa-sliders',
-        data: SPK.PARAMS, 
+        data: SPK.PARAMS,
         open: false,
+        showmeasures: true,
         spk : SPK
       } );
 

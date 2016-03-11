@@ -22,6 +22,11 @@
   position: relative;
   z-index: 1; /* Fix 401 */
 }
+
+.basic-slider:hover {
+  cursor: pointer;
+}
+
 .noUi-origin {
   position: absolute;
   right: 0;
@@ -57,7 +62,7 @@
 /* Slider size and handle placement;
  */
 .noUi-horizontal {
-  height:1px;
+  height:20px;
 }
 
 //this one
@@ -65,7 +70,7 @@
   width: 0.1px;
   height: 0.1px;
   left: -11px;
-  top: -5px;
+  top: 7px;
 
   box-shadow: 0px 0px 2px 1px rgba(50,50,50,0.33);
 }
@@ -87,8 +92,8 @@
 /* Styling;
  */
 .noUi-background {
-  background: #D8D8D8;
-  
+  //background: #FFFFFF;
+  background-image: url('data:image/jpeg;base64,/9j/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQECAgICAgICAgICAgMDAwMDAwMDAwMBAQEBAQEBAgEBAgICAQICAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA//dAAQAAf/uAA5BZG9iZQBkwAAAAAH/wAARCAAVAAIDABEAAREBAhEB/8QBogAAAAcBAQEBAQAAAAAAAAAABAUDAgYBAAcICQoLAQACAgMBAQEBAQAAAAAAAAABAAIDBAUGBwgJCgsQAAIBAwMCBAIGBwMEAgYCcwECAxEEAAUhEjFBUQYTYSJxgRQykaEHFbFCI8FS0eEzFmLwJHKC8SVDNFOSorJjc8I1RCeTo7M2F1RkdMPS4ggmgwkKGBmElEVGpLRW01UoGvLj88TU5PRldYWVpbXF1eX1ZnaGlqa2xtbm9jdHV2d3h5ent8fX5/c4SFhoeIiYqLjI2Oj4KTlJWWl5iZmpucnZ6fkqOkpaanqKmqq6ytrq+hEAAgIBAgMFBQQFBgQIAwNtAQACEQMEIRIxQQVRE2EiBnGBkTKhsfAUwdHhI0IVUmJy8TMkNEOCFpJTJaJjssIHc9I14kSDF1STCAkKGBkmNkUaJ2R0VTfyo7PDKCnT4/OElKS0xNTk9GV1hZWltcXV5fVGVmZ2hpamtsbW5vZHV2d3h5ent8fX5/c4SFhoeIiYqLjI2Oj4OUlZaXmJmam5ydnp+So6SlpqeoqaqrrK2ur6/9oADAMAAAERAhEAPwD9/GKv/9D92n+CvMv/AJd78xP+4Z+U3/pr8Vf/0f38Yq//0v/Z')
 }
 .noUi-connect {
   background: #0C00FF;
@@ -152,7 +157,8 @@
   color: $accentColour;
   border-bottom: 2px solid $accentColour;
   font-size: 11px;
-  padding: 3px;
+  height: 21px;
+  line-height: 20px;
   left: -13px;
   text-align: center;
   width: 35px;
@@ -184,6 +190,7 @@
 .noUi-pips {
   position: absolute;
   color: #999;
+  pointer-events: none;
 }
 
 /* Values;
@@ -224,11 +231,13 @@
   top: 100%;
   left: 0;
   width: 100%;
-  margin-top: -10px;
+  margin-top: -20px;
 }
+
 .noUi-value-horizontal {
   margin-left: -20px;
-  padding-top: 4px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   background-color: white;
 }
 .noUi-value-horizontal.noUi-value-sub {
