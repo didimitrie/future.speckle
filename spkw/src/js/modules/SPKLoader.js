@@ -13,12 +13,6 @@ var SPKLoader = function () {
   
   var SPKLoader = this;
 
-  /**
-   * [load description]
-   * @param  {[type]} url          [description]
-   * @param  {[type]} onLoadAction [This is where the magic happens. It's passed around! ]
-   * @return {[type]}              [description]
-   */
   SPKLoader.load = function(url, onLoadAction) {
 
     var loader = new THREE.XHRLoader();

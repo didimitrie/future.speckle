@@ -1,0 +1,34 @@
+extends ./layout/layout.jade
+
+block header
+  // add the custom stylesheet and scripts here
+  link(rel='stylesheet' href="./../css/Multiple.css")
+  script(src="./../js/Multiple.js")
+
+block content
+  
+  .half
+    #spk-canvas-1.spk-canvas
+    #spk-parameters-1.params
+    #spk-measures-1.measures
+  .half 
+    #spk-canvas-2.spk-canvas
+    #spk-parameters-2.params
+    #spk-measures-2.measures
+
+  
+  #spk-metadata
+    .logo
+      i.fa.fa-angle-double-right
+      p Made with #[a(href="/") Speckle]
+    .logo
+      i.fa.fa-info
+      p [s] shadows [g] grid
+    .metadata
+      span.name.
+        Loading...
+      span.author-date.
+
+  
+  
+  

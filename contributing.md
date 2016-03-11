@@ -1,4 +1,9 @@
-#Contributing to `future.speckle`
+#Contributing to future.speckle
+##Submitting an issue
+Please use the existing labels:
+- Tell us where it's happening: `backend` for backend stuff (logging in, uploading, deleting, etc.), `viewer` for the model viewer and `exporter` if it's a grasshopper-bound error. This really helps :)
+- If it's a feature request/improvement suggestion, please tag it with `enhancement`
+
 ##Flow: 
 The `master` branch is the release branch. Whatever is there is online and running. 
 

@@ -1,0 +1,182 @@
+// include these amazing base styles
+@import './includes/app';
+// drop your custom styles down here
+
+body {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.half {
+  position: relative;
+  display: inline-block;
+  float: left;
+  width: 50%;
+  height: 100%;
+}
+.half:first-of-type {
+  box-sizing: border-box;
+  border-right: 1px solid gray;
+}
+
+.spk-canvas {
+  position: absolute;
+  width: 100%; 
+  height: 70%;
+  left:0;
+  bottom:30%;
+  
+  z-index: 1;
+  @include respond-to(800) {   
+    
+  }
+}
+
+.params {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 30%;
+  z-index: 2;
+  overflow-y: auto;
+  background-color: white;
+  
+  .slider-group-title {
+    width: 100%;
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 10px;
+    padding-left: 30px;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 14px;
+  }
+  .parameter {
+    margin-bottom: 15px;
+    float: left;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .parameter:hover {
+    .noUi-tooltip {
+      background-color: $hoverColour;
+      background-color: $hoverColour;
+      border-bottom: 2px solid $hoverColour;
+      color: white;
+    }
+  }
+
+  .parameter_name {
+    text-align: right;
+    margin-bottom: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    width: 20%;
+    display: inline-block;
+    float: left;
+  }
+
+  .basic-slider {
+    position: relative;
+    left: 10%;
+    width: 60%;
+    display: inline-block;
+    float: left;
+  }
+
+  .measure-slider {
+    .noUi-tooltip {
+      border: 0;
+      color: black;
+    }
+  }
+
+  .measure-name {
+    margin-bottom: 40px;
+    font-size: 10px;
+    padding: 0px 15px;
+  }
+}
+
+.measures{
+  @include boxshadow-right();
+  position: absolute;
+  top: 30px;
+  width: 100%;
+  height: 30px;
+  z-index: 2;
+  background-color: white;
+  line-height: 30px;
+  font-size: 12px;
+  text-align: center;
+
+}
+
+#spk-metadata {
+  
+  @include boxshadow-right();
+  
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: #363636;
+  color: white;
+  z-index: 2;
+  float: left;
+  overflow: hidden;
+  height: 30px;
+  line-height: 30px;
+  
+  a {
+      color: #C2FFF3;
+  }
+  .metadata {
+    display: inline-block;
+    float:left;
+    padding-right: 10px;
+    font-weight: 700;
+
+    .name {
+      margin-right: 3px
+    }
+    .author-date {
+      font-size: 10px;
+      font-weight: 400;
+    }
+  }
+  
+  .logo {
+    font-size: 10px;
+    font-weight: 700;
+    width: 30px;
+    height: 30px;
+    overflow: hidden;
+    display: inline-block;
+    float:left;
+    transition: all 0.3s ease;
+    i {
+      width: 30px; height: 30px; display: inline-block; float: left;
+      text-align: center; line-height: 30px;
+    }
+    img {
+      width: 30px;
+      height: 30px;
+      display: inline-block;
+      float:left;
+    }
+  }
+  
+  .logo:hover {
+    width: 140px;
+  }
+
+  @include respond-to(3000) {
+    top:0;
+    left:0;
+    width: 100%;
+  }
+}
+

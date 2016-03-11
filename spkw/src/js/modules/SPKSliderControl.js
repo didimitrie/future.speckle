@@ -14,6 +14,7 @@ var SPKSliderControl = function ( options ) {
   var SPKSliderControl = this;
   
   SPKSliderControl.id = shortid.generate();
+  SPKSliderControl.Options = {};
   SPKSliderControl.Data = {};
   SPKSliderControl.Wrapper = {};
   SPKSliderControl.SPK = {};
@@ -22,6 +23,7 @@ var SPKSliderControl = function ( options ) {
 
   SPKSliderControl.init = function ( options ) {
 
+    SPKSliderControl.Options = options;
     SPKSliderControl.Wrapper = $( "#" + options.wrapperid );
     SPKSliderControl.SPK = options.spk;
     SPKSliderControl.Data = options.data;
@@ -33,10 +35,7 @@ var SPKSliderControl = function ( options ) {
     var icon = "<div class='icon icon-active' spkuiid='" + SPKSliderControl.id + "'><span class='hint--right' data-hint='Paramaters & Performance'><i class='fa " + options.icon + "'></span></div>";
     $(uitabs).append(icon);
     
-    // handle the clickie
     $("[spkuiid='"+ SPKSliderControl.id + "']").click( function() {
-      //$( SPKSliderControl.Wrapper ).slideToggle()
-      //$( SPKSliderControl.Wrapper ).toggleClass( "sidebar-hidden" );
       $( "#spk-ui-tabs").find(".icon").removeClass( "icon-active" );
       $( this ).addClass( "icon-active" );
       $( ".sidebar" ).addClass( "sidebar-hidden" );
@@ -44,23 +43,27 @@ var SPKSliderControl = function ( options ) {
     } )
 
     SPKSliderControl.makeSliders( options.data.parameters );
-    SPKSliderControl.makeMeasureSliders( options.data.properties );
+    
+    if( options.showmeasures === true ) 
+      SPKSliderControl.makeMeasureSliders( options.data.properties );
   }
 
   SPKSliderControl.makeSliders = function ( params ) {
     
-    $( SPKSliderControl.Wrapper ).append("<h1 class='slider-group-title'>Model Parameters</h1>")
-
+    if( SPKSliderControl.Options.showmeasures ) 
+      $( SPKSliderControl.Wrapper ).append("<h1 class='slider-group-title'>Model Parameters</h1>")
+    else 
+      $( SPKSliderControl.Wrapper ).append( "<br>" );
     for( var i = 0; i < params.length; i++ ) {
         
-        var paramId = "parameter_" + i;
+        var paramId = "parameter_" + i + shortid.generate();
         var paramName = params[i].name === "" ? "Unnamed Parameter" : params[i].name;
 
         $( SPKSliderControl.Wrapper ).append( $( "<div>", { id: paramId, class: "parameter" } ) );
         
         $( "#" + paramId ).append( "<p class='parameter_name'>" + paramName + "</p>" );
         
-        var sliderId = paramId + "_slider_" + i;
+        var sliderId = paramId + "_slider_" + i + "_" ;
 
         $( "#" + paramId ).append( $( "<div>", { id: sliderId, class: "basic-slider" } ) );
 
@@ -96,7 +99,10 @@ var SPKSliderControl = function ( options ) {
     for( var i = 0; i < SPKSliderControl.Sliders.length; i++ ) {
       SPKSliderControl.Sliders[i].on( "change", function() { 
         var currentKey = SPKSliderControl.getCurrentKey();
-        SPKSliderControl.SPK.addNewInstance( currentKey, function() { SPKSliderControl.SPK.zoomExtents(); } );
+        SPKSliderControl.SPK.addNewInstance( currentKey, function() { 
+          if( ! ( SPKSliderControl.SPK.Options.zoomonchange === false ) )
+            SPKSliderControl.SPK.zoomExtents(); 
+        } );
         SPKSliderControl.setMeasureSliders( currentKey );
         //SPKSliderControl.SPK.zoomExtents()
       } );
@@ -119,13 +125,15 @@ var SPKSliderControl = function ( options ) {
         "min" : Number(myRange[0]),
         "max" : Number(myRange[myRange.length-1])
       }
-
+      
+      var wrpName = "measure-wrapper-" + i + "_" + shortid.generate();
       var container = $( SPKSliderControl.Wrapper ); 
-      var myMeasureWrapper = $( container ).append( $("<div>", {id:"measure-wrapper-" + i, class:"measure parameter"}) );
+      
+      var myMeasureWrapper = $( container ).append( $("<div>", {id: wrpName, class:"measure parameter"}) );
       var finalFuckingName = "<p>" + param.name  + "</p><p> <span class='pull-left'>(MIN) " + myRange[0] + "</span> " + " <span class='pull-right'>" + myRange[myRange.length-1] + " (MAX)</span></p>";
-      $( "#measure-wrapper-" + i ).append( $( "<p>", { class: "measure-name parameter_name text-center", html: finalFuckingName } ) );
-      var sliderId = "measure-" + i;
-      $( "#measure-wrapper-" + i ).append( $("<div>", { id: sliderId, class: "basic-slider measure-slider" } ) );
+      $( "#" + wrpName ).append( $( "<p>", { class: "measure-name parameter_name text-center", html: finalFuckingName } ) );
+      var sliderId = "measure-" + i + "_" + shortid.generate();
+      $( "#" + wrpName ).append( $("<div>", { id: sliderId, class: "basic-slider measure-slider" } ) );
     
   
     var slider = noUISlider.create( $("#"+sliderId)[0], {
