@@ -29,6 +29,8 @@ $( function () {
         spk : SPK
       } );
 
+      /*
+      
       var myCommentCtrl = new SPKCommentsControl ( {
         wrapperid : 'spk-comments',
         formid : 'instance-saver-form',
@@ -38,18 +40,27 @@ $( function () {
         open : false,
         spk : SPK
       } );
-
-      var myHelpCtrl = new SPKHelpControl ( {
-        wrapperid : 'spk-help',
-        uitabid : 'spk-ui-tabs',
-        icon : 'fa-info-circle'
-        //icon : 'fa-cogs'
-      })
-
+       */
       var myKeyHandler = new SPKKeyHandler ( {
         spk: SPK
       })
       //window.SPK = mySPK;
+    },
+    onInstanceChange : function ( data, key ) { 
+      var mymeasures = "";
+      var found = false;
+      for( var i =0; i< data.kvpairs.length && !found; i++ )
+        if( data.kvpairs[i].key === key ) {
+          mymeasures = data.kvpairs[i].values;
+          found = true;
+        }
+      //console.log(mymeasures)
+      var mysplits = mymeasures.split(",");
+      var formattedMeasure = "";
+      for( var i = 0; i < mysplits.length - 1; i++ ) {
+        formattedMeasure += "<div class='measure-group'><h1>" + data.propNames[i] + ":&nbsp&nbsp</h1><p>" + mysplits[i] + "</p></div>";
+      }
+      $("#spk-measures").html(formattedMeasure);
     }
   } )
 

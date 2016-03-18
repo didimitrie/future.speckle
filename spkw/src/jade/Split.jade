@@ -8,17 +8,13 @@ block header
 block content
   #spk-canvas
   #spk-metadata
-    .logo
-      //img(src="http://beta.speckle.xyz/img/SPKLogo.svg")
-      i.fa.fa-angle-double-right
-      p Made with #[a(href="/") Speckle]
     .metadata
       span.name.
         Loading...
       span.author-date.
 
-  #spk-ui-tabs
-  #spk-parameters.sidebar
+  //#spk-ui-tabs
+  #spk-parameters.sidebar.aligner
     //#spk-save-widget
       span.save-config.hint--right(data-hint="Save this instance.")
         i.fa.fa-save
@@ -27,9 +23,9 @@ block content
           input(placeholder="Instance description. Press enter to save.")
         span.save-config.hint--bottom-left(data-hint="Close")
           i.fa.fa-close
-    br
-    br
-  #spk-comments.sidebar.sidebar-hidden
+  #spk-measures.sidebar-right.aligner
+    p Loading...
+  //#spk-comments.sidebar.sidebar-hidden
     //form
       span.hint--bottom(data-hint="To save a configuration, give it a description and hit enter.")
         textarea(placeholder="To save a configuration, give it a description and hit enter." rows=3)

@@ -8,6 +8,14 @@ body {
   height: 100%;
 }
 
+.aligner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+
 .sidebar-hidden {
   left: -100% !important;
   //opacity: 0 !important;
@@ -16,10 +24,10 @@ body {
 .sidebar {
   @include boxshadow-right();
   position: absolute;
-  
-  width: 25%;
+
+  width: 20%;
   height: 100%;
-  left: 3%;
+  left: 0;
   z-index: 2;
   background-color: rgba(255,255,255,1);
   overflow-y: auto;
@@ -31,48 +39,83 @@ body {
     height: 35%;
     bottom: 50px;
     left: 0;
-    
-    background-color: rgba(255, 255, 255, 1);
   }
+}
+
+.sidebar-right {
+  @include boxshadow-right();
+  position: absolute;
+  width: 20%;
+  height: 100%;
+  right: 0;
+  top: 0;
+  z-index: 2;
+  background-color: rgba(255,255,255,1);
 }
 
 #spk-canvas {
   position: absolute;
-  width: 75%; 
-  left: 25%;
+  width: 60%; 
+  left: 20%;
   height: 100%;
   z-index: 1;
-  @include respond-to(800) {   
+}
+
+#spk-measures {
+  
+  .measure-group {
     width: 100%;
-    left:0;
-    height: 70%;
-    bottom: 30%;
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 5px;
+    box-sizing: border-box;
+  }
+
+  h1 {
+    font-size: 18px;
+    display: inline-block;
+    font-weight: 300;
+        line-height: 25px;
+  }
+
+  p {
+    line-height: 25px;
+    display: inline-block;
+    font-style: italic;
+    color: $accentColour;
+    font-weight: 700;
+
   }
 }
 
 #spk-metadata {
   
-  @include boxshadow-right();
-  
+  //@include boxshadow-right();
   position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: #363636;
-  color: white;
-  z-index: 2;
+  bottom:0;
+  left:0;
+  width: 100%;
+  
+  
+  //color: white;
+  z-index: 4;
   float: left;
   overflow: hidden;
   height: 50px;
   line-height: 50px;
-  
+  text-align: center;
+
   a {
-      color: #C2FFF3;
+      //color: #C2FFF3;
   }
   .metadata {
+    @include boxshadow-right();
     display: inline-block;
-    float:left;
+    text-align: center;
+    font-weight: 400;
+    background-color: white;
     padding-right: 10px;
-    font-weight: 700;
+    padding-left: 10px;
 
     .name {
       margin-right: 3px
@@ -123,6 +166,7 @@ body {
   height: 100%;
   z-index: 3;
   background-color: #363636;
+  padding-top: 50px;
   @include boxshadow-right();
 
   @include respond-to(800) {
