@@ -33,6 +33,10 @@ module.exports = function( app, passport, express ) {
     res.sendfile(appDir + "/spkw/dist/html/Multiple.html");
   });
 
+  app.get("/view/3/:m", isAuthorized, function(req, res) {
+    res.sendfile(appDir + "/spkw/dist/html/Split.html");
+  });
+
 } // module.exports end
 
 // this is more a placeholder for future functionality

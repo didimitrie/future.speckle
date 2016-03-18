@@ -105,11 +105,16 @@ var SPKObjectMaker = function() {
 
     myObj.instance = key;
 
-    // TODO : Mesh edges for the colourful meshes
+    var myEdges = new THREE.EdgesHelper( myObj, 0xA1A1A1, 30 );
+    
+    myEdges.removable = true; myEdges.material.transparent = true;
+    
+    myEdges.instance = key;
 
     if( callback != undefined )
 
       callback( myObj );
+      callback( myEdges );
   }
 
 

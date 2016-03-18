@@ -50358,6 +50358,7 @@ var SPK = function ( options ) {
   SPK.init = function( options ) {
 
     SPK.Options = options;
+    SPK.Options.lockCameraOnInstanceChange = false;
 
     // get those elements in place, you cunt
     SPK.HMTL.canvas         = $( "#" + options.canvasid );
@@ -50624,7 +50625,7 @@ var SPK = function ( options ) {
 
     // shadow light
     var light = new THREE.SpotLight( 0xffffff, lightintensity );
-    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*15, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*15, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*15)
+    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*3, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*3, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*5)
     light.target.position.set( SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z );
     light.castShadow = true;
     
@@ -51072,6 +51073,10 @@ var SPKKeyHandler = function( options ) {
           SPKKeyHandler.SPK.SCENE.grid.visible = !SPKKeyHandler.SPK.SCENE.grid.visible;
         break;
 
+        case 108:
+        console.log("LLL")
+          SPKKeyHandler.SPK.Options.lockCameraOnInstanceChange = !SPKKeyHandler.SPK.Options.lockCameraOnInstanceChange; // TODO: add functionality to handle this behaviour (ie, no zoom extents on instance change)
+        break;
       }
 
     })
@@ -51341,11 +51346,16 @@ var SPKObjectMaker = function() {
 
     myObj.instance = key;
 
-    // TODO : Mesh edges for the colourful meshes
+    var myEdges = new THREE.EdgesHelper( myObj, 0xA1A1A1, 30 );
+    
+    myEdges.removable = true; myEdges.material.transparent = true;
+    
+    myEdges.instance = key;
 
     if( callback != undefined )
 
       callback( myObj );
+      callback( myEdges );
   }
 
 
@@ -51494,7 +51504,8 @@ var SPKSliderControl = function ( options ) {
         var currentKey = SPKSliderControl.getCurrentKey();
         SPKSliderControl.SPK.addNewInstance( currentKey, function() { 
           if( ! ( SPKSliderControl.SPK.Options.zoomonchange === false ) )
-            SPKSliderControl.SPK.zoomExtents(); 
+            if(SPKSliderControl.SPK.Options.lockCameraOnInstanceChange === false)
+              SPKSliderControl.SPK.zoomExtents(); 
         } );
         SPKSliderControl.setMeasureSliders( currentKey );
         //SPKSliderControl.SPK.zoomExtents()

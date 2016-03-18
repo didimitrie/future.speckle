@@ -101,7 +101,8 @@ var SPKSliderControl = function ( options ) {
         var currentKey = SPKSliderControl.getCurrentKey();
         SPKSliderControl.SPK.addNewInstance( currentKey, function() { 
           if( ! ( SPKSliderControl.SPK.Options.zoomonchange === false ) )
-            SPKSliderControl.SPK.zoomExtents(); 
+            if(SPKSliderControl.SPK.Options.lockCameraOnInstanceChange === false)
+              SPKSliderControl.SPK.zoomExtents(); 
         } );
         SPKSliderControl.setMeasureSliders( currentKey );
         //SPKSliderControl.SPK.zoomExtents()

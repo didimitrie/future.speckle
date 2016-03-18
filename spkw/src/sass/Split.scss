@@ -1,0 +1,404 @@
+// include these amazing base styles
+@import './includes/app';
+// drop your custom styles down here
+
+body {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.aligner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+
+.sidebar-hidden {
+  left: -100% !important;
+  //opacity: 0 !important;
+}
+
+.sidebar {
+  @include boxshadow-right();
+  position: absolute;
+
+  width: 20%;
+  height: 100%;
+  left: 0;
+  z-index: 2;
+  background-color: rgba(255,255,255,1);
+  overflow-y: auto;
+  opacity: 1;
+  //transition: all 0.4s ease;
+
+  @include respond-to(800) {
+    width: 100%;
+    height: 35%;
+    bottom: 50px;
+    left: 0;
+  }
+}
+
+.sidebar-right {
+  @include boxshadow-right();
+  position: absolute;
+  width: 20%;
+  height: 100%;
+  right: 0;
+  top: 0;
+  z-index: 2;
+  background-color: rgba(255,255,255,1);
+}
+
+#spk-canvas {
+  position: absolute;
+  width: 60%; 
+  left: 20%;
+  height: 100%;
+  z-index: 1;
+}
+
+#spk-measures {
+  
+  .measure-group {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 5px;
+    box-sizing: border-box;
+  }
+
+  h1 {
+    font-size: 18px;
+    display: inline-block;
+    font-weight: 300;
+        line-height: 25px;
+  }
+
+  p {
+    line-height: 25px;
+    display: inline-block;
+    font-style: italic;
+    color: $accentColour;
+    font-weight: 700;
+
+  }
+}
+
+#spk-metadata {
+  
+  //@include boxshadow-right();
+  position: absolute;
+  bottom:0;
+  left:0;
+  width: 100%;
+  
+  
+  //color: white;
+  z-index: 4;
+  float: left;
+  overflow: hidden;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+
+  a {
+      //color: #C2FFF3;
+  }
+  .metadata {
+    @include boxshadow-right();
+    display: inline-block;
+    text-align: center;
+    font-weight: 400;
+    background-color: white;
+    padding-right: 10px;
+    padding-left: 10px;
+
+    .name {
+      margin-right: 3px
+    }
+    .author-date {
+      font-size: 10px;
+      font-weight: 400;
+    }
+  }
+  
+  .logo {
+    font-size: 10px;
+    font-weight: 700;
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+    display: inline-block;
+    float:left;
+    transition: all 0.3s ease;
+    i {
+      width: 50px; height: 50px; display: inline-block; float: left;
+      text-align: center; line-height: 50px;
+    }
+    img {
+      width: 50px;
+      height: 50px;
+      display: inline-block;
+      float:left;
+    }
+  }
+  
+  .logo:hover {
+    width: 140px;
+  }
+
+  @include respond-to(800) {
+    top:0;
+    left:0;
+    width: 100%;
+  }
+}
+
+#spk-ui-tabs {
+  position: absolute;
+  top: 0; 
+  left: 0;
+  width: 3%;
+  height: 100%;
+  z-index: 3;
+  background-color: #363636;
+  padding-top: 50px;
+  @include boxshadow-right();
+
+  @include respond-to(800) {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    display: inline-block;
+    text-align: center;
+  }
+
+  span {
+    width: 100%;
+  }
+  .icon {
+    width: 100%;
+    height: 80px;
+    line-height: 80px;
+    display:inline-block;
+    font-size: 15px;
+    text-align: center;
+    color: white;
+    transition: all 0.3s ease;
+    @include respond-to(800) {
+      width: 80px;
+      height: 50px;
+      line-height: 50px;
+    }
+  }
+  .icon:hover {
+    cursor: pointer;
+  }
+  .icon-active {
+      //color: $hoverColour;
+      background-color: white;
+      color: black;
+      width: 120%;
+      box-shadow: none;
+      @include respond-to(800) {
+        width: 80px;
+      }
+  }
+}
+
+#spk-parameters {
+  
+  #spk-save-widget {
+    width: 100%;
+    display: block;
+    box-sizing: border-box;
+    padding: 10px;
+    line-height: 50px;
+    background-color: white;
+    text-align: center;
+    i {
+      width: 50px;
+    }
+    .save-config {
+      transition: all 0.2s ease;
+    }
+    
+    .save-config:hover {
+      cursor: pointer;
+      color: $hoverColour;
+    }
+
+    form {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 70px;
+      background-color: white;
+      line-height: 70px;
+      transition: all 0.3s ease;
+      .input-hint { width: 80%; }
+      input { width: 100%; }
+    }
+
+    form.closed {
+      top: -150px;
+      transition: all 0.3s ease;
+    }
+
+    @include respond-to(800) {
+    }
+  }
+  .slider-group-title {
+    width: 100%;
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 10px;
+    padding-left: 30px;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 14px;
+  }
+  .parameter {
+    margin-bottom: 30px;
+    float: left;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .parameter:hover {
+    .noUi-tooltip {
+      background-color: $hoverColour;
+      background-color: $hoverColour;
+      border-bottom: 2px solid $hoverColour;
+      color: white;
+    }
+  }
+
+  .parameter_name {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .basic-slider {
+    position: relative;
+    width: 80%;
+    left: 10%;
+  }
+
+  .measure-slider {
+    .noUi-tooltip {
+      border: 0;
+      color: black;
+    }
+  }
+
+  .measure-name {
+    margin-bottom: 40px;
+    font-size: 10px;
+    padding: 0px 15px;
+  }
+}
+
+#spk-comments {
+  padding-top: 30px;
+  form {
+    box-sizing: border-box;
+    padding: 20px;
+    position: relative;
+    width: 80%;
+    left: 10%;
+    span { width: 100%; }
+    textarea {
+      width: 100%;
+      display: inline-block; 
+      height: 100px;
+    }
+  }
+  .instance-element {
+    position: relative;
+    box-sizing: border-box;
+    padding: 20px;
+    width: 80%;
+    left: 10%;
+    border: 2px solid white;
+    transition: all 0.3s ease;
+  }
+
+  .instance-element:hover {
+    //@include boxshadow-right();
+    cursor: pointer;
+    border: 2px solid $accentColour;
+  }
+
+  .instance-element.active {
+    border: 2px solid $hoverColour;
+  }
+  .description {
+    margin: 10px 0px;
+
+  }
+  .spk-saver-half {
+    width: 45%;
+    display: inline-block;
+    float: left;
+    font-size: 10px;
+
+    @include respond-to(450) {
+      width: 100%;
+    }
+
+  }
+  .clear:before,
+  .clear:after {
+      content: " "; /* 1 */
+      display: table; /* 2 */
+  }
+
+  .clear:after {
+      clear: both;
+  }
+}
+
+#spk-help {
+  box-sizing: border-box;
+  padding: 20px;
+  * {
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-size: large;
+  }
+
+  .shortcut { 
+    width: 100%;
+    
+    .half-1, .half-2 {
+      width: 50%;
+      display: inline-block;
+      float: left;
+      height: 40px;
+      line-height: 40px;
+      font-size: 12px;
+    }
+
+    .half-2 {
+      font-weight: 700;
+      font-size: 20px;
+      box-sizing: border-box;
+      //border: 2px solid $hoverColour;
+      color: $hoverColour;
+      text-align: center;
+    }
+
+  }
+}
+

@@ -83,6 +83,7 @@ var SPK = function ( options ) {
   SPK.init = function( options ) {
 
     SPK.Options = options;
+    SPK.Options.lockCameraOnInstanceChange = false;
 
     // get those elements in place, you cunt
     SPK.HMTL.canvas         = $( "#" + options.canvasid );
@@ -349,7 +350,7 @@ var SPK = function ( options ) {
 
     // shadow light
     var light = new THREE.SpotLight( 0xffffff, lightintensity );
-    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*15, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*15, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*15)
+    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*3, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*3, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*5)
     light.target.position.set( SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z );
     light.castShadow = true;
     
