@@ -65,17 +65,19 @@ body {
   
   .measure-group {
     width: 100%;
-    text-align: center;
+    //text-align: center;
     margin-bottom: 10px;
-    padding: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
     box-sizing: border-box;
   }
 
   h1 {
-    font-size: 18px;
+    font-size: 15px;
     display: inline-block;
     font-weight: 300;
-        line-height: 25px;
+    line-height: 25px;
+    width: 50%;
   }
 
   p {
@@ -84,7 +86,8 @@ body {
     font-style: italic;
     color: $accentColour;
     font-weight: 700;
-
+    text-align: right;
+    width: 50%;
   }
 }
 
