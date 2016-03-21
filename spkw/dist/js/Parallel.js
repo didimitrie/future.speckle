@@ -59838,8 +59838,28 @@ var svg = d3.select("#spk-parameters").append("svg")
     var cars = d3.csv.parse( data );
 
     console.log(cars);
+    var colors = d3.scale.category20b(); 
 
+    var colorgen = d3.scale.ordinal()
+    .range(["#a6cee3","#1f78b4","#b2df8a","#33a02c",
+            "#fb9a99","#e31a1c","#fdbf6f","#ff7f00",
+            "#cab2d6","#6a3d9a","#ffff99","#b15928"]);
+    var color = function(d) { return colors(d.group); };
+
+    var pc = d3.parcoords()("#spk-parameters")
+      .data(cars)
+      .hideAxis(["name"])
+      .color(color)
+      .alpha(0.15)
+      .composite("darken")
+      .margin({ top: 24, left: 20, bottom: 12, right: 0 })
+      .mode("queue")
+      //.bundlingStrength(0.2)
+      //.smoothness(0.3)
+      .render()
+      .brushMode("1D-axes");  // enable brushing
    
+   return;
     // Extract the list of dimensions and create a scale for each.
     x.domain(dimensions = d3.keys(cars[0]).filter(function(d) {
       console.log(d);
@@ -59850,11 +59870,11 @@ var svg = d3.select("#spk-parameters").append("svg")
 
     // Add grey background lines for context.
     background = svg.append("g")
-        .attr("class", "background")
+      .attr("class", "background")
       .selectAll("path")
-        .data(cars)
+      .data(cars)
       .enter().append("path")
-        .attr("d", path);
+      .attr("d", path);
 
     // Add blue foreground lines for focus.
     foreground = svg.append("g")
@@ -59888,7 +59908,7 @@ var svg = d3.select("#spk-parameters").append("svg")
             transition(d3.select(this)).attr("transform", "translate(" + x(d) + ")");
             transition(foreground).attr("d", path);
             background
-                .attr("d", path)
+              .attr("d", path)
               .transition()
                 .delay(500)
                 .duration(0)

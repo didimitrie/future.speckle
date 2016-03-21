@@ -1,5 +1,6 @@
 // include these amazing base styles
-@import './includes/app';
+//@import './includes/app';
+@import './includes/external/d3.parcoords';
 // drop your custom styles down here
 
 body {
@@ -9,7 +10,7 @@ body {
 }
 
 .sidebar {
-  @include boxshadow-right();
+  //@include boxshadow-right();
   position: absolute;
   width: 50%;
   min-width: 350px;
@@ -34,49 +35,10 @@ body {
 }
 
 #spk-parameters {
-  
-}
-
-svg {
-  font: 10px sans-serif;
-}
-
-.background path {
-  fill: none;
-  stroke: #ddd;
-
-  opacity: 0.1;
-}
-
-.foreground path {
-  fill: none;
-  stroke: #000000;
-  stroke-width: 2px;
-  opacity: 0.4;
-
-}
-
-.brush .extent {
-  fill-opacity: 1;
-  stroke-opacity: 0;
-  fill: #000000;
-}
-
-.axis line,
-.axis path {
-  fill: none;
-  stroke: black;
-  stroke-width: 1px;
-
-  opacity: 1;
-}
-
-.axis text {
-  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
-  cursor: move;
-  background-color: white;
-}
-.dimension {
-  background-color: white;
+  canvas {
+    position: absolute;
+    top:0;
+    left:0;
+  }
 }
 
