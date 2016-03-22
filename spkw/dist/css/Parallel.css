@@ -47,34 +47,12 @@
   background-color: white; }
 
 body {
-  position: absolute;
-  width: 100%;
-  height: 100%; }
-
-.sidebar {
-  position: absolute;
-  width: 50%;
-  min-width: 350px;
-  height: 100%;
-  left: 0;
-  z-index: 2;
-  background-color: white;
-  overflow: hidden;
-  opacity: 1; }
-
-.sidebar-hidden {
-  left: -100% !important; }
+  position: absolute; }
 
 #spk-canvas {
   position: absolute;
-  width: 50%;
-  left: 50%;
-  height: 100%;
-  z-index: 1; }
-
-#spk-parameters canvas {
-  position: absolute;
-  top: 0;
-  left: 0; }
+  right: 0;
+  width: 150px;
+  height: 150px; }
 
 /*# sourceMappingURL=Parallel.css.map */
