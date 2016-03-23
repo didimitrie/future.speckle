@@ -716,6 +716,57 @@ hr {
 .blue {
   color: #0000FF; }
 
+.parcoords > svg, .parcoords > canvas {
+  font: 10px sans-serif;
+  position: absolute;
+  font-weight: bold;
+  top: 0;
+  left: 0; }
+
+.parcoords > canvas {
+  pointer-events: none; }
+
+.parcoords text.label {
+  cursor: default;
+  stroke: #ff0000;
+  stroke-width: 1px; }
+
+.parcoords rect.background {
+  fill: transparent; }
+
+.parcoords rect.background:hover {
+  fill: rgba(120, 120, 120, 0.2); }
+
+.parcoords .resize rect {
+  fill: rgba(0, 0, 0, 0.1); }
+
+.parcoords rect.extent {
+  fill: rgba(255, 255, 255, 0.25);
+  stroke: rgba(0, 0, 0, 0.6); }
+
+.parcoords .axis line, .parcoords .axis path {
+  fill: none;
+  stroke: #222;
+  shape-rendering: crispEdges; }
+
+.parcoords canvas {
+  opacity: 1;
+  -moz-transition: opacity 0.3s;
+  -webkit-transition: opacity 0.3s;
+  -o-transition: opacity 0.3s; }
+
+.parcoords canvas.faded {
+  opacity: 0.25; }
+
+.parcoords {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-color: white; }
+
 body {
   position: absolute;
   width: 100%;
@@ -725,13 +776,8 @@ body {
   box-shadow: 1px 1px 12px 0px rgba(0, 0, 0, 0.25);
   position: absolute;
   width: 50%;
-  min-width: 350px;
   height: 100%;
-  left: 0;
-  z-index: 2;
-  background-color: white;
-  overflow: hidden;
-  opacity: 1; }
+  z-index: 2; }
 
 .sidebar-hidden {
   left: -100% !important; }
@@ -743,38 +789,36 @@ body {
   height: 100%;
   z-index: 1; }
 
-svg {
-  font: 10px sans-serif; }
+#spk-datagrid {
+  height: 50%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 40px;
+  overflow-y: auto; }
 
-.background path {
-  fill: none;
-  stroke: #ddd;
-  opacity: 0.1; }
+.parcoords > svg, .parcoords > canvas {
+  font-family: "Titillium Web", sans-serif; }
 
-.foreground path {
-  fill: none;
-  stroke: #000000;
-  stroke-width: 2px;
-  opacity: 0.4; }
+.row, .header {
+  clear: left;
+  font-size: 12px;
+  line-height: 18px;
+  height: 18px; }
 
-.brush .extent {
-  fill-opacity: 1;
-  stroke-opacity: 0;
-  fill: #000000; }
+.row:nth-child(odd) {
+  background: rgba(0, 0, 0, 0.05); }
 
-.axis line,
-.axis path {
-  fill: none;
-  stroke: black;
-  stroke-width: 1px;
-  opacity: 1; }
+.header {
+  font-weight: bold; }
 
-.axis text {
-  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
-  cursor: move;
-  background-color: white; }
+.cell {
+  float: left;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 80px;
+  height: 18px; }
 
-.dimension {
-  background-color: white; }
+.col-0 {
+  width: 80px; }
 
 /*# sourceMappingURL=Parallel.css.map */

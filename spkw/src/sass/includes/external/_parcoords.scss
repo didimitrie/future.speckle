@@ -1,6 +1,7 @@
 .parcoords > svg, .parcoords > canvas { 
-  font: 14px sans-serif;
+  font: 10px sans-serif;
   position: absolute;
+  font-weight: bold;
   top:0;
   left:0;
 }
@@ -10,6 +11,8 @@
 
 .parcoords text.label {
   cursor: default;
+  stroke:#ff0000;
+  stroke-width:1px
 }
 
 .parcoords rect.background {

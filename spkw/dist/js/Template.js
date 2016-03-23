@@ -50164,8 +50164,26 @@ var SPK = function ( options ) {
     geometry.dispose();
   }
 
+  // Wrapper and parser
+  
+  SPK.loadParallelInstance = function ( data ) {
+    var instanceKey = "";
+    console.log(SPK.PARAMS.parameters.length);
+    var k = 0;
+    for (var property in data) {
+         if (data.hasOwnProperty(property)) {
+           
+            if(++k <= SPK.PARAMS.parameters.length) instanceKey += data[property] + ",";
+          }
+    }
+//    instanceKey += ".json"
+    console.log(instanceKey);
+    SPK.addNewInstance( instanceKey );
+  }
+
   // Tells file.json > SPKLoader > SPKMaker > objects > adds them to scene
   // Initial opacity is set to 0 so new objs can be fadedIn
+ 
   SPK.loadInstance = function(key, callback) {
 
     SPKLoader.load( SPK.GLOBALS.metadata.rootFiles + key + ".json", function ( obj ) {

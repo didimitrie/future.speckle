@@ -1,5 +1,6 @@
 // include these amazing base styles
 @import './includes/app';
+@import './includes/external/parcoords';
 // drop your custom styles down here
 
 body {
@@ -12,13 +13,8 @@ body {
   @include boxshadow-right();
   position: absolute;
   width: 50%;
-  min-width: 350px;
   height: 100%;
-  left: 0;
   z-index: 2;
-  background-color: rgba(255,255,255,1);
-  overflow: hidden;
-  opacity: 1;
 }
 
 .sidebar-hidden {
@@ -34,49 +30,24 @@ body {
 }
 
 #spk-parameters {
-  
 }
 
-svg {
-  font: 10px sans-serif;
+#spk-datagrid {
+  height: 50%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 40px;
+  overflow-y: auto;
 }
 
-.background path {
-  fill: none;
-  stroke: #ddd;
-
-  opacity: 0.1;
+.parcoords > svg, .parcoords > canvas { 
+  font-family: $fontFamily;
 }
 
-.foreground path {
-  fill: none;
-  stroke: #000000;
-  stroke-width: 2px;
-  opacity: 0.4;
+.row, .header { clear: left; font-size: 12px; line-height: 18px; height: 18px; }
+.row:nth-child(odd) { background: rgba(0,0,0,0.05); }
+.header { font-weight: bold; }
+.cell { float: left; overflow: hidden; white-space: nowrap; width: 80px; height: 18px; }
+.col-0 { width: 80px; }
 
-}
-
-.brush .extent {
-  fill-opacity: 1;
-  stroke-opacity: 0;
-  fill: #000000;
-}
-
-.axis line,
-.axis path {
-  fill: none;
-  stroke: black;
-  stroke-width: 1px;
-
-  opacity: 1;
-}
-
-.axis text {
-  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
-  cursor: move;
-  background-color: white;
-}
-.dimension {
-  background-color: white;
-}
 

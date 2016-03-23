@@ -59,8 +59,8 @@ var SPKSliderControl = function ( options ) {
     for( var i = 0; i < mydata.kvpairs.length; i++ ) {
       d3Data += mydata.kvpairs[ i ].key + mydata.kvpairs[ i ].values.substring( 0, mydata.kvpairs[ i ].values.length - 1 ) + "\n";
     }
-    
-    options.onInitEnd( d3Data );
+
+    options.onInitEnd( d3Data, SPKSliderControl.SPK );
   }
 
 
