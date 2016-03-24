@@ -59808,15 +59808,6 @@ var dod3 = function ( data, SPK ) {
     
     pc.svg.selectAll("text.label").attr("transform", "translate(0,-5) rotate(-25)");
 
-    // make the first grid instance
-    d3.select("#spk-datagrid")
-      .datum( myData.slice(0,100) )
-      .call( grid )
-      .selectAll(".row")
-      .on({
-        // TODO: copy stuff form down below, use same behaviour functions
-      });
-
     var num = $( ".header" ).find( ".cell" ).length;
     $( ".cell" ).width( ( 100 / (num) ) + "%" );
 
