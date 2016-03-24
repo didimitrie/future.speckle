@@ -1,0 +1,56 @@
+extends ./layout/layout.jade
+
+block header
+  // add the custom stylesheet and scripts here
+  link(rel='stylesheet' href="./../css/Split.css")
+  script(src="./../js/Split.js")
+
+block content
+  #spk-canvas
+  #spk-metadata
+    .metadata
+      span.name.
+        Loading...
+      span.author-date.
+
+  //#spk-ui-tabs
+  #spk-parameters.sidebar.aligner
+    //#spk-save-widget
+      span.save-config.hint--right(data-hint="Save this instance.")
+        i.fa.fa-save
+      form#instance-saver-form.closed
+        span.input-hint.hint--bottom(data-hint="To save a configuration, give it a description and hit enter.")
+          input(placeholder="Instance description. Press enter to save.")
+        span.save-config.hint--bottom-left(data-hint="Close")
+          i.fa.fa-close
+  #spk-measures.sidebar-right.aligner
+    p Loading...
+  //#spk-comments.sidebar.sidebar-hidden
+    //form
+      span.hint--bottom(data-hint="To save a configuration, give it a description and hit enter.")
+        textarea(placeholder="To save a configuration, give it a description and hit enter." rows=3)
+    #instance-list
+  #spk-help.sidebar.sidebar-hidden
+    h1 Simple shortcuts to get you through the day:
+    .shortcut
+      .half-1
+        p Zoom All Objects 
+      .half-2
+        p 
+          span.hint--bottom(data-hint="Press Z on your keyboard!") Z
+    .shortcut
+      .half-1
+        p Toggle Ground Shadows
+      .half-2
+        p 
+          span.hint--bottom(data-hint="Press S on your keyboard!") S
+    .shortcut
+      .half-1
+        p Toggle Grid
+      .half-2
+        p 
+          span.hint--bottom(data-hint="Press G on your keyboard!") G
+  
+  
+  
+  

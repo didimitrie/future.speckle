@@ -1,4 +1,5 @@
-future.speckle.sublime-workspace
+*.sublime-workspace
+*.sublime-project
 views/partials/analytics.js
 uploads
 node_modules
@@ -7,7 +8,4 @@ spkw/.srcbackup/
 spkw/node_modules/
 spkw/*.map/
 **/.sass-cache/*
-
-*.log
-
 *.log

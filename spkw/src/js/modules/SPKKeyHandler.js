@@ -31,6 +31,10 @@ var SPKKeyHandler = function( options ) {
           SPKKeyHandler.SPK.SCENE.grid.visible = !SPKKeyHandler.SPK.SCENE.grid.visible;
         break;
 
+        case 108:
+        console.log("LLL")
+          SPKKeyHandler.SPK.Options.lockCameraOnInstanceChange = !SPKKeyHandler.SPK.Options.lockCameraOnInstanceChange; // TODO: add functionality to handle this behaviour (ie, no zoom extents on instance change)
+        break;
       }
 
     })

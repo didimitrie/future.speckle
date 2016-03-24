@@ -83,6 +83,7 @@ var SPK = function ( options ) {
   SPK.init = function( options ) {
 
     SPK.Options = options;
+    SPK.Options.lockCameraOnInstanceChange = false;
 
     // get those elements in place, you cunt
     SPK.HMTL.canvas         = $( "#" + options.canvasid );
@@ -249,8 +250,21 @@ var SPK = function ( options ) {
     geometry.dispose();
   }
 
+  // Wrapper and parser
+  
+  SPK.loadParallelInstance = function ( data ) {
+    var instanceKey = "";
+    var k = 0;
+    for (var property in data) 
+         if (data.hasOwnProperty(property)) 
+            if(++k <= SPK.PARAMS.parameters.length) instanceKey += data[property] + ",";
+
+    SPK.addNewInstance( instanceKey );
+  }
+
   // Tells file.json > SPKLoader > SPKMaker > objects > adds them to scene
   // Initial opacity is set to 0 so new objs can be fadedIn
+ 
   SPK.loadInstance = function(key, callback) {
 
     SPKLoader.load( SPK.GLOBALS.metadata.rootFiles + key + ".json", function ( obj ) {
@@ -349,7 +363,7 @@ var SPK = function ( options ) {
 
     // shadow light
     var light = new THREE.SpotLight( 0xffffff, lightintensity );
-    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*15, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*15, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*15)
+    light.position.set(SPK.GLOBALS.boundingSphere.center.x + SPK.GLOBALS.boundingSphere.radius*3, SPK.GLOBALS.boundingSphere.center.y + SPK.GLOBALS.boundingSphere.radius*3, SPK.GLOBALS.boundingSphere.center.z + SPK.GLOBALS.boundingSphere.radius*5)
     light.target.position.set( SPK.GLOBALS.boundingSphere.center.x, SPK.GLOBALS.boundingSphere.center.y, SPK.GLOBALS.boundingSphere.center.z );
     light.castShadow = true;
     
