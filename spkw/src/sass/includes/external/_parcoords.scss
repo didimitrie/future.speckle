@@ -9,10 +9,13 @@
   pointer-events: none;
 }
 
+.selected {
+  stroke: #0000FF;
+}
+
 .parcoords text.label {
   cursor: default;
-  stroke:#ff0000;
-  stroke-width:1px
+  font: 12px sans-serif;
 }
 
 .parcoords rect.background {
@@ -26,11 +29,13 @@
 }
 .parcoords rect.extent {
   fill: rgba(255,255,255,0.25);
-  stroke: rgba(0,0,0,0.6);
+  stroke: rgba(0,0,255,1);
+  stroke-width: 1.5px;
 }
 .parcoords .axis line, .parcoords .axis path {
   fill: none;
-  stroke: #222;
+  stroke:#000;
+  stroke-width: 1px;
   shape-rendering: crispEdges;
 }
 .parcoords canvas {

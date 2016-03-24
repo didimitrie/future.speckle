@@ -12,9 +12,12 @@ body {
 .sidebar {
   @include boxshadow-right();
   position: absolute;
-  width: 50%;
+  width: 40%;
   height: 100%;
   z-index: 2;
+
+  padding-top: 20px;
+  box-sizing: border-box;
 }
 
 .sidebar-hidden {
@@ -23,8 +26,8 @@ body {
 
 #spk-canvas {
   position: absolute;
-  width: 50%; 
-  left: 50%;
+  width: 60%; 
+  left: 40%;
   height: 100%;
   z-index: 1;
 }
@@ -32,22 +35,112 @@ body {
 #spk-parameters {
 }
 
-#spk-datagrid {
-  height: 50%;
+.grid-wrapper {
+  height: 45%;
   width: 100%;
   box-sizing: border-box;
-  padding: 40px;
-  overflow-y: auto;
+  padding-left: 21px;
+  padding-right: 25px;
+  padding-top: 0px;
+
+  p {
+    margin-top: 20px;
+    font-size: 12px;
+  }
+
+}
+#spk-datagrid {
+  height: 100%;
+  width: 100%;
+  overflow-y: scroll;
+  box-sizing: border-box;
 }
 
 .parcoords > svg, .parcoords > canvas { 
   font-family: $fontFamily;
 }
 
-.row, .header { clear: left; font-size: 12px; line-height: 18px; height: 18px; }
-.row:nth-child(odd) { background: rgba(0,0,0,0.05); }
-.header { font-weight: bold; }
-.cell { float: left; overflow: hidden; white-space: nowrap; width: 80px; height: 18px; }
-.col-0 { width: 80px; }
+
+
+.header { 
+  clear: left; 
+  font-size: 12px; 
+  width: 100%;
+  font-weight: bold; 
+  line-height: 30px; 
+  height: 30px; 
+  display: none;
+}
+
+
+.row {
+  border-bottom: 1px solid #CCCCCC;
+  width: 100%;
+  height: 25px;
+  line-height: 25px;
+  font-size: 12px;
+  transition: all 0.4s ease;
+}
+
+.row:first-child {
+  margin-top: 70px;
+}
+
+.row:hover{ 
+  border-bottom: 1px solid blue;
+  background-color: #F0F0F0;
+  cursor: pointer;
+  color: blue;
+}
+
+.selected-row {
+  color: blue;
+  font-weight: bold;
+  border-bottom: 1px solid blue;
+}
+
+.selected-row:hover{
+  color: blue;
+  font-weight: bold;
+}
+
+.cell { 
+  float: left; overflow: hidden; white-space: nowrap; 
+  height: 25px;
+  text-align: center;
+  box-sizing: border-box;
+  border-left: 0px solid white;
+}
+
+.cell:hover{
+  xxxbackground-color: #E3E3E3;
+}
+.col-0:hover, .col-1:hover, .col-2:hover, .col-3:hover, .col-4:hover, .col-5:hover,
+.col-6:hover, .col-7:hover, .col-8:hover, .col-9:hover, .col-10:hover, .col-11:hover {
+  color: blue;
+}
+
+.column-select {
+  color: blue;
+  //font-weight: bold;
+}
+
+.hoverdimension {
+  //fill: blue;
+  //sstroke: blue;
+  .domain {
+    stroke-width: 1.3px !important;
+    stroke: blue !important;
+  }
+  .label {
+    fill: blue;
+    font-weight: bold;
+  }
+
+  .tick > text {
+    fill: blue;
+  }
+}
+
 
 

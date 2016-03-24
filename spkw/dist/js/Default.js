@@ -50529,16 +50529,11 @@ var SPK = function ( options ) {
   
   SPK.loadParallelInstance = function ( data ) {
     var instanceKey = "";
-    console.log(SPK.PARAMS.parameters.length);
     var k = 0;
-    for (var property in data) {
-         if (data.hasOwnProperty(property)) {
-           
+    for (var property in data) 
+         if (data.hasOwnProperty(property)) 
             if(++k <= SPK.PARAMS.parameters.length) instanceKey += data[property] + ",";
-          }
-    }
-//    instanceKey += ".json"
-    console.log(instanceKey);
+
     SPK.addNewInstance( instanceKey );
   }
 

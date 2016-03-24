@@ -726,10 +726,12 @@ hr {
 .parcoords > canvas {
   pointer-events: none; }
 
+.selected {
+  stroke: #0000FF; }
+
 .parcoords text.label {
   cursor: default;
-  stroke: #ff0000;
-  stroke-width: 1px; }
+  font: 12px sans-serif; }
 
 .parcoords rect.background {
   fill: transparent; }
@@ -742,11 +744,13 @@ hr {
 
 .parcoords rect.extent {
   fill: rgba(255, 255, 255, 0.25);
-  stroke: rgba(0, 0, 0, 0.6); }
+  stroke: blue;
+  stroke-width: 1.5px; }
 
 .parcoords .axis line, .parcoords .axis path {
   fill: none;
-  stroke: #222;
+  stroke: #000;
+  stroke-width: 1px;
   shape-rendering: crispEdges; }
 
 .parcoords canvas {
@@ -775,50 +779,103 @@ body {
 .sidebar {
   box-shadow: 1px 1px 12px 0px rgba(0, 0, 0, 0.25);
   position: absolute;
-  width: 50%;
+  width: 40%;
   height: 100%;
-  z-index: 2; }
+  z-index: 2;
+  padding-top: 20px;
+  box-sizing: border-box; }
 
 .sidebar-hidden {
   left: -100% !important; }
 
 #spk-canvas {
   position: absolute;
-  width: 50%;
-  left: 50%;
+  width: 60%;
+  left: 40%;
   height: 100%;
   z-index: 1; }
 
-#spk-datagrid {
-  height: 50%;
+.grid-wrapper {
+  height: 45%;
   width: 100%;
   box-sizing: border-box;
-  padding: 40px;
-  overflow-y: auto; }
+  padding-left: 21px;
+  padding-right: 25px;
+  padding-top: 0px; }
+  .grid-wrapper p {
+    margin-top: 20px;
+    font-size: 12px; }
+
+#spk-datagrid {
+  height: 100%;
+  width: 100%;
+  overflow-y: scroll;
+  box-sizing: border-box; }
 
 .parcoords > svg, .parcoords > canvas {
   font-family: "Titillium Web", sans-serif; }
 
-.row, .header {
+.header {
   clear: left;
   font-size: 12px;
-  line-height: 18px;
-  height: 18px; }
+  width: 100%;
+  font-weight: bold;
+  line-height: 30px;
+  height: 30px;
+  display: none; }
 
-.row:nth-child(odd) {
-  background: rgba(0, 0, 0, 0.05); }
+.row {
+  border-bottom: 1px solid #CCCCCC;
+  width: 100%;
+  height: 25px;
+  line-height: 25px;
+  font-size: 12px;
+  transition: all 0.4s ease; }
 
-.header {
+.row:first-child {
+  margin-top: 70px; }
+
+.row:hover {
+  border-bottom: 1px solid blue;
+  background-color: #F0F0F0;
+  cursor: pointer;
+  color: blue; }
+
+.selected-row {
+  color: blue;
+  font-weight: bold;
+  border-bottom: 1px solid blue; }
+
+.selected-row:hover {
+  color: blue;
   font-weight: bold; }
 
 .cell {
   float: left;
   overflow: hidden;
   white-space: nowrap;
-  width: 80px;
-  height: 18px; }
+  height: 25px;
+  text-align: center;
+  box-sizing: border-box;
+  border-left: 0px solid white; }
 
-.col-0 {
-  width: 80px; }
+.cell:hover {
+  xxxbackground-color: #E3E3E3; }
+
+.col-0:hover, .col-1:hover, .col-2:hover, .col-3:hover, .col-4:hover, .col-5:hover,
+.col-6:hover, .col-7:hover, .col-8:hover, .col-9:hover, .col-10:hover, .col-11:hover {
+  color: blue; }
+
+.column-select {
+  color: blue; }
+
+.hoverdimension .domain {
+  stroke-width: 1.3px !important;
+  stroke: blue !important; }
+.hoverdimension .label {
+  fill: blue;
+  font-weight: bold; }
+.hoverdimension .tick > text {
+  fill: blue; }
 
 /*# sourceMappingURL=Parallel.css.map */

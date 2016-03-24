@@ -19,6 +19,7 @@ d3.parcoords = function(config) {
     nullValueSeparator: "undefined", // set to "top" or "bottom"
     nullValueSeparatorPadding: { top: 8, right: 0, bottom: 8, left: 0 },
     color: "#069",
+    highlightColor : "#0000FF",
     composite: "source-over",
     alpha: 0.7,
     bundlingStrength: 0.5,
@@ -652,7 +653,7 @@ function path_foreground(d, i) {
 };
 
 function path_highlight(d, i) {
-  ctx.highlight.strokeStyle = d3.functor(__.color)(d, i);
+  ctx.highlight.strokeStyle = d3.functor(__.highlightColor)(d, i);
 	return color_path(d, ctx.highlight);
 };
 pc.clear = function(layer) {
@@ -689,9 +690,10 @@ function rotateLabels() {
   delta = delta < 0 ? -5 : delta;
   delta = delta > 0 ? 5 : delta;
 
+  // DIMHACKS
   __.dimensionTitleRotation += delta;
   pc.svg.selectAll("text.label")
-    .attr("transform", "translate(0,-5) rotate(" + __.dimensionTitleRotation + ")");
+    .attr("transform", "translate(0,-25) rotate(" + __.dimensionTitleRotation + ")");
   d3.event.preventDefault();
 }
 
@@ -721,7 +723,7 @@ pc.createAxes = function() {
       })
     .append("svg:text")
       .attr({
-        "text-anchor": "middle",
+        "text-anchor": "right",
         "y": 0,
         "transform": "translate(0,-5) rotate(" + __.dimensionTitleRotation + ")",
         "x": 0,
@@ -2665,7 +2667,7 @@ d3.divgrid = function(config) {
 
 
 
-  
+
 // Constructor function
 Vector.create = function(elements) {
   var V = new Vector();
