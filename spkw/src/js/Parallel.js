@@ -37,9 +37,6 @@ var dod3 = function ( data, SPK ) {
     
     pc.svg.selectAll("text.label").attr("transform", "translate(0,-5) rotate(-25)");
 
-    var num = $( ".header" ).find( ".cell" ).length;
-    $( ".cell" ).width( ( 100 / (num) ) + "%" );
-
     pc.on( "brush", function( d ) { 
       brushfunction( d );
       SPK.loadParallelInstance(d[0]); 
@@ -71,6 +68,7 @@ var dod3 = function ( data, SPK ) {
         }, "mouseout": pc.unhighlight
       });
       // reinstate widths because we suck
+      var num = $( ".header" ).find( ".cell" ).length;
       $( ".cell" ).width( ( 100 / (num) ) + "%" );
       $( ".cell" ).click( function () {
         $( ".selected-row" ).removeClass( "selected-row" )
