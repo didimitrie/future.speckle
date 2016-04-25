@@ -59775,9 +59775,8 @@ var SPK                 = require('./modules/SPK.js')
 var SPKMeta             = require('./modules/SPKMetaDisplay.js')
 var SPKParallelControl  = require('./modules/SPKParallel.js')
 var SPKCommentsControl  = require('./modules/SPKCommentsControl.js')
-var SPKHelpControl      = require('./modules/SPKHelpControl.js')
 var SPKKeyHandler       = require('./modules/SPKKeyHandler.js')
-var d3                  = require('d3'); window.d3 = d3;
+var d3                  = require('d3'); window.d3 = d3; // this is an ugly hack
 var parcoords           = require('./modules/external/d3.parcoords.js');
 var divgrid             = require('./modules/external/divgrid.js');
 var sylvester           = require('./modules/external/sylvester.js');
@@ -59786,7 +59785,7 @@ var remap = function ( value, from1, to1, from2, to2 ) {
   return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
 }
 
-var dod3 = function ( data, SPK ) {
+var createParallelGraph = function ( data, SPK ) {
     
     $(".parcoords").width( $( ".sidebar" ).innerWidth() - 20 + "px" ); 
     $(".parcoords").height( $( ".sidebar" ).innerHeight() * 0.5 - 20 + "px" ); 
@@ -59797,26 +59796,27 @@ var dod3 = function ( data, SPK ) {
     var pc = d3.parcoords( )( "#spk-parameters" )
                .data( myData )
                .color( "#666666" )
-               .alpha( 0.05 )
+               .alpha( 0.025 )
+               //.smoothness(0.15)
                .mode( "queue" )
-               .margin({ top: 100, left: 20, bottom: 12, right: 20 })
+               .margin({ top: 130, left: 20, bottom: 12, right: 20 })
                .render( )
                .shadows( )
                .createAxes( )
                .reorderable( )
                .brushMode( "1D-axes" );
     
-    pc.svg.selectAll("text.label").attr("transform", "translate(0,-5) rotate(-25)");
+    pc.svg.selectAll("text.label").attr("transform", "translate(0,-5) rotate(-90)");
 
     pc.on( "brush", function( d ) { 
       brushfunction( d );
-      SPK.loadParallelInstance(d[0]); 
+      SPK.loadParallelInstance( d[ 0 ] ); 
     } );
 
     pc.on( "brushend", function( d ) { 
-      $(".selected-row").removeClass("selected-row")
-      //SPK.loadParallelInstance(d[0]); 
-      $($(".row")[0]).addClass("selected-row");
+      $( ".selected-row" ).removeClass( "selected-row" )
+      $( $( ".row" )[ 0 ]).addClass( "selected-row" )
+      SPK.purgeScene( )
     });
 
     var brushfunction = function ( d ) {
@@ -59824,7 +59824,7 @@ var dod3 = function ( data, SPK ) {
         var myopacity = remap( d.length, 100, 1, 0, 1)
         pc.alpha( myopacity );
       } else
-        pc.alpha( 0.1 )
+        pc.alpha( 0.025 )
       
       d3.select("#spk-datagrid")
       .datum( d.slice( 0, 20 ) )
@@ -59843,23 +59843,23 @@ var dod3 = function ( data, SPK ) {
       $( ".cell" ).width( ( 100 / (num) ) + "%" );
       $( ".cell" ).click( function () {
         $( ".selected-row" ).removeClass( "selected-row" )
-        $(this).closest( ".row" ).addClass( "selected-row" )
+        $( this ).closest( ".row" ).addClass( "selected-row" )
       })
 
       // and hover behaviours
       $(".cell").hover( function() {
-        var cls = this.className.split(" ")[0]; 
-        var dimnumber = cls.split("-")[1];
-        $("." + cls ).addClass("column-select");
+        var cls = this.className.split(" ")[ 0 ]; 
+        var dimnumber = cls.split( "-" )[ 1 ];
+        $( "." + cls ).addClass("column-select");
         var mystuff = pc.svg.selectAll("dimension");
-        $(mystuff[ 0 ].parentNode.children[ dimnumber ]).addClass("hoverdimension");
+        $( mystuff[ 0 ].parentNode.children[ dimnumber ] ).addClass( "hoverdimension" );
 
       } , function() {
         var cls = this.className.split(" ")[0];
         var dimnumber = cls.split("-")[1];
-        $("." + cls ).removeClass("column-select")
-         var mystuff = pc.svg.selectAll("dimension");
-        $(mystuff[ 0 ].parentNode.children[ dimnumber ]).removeClass("hoverdimension");
+        $( "." + cls ).removeClass( "column-select" )
+         var mystuff = pc.svg.selectAll( "dimension" );
+        $(mystuff[ 0 ].parentNode.children[ dimnumber ]).removeClass( "hoverdimension" );
       })
 
       var number1 = 0;
@@ -59892,15 +59892,8 @@ $( function () {
         icon : 'fa-sliders',
         data: SPK.PARAMS,
         spk : SPK,
-        onInitEnd : dod3
+        onInitEnd : createParallelGraph
       } );
-
-      var myHelpCtrl = new SPKHelpControl ( {
-        wrapperid : 'spk-help',
-        uitabid : 'spk-ui-tabs',
-        icon : 'fa-info-circle'
-        //icon : 'fa-cogs'
-      })
 
       var myKeyHandler = new SPKKeyHandler ( {
         spk: SPK
@@ -59912,7 +59905,7 @@ $( function () {
 } )
 
 
-},{"./modules/SPK.js":17,"./modules/SPKCommentsControl.js":18,"./modules/SPKHelpControl.js":20,"./modules/SPKKeyHandler.js":21,"./modules/SPKMetaDisplay.js":23,"./modules/SPKParallel.js":25,"./modules/external/d3.parcoords.js":26,"./modules/external/divgrid.js":27,"./modules/external/sylvester.js":28,"d3":1,"jquery":2}],17:[function(require,module,exports){
+},{"./modules/SPK.js":17,"./modules/SPKCommentsControl.js":18,"./modules/SPKKeyHandler.js":20,"./modules/SPKMetaDisplay.js":22,"./modules/SPKParallel.js":24,"./modules/external/d3.parcoords.js":25,"./modules/external/divgrid.js":26,"./modules/external/sylvester.js":27,"d3":1,"jquery":2}],17:[function(require,module,exports){
 /*
  * The MIT License (MIT)
  * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
@@ -60174,7 +60167,10 @@ var SPK = function ( options ) {
          if (data.hasOwnProperty(property)) 
             if(++k <= SPK.PARAMS.parameters.length) instanceKey += data[property] + ",";
 
-    SPK.addNewInstance( instanceKey );
+    if( instanceKey != "") 
+      SPK.addNewInstance( instanceKey );
+    else 
+      console.error("Oups. Bad onbrush event.")
   }
 
   // Tells file.json > SPKLoader > SPKMaker > objects > adds them to scene
@@ -60433,7 +60429,7 @@ var SPK = function ( options ) {
 module.exports = SPK;
 
 
-},{"./SPKConfig.js":19,"./SPKLoader.js":22,"./SPKObjectMaker.js":24,"jquery":2,"nouislider":3,"three":14,"three-orbit-controls":13,"tween.js":15}],18:[function(require,module,exports){
+},{"./SPKConfig.js":19,"./SPKLoader.js":21,"./SPKObjectMaker.js":23,"jquery":2,"nouislider":3,"three":14,"three-orbit-controls":13,"tween.js":15}],18:[function(require,module,exports){
 /*
  * The MIT License (MIT)
  * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
@@ -60659,45 +60655,6 @@ module.exports = new SPKConfig();
  * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
  */
 
-
-var $               = require('jquery');
-var shortid         = require('shortid');
-
-var SPKHelpControl = function ( options ) {
-
-  var SPKHelpControl = this
-  
-  SPKHelpControl.id = shortid.generate()
-  SPKHelpControl.Wrapper = {}
-
-  SPKHelpControl.init = function ( options ) {
-
-    SPKHelpControl.Wrapper = $( "#" + options.wrapperid );
-    $( SPKHelpControl.Wrapper ).attr( "spktabid", SPKHelpControl.id );
-
-    var uitabs = $( "#" + options.uitabid );
-    var icon = "<div class='icon' spkuiid='" + SPKHelpControl.id + "'><span class='hint--right' data-hint='Help and Info'><i class='fa " + options.icon + "'></span></div>";
-    $(uitabs).append(icon);
-
-    $("[spkuiid='"+ SPKHelpControl.id + "']").click( function() {
-      $( "#spk-ui-tabs").find(".icon").removeClass( "icon-active" );
-      $( this ).addClass( "icon-active" );
-      $( ".sidebar" ).addClass( "sidebar-hidden" );
-      $( "[spktabid='"+ SPKHelpControl.id + "']").removeClass( "sidebar-hidden" );
-    } )
-
-  }
-
-  SPKHelpControl.init( options );
-}
-
-module.exports = SPKHelpControl;
-},{"jquery":2,"shortid":4}],21:[function(require,module,exports){
-/*
- * The MIT License (MIT)
- * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
- */
-
 var $               = require('jquery');
 
 var SPKKeyHandler = function( options ) {
@@ -60749,7 +60706,7 @@ var SPKKeyHandler = function( options ) {
 }
 
 module.exports = SPKKeyHandler;
-},{"jquery":2}],22:[function(require,module,exports){
+},{"jquery":2}],21:[function(require,module,exports){
 /*
  * The MIT License (MIT)
  * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
@@ -60868,7 +60825,7 @@ var SPKLoader = function () {
 }
 
 module.exports = new SPKLoader();
-},{"three":14}],23:[function(require,module,exports){
+},{"three":14}],22:[function(require,module,exports){
 /*
  * The MIT License (MIT)
  * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
@@ -60891,7 +60848,7 @@ var SPKMetaDisplay = function ( options ) {
 }
 
 module.exports = SPKMetaDisplay;
-},{"jquery":2}],24:[function(require,module,exports){
+},{"jquery":2}],23:[function(require,module,exports){
 /*
  * The MIT License (MIT)
  * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
@@ -61053,7 +61010,7 @@ var SPKObjectMaker = function() {
 }
 
 module.exports = new SPKObjectMaker();
-},{"three":14}],25:[function(require,module,exports){
+},{"three":14}],24:[function(require,module,exports){
 /*
  * The MIT License (MIT)
  * Copyright (c) 2016 Dimitrie Andrei Stefanescu & University College London (UCL)
@@ -61133,7 +61090,7 @@ var SPKSliderControl = function ( options ) {
 }
 
 module.exports = SPKSliderControl;
-},{"jquery":2,"nouislider":3,"shortid":4}],26:[function(require,module,exports){
+},{"jquery":2,"nouislider":3,"shortid":4}],25:[function(require,module,exports){
 // ATTN: Modified to include the vector part of Sylvester.js
 // 
 
@@ -61143,7 +61100,7 @@ d3.parcoords = function(config) {
     data: [],
     highlighted: [],
     dimensions: {},
-    dimensionTitleRotation: 0,
+    dimensionTitleRotation: 90,
     brushed: false,
     brushedColor: null,
     alphaOnBrushed: 0.0,
@@ -61155,7 +61112,7 @@ d3.parcoords = function(config) {
     nullValueSeparator: "undefined", // set to "top" or "bottom"
     nullValueSeparatorPadding: { top: 8, right: 0, bottom: 8, left: 0 },
     color: "#069",
-    highlightColor : "#0000FF",
+    highlightColor : "#08BAA8",
     composite: "source-over",
     alpha: 0.7,
     bundlingStrength: 0.5,
@@ -61829,7 +61786,7 @@ function rotateLabels() {
   // DIMHACKS
   __.dimensionTitleRotation += delta;
   pc.svg.selectAll("text.label")
-    .attr("transform", "translate(0,-25) rotate(" + __.dimensionTitleRotation + ")");
+    .attr("transform", "translate(0,-45) rotate(" + __.dimensionTitleRotation + ")");
   d3.event.preventDefault();
 }
 
@@ -63833,7 +63790,7 @@ Vector.Zero = function(n) {
 // Utility functions
 var $V = Vector.create;
 
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 // http://bl.ocks.org/3687826
 d3.divgrid = function(config) {
   var columns = [];
@@ -63894,7 +63851,7 @@ d3.divgrid = function(config) {
   return dg;
 };
 
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 // === Sylvester ===
 // Vector and Matrix mathematics modules for JavaScript
 // Copyright (c) 2007 James Coglan
