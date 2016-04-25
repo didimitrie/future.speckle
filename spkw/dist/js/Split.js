@@ -50545,7 +50545,10 @@ var SPK = function ( options ) {
          if (data.hasOwnProperty(property)) 
             if(++k <= SPK.PARAMS.parameters.length) instanceKey += data[property] + ",";
 
-    SPK.addNewInstance( instanceKey );
+    if( instanceKey != "") 
+      SPK.addNewInstance( instanceKey );
+    else 
+      console.error("Oups. Bad onbrush event.")
   }
 
   // Tells file.json > SPKLoader > SPKMaker > objects > adds them to scene

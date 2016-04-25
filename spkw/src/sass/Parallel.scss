@@ -12,10 +12,10 @@ body {
 .sidebar {
   @include boxshadow-right();
   position: absolute;
-  width: 40%;
+  width: 60%;
   height: 100%;
   z-index: 2;
-
+  background-color: white;
   padding-top: 20px;
   box-sizing: border-box;
 }
@@ -26,8 +26,8 @@ body {
 
 #spk-canvas {
   position: absolute;
-  width: 60%; 
-  left: 40%;
+  width: 40%; 
+  left: 60%;
   height: 100%;
   z-index: 1;
 }

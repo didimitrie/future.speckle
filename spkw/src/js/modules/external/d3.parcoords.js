@@ -7,7 +7,7 @@ d3.parcoords = function(config) {
     data: [],
     highlighted: [],
     dimensions: {},
-    dimensionTitleRotation: 0,
+    dimensionTitleRotation: 90,
     brushed: false,
     brushedColor: null,
     alphaOnBrushed: 0.0,
@@ -19,7 +19,7 @@ d3.parcoords = function(config) {
     nullValueSeparator: "undefined", // set to "top" or "bottom"
     nullValueSeparatorPadding: { top: 8, right: 0, bottom: 8, left: 0 },
     color: "#069",
-    highlightColor : "#0000FF",
+    highlightColor : "#08BAA8",
     composite: "source-over",
     alpha: 0.7,
     bundlingStrength: 0.5,
@@ -693,7 +693,7 @@ function rotateLabels() {
   // DIMHACKS
   __.dimensionTitleRotation += delta;
   pc.svg.selectAll("text.label")
-    .attr("transform", "translate(0,-25) rotate(" + __.dimensionTitleRotation + ")");
+    .attr("transform", "translate(0,-45) rotate(" + __.dimensionTitleRotation + ")");
   d3.event.preventDefault();
 }
 
