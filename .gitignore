@@ -7,7 +7,7 @@ config.deploy
 spkw/.srcbackup/
 spkw/node_modules/
 spkw/*.map/
-spkw/dist/
-.sass-cache/
+spkw/dist/*
+**/.sass-cache
 **/.sass-cache/*
 *.log

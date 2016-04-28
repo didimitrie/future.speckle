@@ -6,6 +6,7 @@
   "dependencies": {
     "bcrypt-nodejs": "latest",
     "body-parser": "^1.0.2",
+    "compression": "^1.6.1",
     "connect-flash": "~0.1.1",
     "cookie-parser": "~1.0.0",
     "decompress-zip": "^0.2.0",
@@ -16,23 +17,21 @@
     "mongoose": "~3.8.1",
     "morgan": "~1.0.0",
     "multer": "^1.1.0",
-    "node-sass": "^3.4.2",
     "node-sass-middleware": "^0.9.7",
-    "nodemon": "^1.8.1",
+    "nodemon": "1.2.1",
     "passport": "^0.1.18",
     "passport-auth0": "^0.5.0",
     "rimraf": "^2.5.0",
     "serve-favicon": "^2.3.0",
     "shortid": "^2.2.4"
   },
-  "devDependencies": {
-    "node-sass": "^3.4.2"
-  },
   "scripts": {
-    "watch-sass": "sass --watch spkw/src/sass/:spkw/dist/css/",
+    "watch-sass-spkw": "sass --watch spkw/src/sass/:spkw/dist/css/",
+    "watch-sass-serv": "sass --watch assets/scss/:assets/css/",
     "watch-jade": "jade --watch spkw/src/jade/*.jade -o spkw/dist/html/",
-    "build-js": "browserify spkw/src/js/Default.js -o spkw/dist/js/Default.js & browserify spkw/src/js/Parallel.js -o spkw/dist/js/Parallel.js & browserify spkw/src/js/Split.js -o spkw/dist/js/Split.js & browserify spkw/src/js/Template.js -o spkw/dist/js/Template.js & browserify spkw/src/js/Multiple.js -o spkw/dist/js/Multiple.js",
-    "watch-js": "nodemon -e js -w spkw/src/js -x 'npm run build-js'",
-    "watch": "npm run watch-sass & npm run watch-jade & npm run watch-js & nodemon server.js --ignore 'uploads/' --ignore 'spkw/' "
+    "build-js": "browserify spkw/src/js/Default.js -o spkw/dist/js/Default.js & browserify spkw/src/js/Parallel.js -o spkw/dist/js/Parallel.js & browserify spkw/src/js/Split.js -o spkw/dist/js/Split.js & browserify spkw/src/js/Template.js -o spkw/dist/js/Template.js & browserify spkw/src/js/Multiple.js -o spkw/dist/js/Multiple.js & browserify spkw/src/js/DefaultNewLoader.js -o spkw/dist/js/DefaultNewLoader.js",
+    "watch-js": "nodemon -V -e js --watch spkw/src/js -x 'npm run build-js'",
+    "watch-server": "nodemon -V --watch server.js --watch app --watch config",
+    "watch": "npm run watch-sass-spkw & npm run watch-sass-serv & npm run watch-jade & npm run watch-js & npm run watch-server"
   }
 }

@@ -35,6 +35,11 @@ var SPKKeyHandler = function( options ) {
         console.log("LLL")
           SPKKeyHandler.SPK.Options.lockCameraOnInstanceChange = !SPKKeyHandler.SPK.Options.lockCameraOnInstanceChange; // TODO: add functionality to handle this behaviour (ie, no zoom extents on instance change)
         break;
+
+        case 116:
+          console.info("attempting a screenshot");
+          SPKKeyHandler.SPK.takesScreenshot = true;
+        break;
       }
 
     })

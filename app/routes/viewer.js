@@ -40,6 +40,10 @@ module.exports = function( app, passport, express ) {
   app.get("/view/p/:m", isAuthorized, function(req, res) {
     res.sendfile(appDir + "/spkw/dist/html/Parallel.html");
   });
+  
+  app.get("/view/a/:m", isAuthorized, function(req, res) {
+    res.sendfile(appDir + "/spkw/dist/html/DefaultNewLoader.html");
+  });
 
 } // module.exports end
 

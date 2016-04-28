@@ -59989,7 +59989,8 @@ var SPK = function ( options ) {
    */
   
   SPK.init = function( options ) {
-
+    console.log("hello");
+   
     SPK.Options = options;
     SPK.Options.lockCameraOnInstanceChange = false;
 
@@ -60157,9 +60158,8 @@ var SPK = function ( options ) {
     SPK.GLOBALS.boundingSphere = geometry.boundingSphere;
     geometry.dispose();
   }
-
-  // Wrapper and parser
   
+  // used by the parallel coordinates interface
   SPK.loadParallelInstance = function ( data ) {
     var instanceKey = "";
     var k = 0;
@@ -60646,6 +60646,7 @@ var SPKConfig = function () {
   SPKConfig.GEOMAPI    = location.origin + "/api/model/";
   SPKConfig.METAAPI    = location.origin + "/api/model/metadata/";
   SPKConfig.INSTAPI    = location.origin + "/api/model/instances/"; 
+  
 }
 
 module.exports = new SPKConfig();
@@ -60686,6 +60687,11 @@ var SPKKeyHandler = function( options ) {
         case 108:
         console.log("LLL")
           SPKKeyHandler.SPK.Options.lockCameraOnInstanceChange = !SPKKeyHandler.SPK.Options.lockCameraOnInstanceChange; // TODO: add functionality to handle this behaviour (ie, no zoom extents on instance change)
+        break;
+
+        case 116:
+          console.info("attempting a screenshot");
+          SPKKeyHandler.SPK.takesScreenshot = true;
         break;
       }
 
@@ -60874,7 +60880,7 @@ var SPKObjectMaker = function() {
 
     if( data.SPKLType === 'SPKL_Mesh' ) 
 
-      SPKObjectMaker.makeMesh( data, key, callback);
+      SPKObjectMaker.makeMesh( data.geometry, key, callback);
 
     else
     
@@ -60893,6 +60899,35 @@ var SPKObjectMaker = function() {
     if( data.SPKLType === 'SPKL_Point' )
 
       SPKObjectMaker.makePoint( data, key, callback );
+
+    else {}
+
+      //console.warn( "ERR_MAKE: Unidentified type encountered: " + data.SPKLType );
+  }
+
+  SPKObjectMaker.makeNL = function( data, key, callback) {
+
+    if( data.SPKLType === 'SPKL_Mesh' ) 
+
+      SPKObjectMaker.makeMesh( data.geometry, key, callback);
+
+    else
+    
+    if( data.SPKLType === 'SPKL_ColorMesh' ) 
+    
+      SPKObjectMaker.makeColorMesh( data.geometry, data.vertexColors, key, callback );
+    
+    else 
+
+    if( data.SPKLType === 'SPKL_Polyline' )
+
+      SPKObjectMaker.makePolyline( data.geometry, key, callback );
+
+    else 
+
+    if( data.SPKLType === 'SPKL_Point' )
+
+      SPKObjectMaker.makePoint( data.geometry, key, callback );
 
     else {}
 
@@ -60931,15 +60966,15 @@ var SPKObjectMaker = function() {
     callback( myEdges );
   }
 
-  SPKObjectMaker.makeColorMesh = function( data, key, callback ) {
+  SPKObjectMaker.makeColorMesh = function( data, vertexColors, key, callback ) {
     
     for( var i=0 ; i < data.faces.length ; i++ ) {
       
-      data.faces[i].vertexColors.push( new THREE.Color( data.vertexColors[data.faces[i].a] ) )
+      data.faces[i].vertexColors.push( new THREE.Color( vertexColors[data.faces[i].a] ) )
       
-      data.faces[i].vertexColors.push( new THREE.Color( data.vertexColors[data.faces[i].b] ) )
+      data.faces[i].vertexColors.push( new THREE.Color( vertexColors[data.faces[i].b] ) )
       
-      data.faces[i].vertexColors.push( new THREE.Color( data.vertexColors[data.faces[i].c] ) )  
+      data.faces[i].vertexColors.push( new THREE.Color( vertexColors[data.faces[i].c] ) )  
     }
 
     var material = new THREE.MeshBasicMaterial({vertexColors: THREE.VertexColors});

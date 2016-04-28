@@ -16,11 +16,9 @@ var SPKLoader       = require('./SPKLoader.js');
 var SPKMaker        = require('./SPKObjectMaker.js');
 var SPKConfig       = require('./SPKConfig.js');
 
-var SPK = function ( options ) {
+var events = require('./SPKPubSub.js');
 
-  /*************************************************
-  /   SPK Global
-  *************************************************/
+var SPK = function ( options ) {
   
   var SPK = this;
   
@@ -72,17 +70,15 @@ var SPK = function ( options ) {
     shadowlight : null,
     shadows : true
   }
+
+  SPK.takesScreenshot = false;
+
   /*************************************************
   /   SPK Methods
   *************************************************/
   
-  /**
-   * Main Init Function
-   */
-  
   SPK.init = function( options ) {
-    console.log("hello");
-   
+
     SPK.Options = options;
     SPK.Options.lockCameraOnInstanceChange = false;
 
@@ -100,37 +96,31 @@ var SPK = function ( options ) {
     
     SPK.VIEWER.scene = new THREE.Scene();
     
+    
     // load parameters && go!
     
-    SPK.getModelMeta( function () {
-
-      SPK.loadParameters( function ( firstKey ) {
-
-        SPK.addNewInstance( firstKey, function () {
-
-          SPK.loadStaticInstance();
+    SPK.getModelInfo( function () {
+      SPK.getModelMetadata( function ( defaultKey ) {
+        SPK.loadInstance( defaultKey, function () {
+         
           SPK.setupEnvironment();
           SPK.render(); 
           SPK.zoomExtents();
-
-          if( options.onInitEnd !== undefined ) options.onInitEnd( SPK )
-
+          
+          if( options.onInitEnd !== undefined ) 
+            options.onInitEnd( SPK )
         });      
       });
     });
-
+  
   }
 
-  SPK.getModelMeta = function(callback) {
+  SPK.getModelInfo = function(callback) {
 
-    $.getJSON(SPKConfig.GEOMAPI + SPK.GLOBALS.model, function (data) {
-      
+    $.getJSON( SPKConfig.GEOMAPI + SPK.GLOBALS.model, function (data) {
       SPK.META = data;
-
       data.deflateLocation = data.deflateLocation.replace("./", "/");
-      
-      SPK.GLOBALS.metadata.paramsFile = SPKConfig.APPDIR + data.deflateLocation + "/params.json"
-      SPK.GLOBALS.metadata.staticGeoFile = SPKConfig.APPDIR + data.deflateLocation + "/static.json"
+      SPK.GLOBALS.metadata.paramsFile = SPKConfig.APPDIR + data.deflateLocation + "/metadata"
       SPK.GLOBALS.metadata.rootFiles = SPKConfig.APPDIR + data.deflateLocation + "/";
 
       if( callback !== undefined ) callback();
@@ -138,21 +128,125 @@ var SPK = function ( options ) {
 
   }
 
-  // Loads the parameters file and passen on to call back the first key to load
-  // Used only in init
-  SPK.loadParameters = function(callback) {
+  SPK.getModelMetadata = function( callback ) {
 
-    $.getJSON( SPK.GLOBALS.metadata.paramsFile, function(data) {
+    $.getJSON( SPK.GLOBALS.metadata.paramsFile, function( data ) {
       SPK.PARAMS = data;
-      callback( data.kvpairs[0].key );
+      callback( data.kvpairs[0] );
     });
 
   }
 
+  SPK.addNewInstance = function( key, callback ) { // TODO: only for compatibility reasons, should be cleaned up
+    var notfound = true;
+    for( var i = 0; i < SPK.PARAMS.kvpairs.length && notfound; i++) {
+      if( SPK.PARAMS.kvpairs[ i ].key == key ) {
+        found = true;
+        SPK.loadInstance( SPK.PARAMS.kvpairs[ i ] );
+      }
+    }
+  }
+
+  SPK.findKvpByKey = function ( key ) {
+    for (var i = SPK.PARAMS.kvpairs.length - 1; i >= 0; i--) {
+      if(SPK.PARAMS.kvpairs[i].key === key) return SPK.PARAMS.kvpairs[i];
+    }
+    return null;
+  }
+
+  SPK.sceneDiff = function ( scene1, scene2 ) {
+
+  }
+
+  SPK.loadInstance = function( kvp, callback ) {
+    SPK.GLOBALS.oldKey = SPK.GLOBALS.currentKey;
+    SPK.GLOBALS.currentKey = kvp.key;
+    
+    var a = kvp.geometries; var oldkvp = SPK.findKvpByKey( SPK.GLOBALS.oldKey );
+    var left = [], right = [], both = [];
+    var geomsToLoad = kvp.geometries;
+
+    // DIFF between scene objects
+    if( oldkvp != null ) {
+      var b = oldkvp.geometries;
+      
+      a.sort( function( a, b ) { return a - b } ); // fuck this
+      b.sort( function( a, b ) { return a - b } );
+      var left = [], right = [], both = [];
+
+      var i = 0, j = 0;
+      while (i < a.length && j < b.length) {
+          if (a[i] < b[j]) {
+              left.push(a[i]);
+              ++i;
+          } else if (b[j] < a[i]) {
+              right.push(b[j]);
+              ++j;
+          } else {
+              both.push(a[i]);
+              ++i; ++j;
+          }
+      }
+      while (i < a.length) {
+          left.push(a[i]);
+          ++i;
+      }
+      while (j < b.length) {
+          right.push(b[j]);
+          ++j;
+      }      
+
+      var out = [];
+
+      for(var k = 0; k < SPK.VIEWER.scene.children.length; k++ )
+        if( ( SPK.VIEWER.scene.children[ k ].removable ) && ( $.inArray( SPK.VIEWER.scene.children[ k ].spkId, right ) !== -1))
+          out.push(SPK.VIEWER.scene.children[ k ]);
+
+      SPK.fadeOut( out );
+      geomsToLoad = left;
+    }
+    
+    var geometryLoader = new THREE.JSONLoader();
+    var results = [];
+
+    for( var i = 0; i <  geomsToLoad.length; i++ ) {
+      
+      ( function( geomid, results ) {      
+        var async = $.getJSON( SPK.GLOBALS.metadata.rootFiles + geomsToLoad[ i ], function ( data ) {
+          
+          var myg = geometryLoader.parse( data );
+          myg.SPKLType = data.type;
+
+          if( data.hasOwnProperty( "vertexColors" ) ) 
+            myg.vertexColors = data.vertexColors;
+
+          if( data.hasOwnProperty( "isClosed" ) )
+            myg.isClosed = data.isClosed;
+
+          SPKMaker.makeNL( myg, kvp.key, function ( threeObj ) {
+            // woot
+            threeObj.layer = data.parentGuid;
+            threeObj.spkId = geomid; 
+            threeObj.instanceName = kvp.key;
+
+            SPK.VIEWER.scene.add( threeObj );
+            SPK.fadeIn( [ threeObj ] );
+          });   
+        }); 
+        results.push( async );
+      } ) ( geomsToLoad[ i ], results );
+    } // end for
+
+    $.when.apply(this, results).done(function() {
+        SPK.computeBoundingSphere();
+        if( callback != null ) 
+          callback();
+    });
+  
+  }
 
   SPK.fadeIn = function ( objects ) {
-      var duration = 300, opacity = 0.95;
-      
+      var duration = 420, opacity = 0.6; // TODO: SPK.Global props, check w/h material props
       var tweenIn = new TWEEN.Tween( { x : 0 } )
       .to( { x: opacity }, duration )
       .onUpdate( function() {
@@ -162,13 +256,10 @@ var SPK = function ( options ) {
       })
 
       tweenIn.start();
-
   }
 
   SPK.fadeOut = function ( objects ) {
-
-    var opacity = 0.95, duration = 300;
-    
+    var opacity = 0.6, duration = 420; // TODO: SPK.Global props, check w/h material props
     var tweenOut = new TWEEN.Tween( { x: opacity } )
     .to( {x: 0}, duration )
     .onUpdate( function() {
@@ -182,138 +273,7 @@ var SPK = function ( options ) {
         objects[ i ].material.dispose();
       }
     } );
-
     tweenOut.start();
-
-  }
-
-  SPK.purgeScene = function() {
-    
-    // theoretically should do nothing; but we do have cases when we have overlapping instances
-    // due to "quickness" of slider drag, and the way we handle object loading. yoop. 
-
-    var out = [];
-    
-    for(var i = 0; i < SPK.VIEWER.scene.children.length; i++ ) {
-      var myObj = SPK.VIEWER.scene.children[i];
-      if( (myObj.removable) && (myObj.instance != SPK.GLOBALS.currentKey) )
-          out.push(myObj);
-    }
-
-    SPK.fadeOut( out )
-  }
-
-  // 
-  SPK.addNewInstance = function( key, callback ) {
-
-    if(SPK.GLOBALS.currentKey === key) 
-      return;
-    
-    SPK.GLOBALS.currentKey = key;
-    SPK.purgeScene();
-
-    SPK.loadInstance( key, function() {
-
-      var iin = [];
-      for(var i = 0; i < SPK.VIEWER.scene.children.length; i++ ) {
-        
-        var myObj = SPK.VIEWER.scene.children[i];
-        
-        if( myObj.removable && ( myObj.instance === SPK.GLOBALS.currentKey ) ) 
-          iin.push(myObj);
-
-      }
-
-      SPK.fadeIn( iin );
-
-      if( callback !== undefined ) callback();
-      if( SPK.Options.onInstanceChange !== undefined) SPK.Options.onInstanceChange( SPK.PARAMS, key);
-
-    });
-
-  }
-
-  SPK.computeBoundingSphere = function() {
-
-    var geometry = new THREE.Geometry();
-    
-    for(var i = 0; i < SPK.VIEWER.scene.children.length; i++) {
-      //console.log( SPK.VIEWER.scene.children[i] );
-      if(SPK.VIEWER.scene.children[i].selectable && SPK.VIEWER.scene.children[i].instance === SPK.GLOBALS.currentKey) {
-        
-        geometry.merge(SPK.VIEWER.scene.children[i].geometry);
-      
-      }
-    }
-
-    geometry.computeBoundingSphere();
-    SPK.GLOBALS.boundingSphere = geometry.boundingSphere;
-    geometry.dispose();
-  }
-  
-  // used by the parallel coordinates interface
-  SPK.loadParallelInstance = function ( data ) {
-    var instanceKey = "";
-    var k = 0;
-    for (var property in data) 
-         if (data.hasOwnProperty(property)) 
-            if(++k <= SPK.PARAMS.parameters.length) instanceKey += data[property] + ",";
-
-    if( instanceKey != "") 
-      SPK.addNewInstance( instanceKey );
-    else 
-      console.error("Oups. Bad onbrush event.")
-  }
-
-  // Tells file.json > SPKLoader > SPKMaker > objects > adds them to scene
-  // Initial opacity is set to 0 so new objs can be fadedIn
- 
-  SPK.loadInstance = function(key, callback) {
-
-    SPKLoader.load( SPK.GLOBALS.metadata.rootFiles + key + ".json", function ( obj ) {
-
-      for( var i = 0; i < obj.geometries.length; i++ ) {
-
-        SPKMaker.make( obj.geometries[i], key, function( obj ) { 
-          
-          SPK.VIEWER.scene.add(obj);
-
-        });
-
-      }
-
-      SPK.computeBoundingSphere();
-
-      if( callback != undefined )
-
-        callback();
-
-    });
-
-  }
-
-  SPK.loadStaticInstance = function() {
-
-    SPKLoader.load( SPK.GLOBALS.metadata.staticGeoFile, function( obj ) {
-
-      for( var i = 0; i < obj.geometries.length; i++ ) {
-
-        SPKMaker.make(obj.geometries[i], "static", function( obj ) { 
-          
-          // TODO : Make unremovable
-          
-          obj.removable = false;
-
-          obj.material.opacity = 1;
-          
-          SPK.VIEWER.scene.add(obj);
-          
-        });
-
-      }
-
-    });
-
   }
 
   SPK.render = function() {
@@ -324,7 +284,35 @@ var SPK = function ( options ) {
 
     SPK.VIEWER.renderer.render(SPK.VIEWER.scene, SPK.VIEWER.camera);
 
+    if( SPK.takesScreenshot ) {
+      SPK.takesScreenshot = false;
+      var img = SPK.VIEWER.renderer.domElement.toDataURL();
+      console.log( img ); 
+      var image = new Image();
+      image.src = img;
+      var w = window.open("");
+      w.document.write(image.outerHTML) 
+    }
+
   }
+
+  SPK.computeBoundingSphere = function() {
+    var geometry = new THREE.Geometry();
+    for(var i = 0; i < SPK.VIEWER.scene.children.length; i++) {
+      //console.log( SPK.VIEWER.scene.children[i] );
+      if(SPK.VIEWER.scene.children[i].selectable && SPK.VIEWER.scene.children[i].instance === SPK.GLOBALS.currentKey) {
+        geometry.merge(SPK.VIEWER.scene.children[i].geometry);
+      }
+    }
+
+    geometry.computeBoundingSphere();
+    SPK.GLOBALS.boundingSphere = geometry.boundingSphere;
+    geometry.dispose();
+  }
+
+  /*************************************************
+  /   CONTEXT AND ENVIRONMENT
+  *************************************************/
 
   SPK.setupEnvironment = function () {
     // TODO: Grids, etc.
@@ -338,7 +326,7 @@ var SPK = function ( options ) {
     if( typeof SPK.Options.lightintensity !== 'undefined' || SPK.Options.lightintensity !== null )
       lightintensity = SPK.Options.lightintensity;
 
-    SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : true, alpha: true} );
+    SPK.VIEWER.renderer = new THREE.WebGLRenderer( { antialias : true, alpha: true, } );
 
     SPK.VIEWER.renderer.setClearColor( 0xF2F2F2 ); 
 
@@ -355,13 +343,14 @@ var SPK = function ( options ) {
     //SPK.VIEWER.camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, - 500, 1000 );
     
     SPK.VIEWER.camera.position.z = -SPK.GLOBALS.boundingSphere.radius*1.8; 
+    //SPK.VIEWER.camera.position.z = -30; 
 
     SPK.VIEWER.camera.position.y = SPK.GLOBALS.boundingSphere.radius*1.8;
+    //SPK.VIEWER.camera.position.y = 30;
     
     SPK.VIEWER.controls = new OrbitCtrls( SPK.VIEWER.camera, SPK.VIEWER.renderer.domElement );
 
     SPK.VIEWER.controls.addEventListener( 'change', function () {
-
     });
 
     // shadow light
@@ -423,13 +412,12 @@ var SPK = function ( options ) {
 
     SPK.VIEWER.scene.add( plane );
     SPK.SCENE.plane = plane;
-
-    if(SPK.GLOBALS.boundingSphere.radius === 0) {
+    
+    if(SPK.GLOBALS.boundingSphere.radius === 0) 
+    {
       console.error("ERR: Failed to calculate bounding sphere. This is a known bug and it happens when there's no valid geometry in the scene.");
-      //$(".model-name").append(
-      $(SPK.HMTL.sliders).html(
-      "<br><p style='color: red'>Failed to load model. <strong>Check the console for details (if you feel like a hacker), and send a shout over to <a href='mailto:contact@dimitrie.org?subject=Model " + SPK.GLOBALS.model + " failed to load'>contact@dimitrie.org.</a> so we can look into it. Thanks!</p>")
-    } else {
+    } 
+    else {
       grid = new THREE.GridHelper( SPK.GLOBALS.boundingSphere.radius * multiplier, SPK.GLOBALS.boundingSphere.radius*multiplier/30);
       grid.material.opacity = 0.15;
       grid.material.transparent = true;
@@ -438,9 +426,8 @@ var SPK = function ( options ) {
       SPK.VIEWER.scene.add( grid );
       SPK.SCENE.grid = grid;
    }
-
+  
   }
-
 
   /*************************************************
   /   SPK CAMERA FUNC
@@ -483,10 +470,6 @@ var SPK = function ( options ) {
       SPK.VIEWER.controls.update();
      }).easing(TWEEN.Easing.Quadratic.InOut).start();
   }
-
-  /*************************************************
-  /   SPK CAMERA FUNC
-  *************************************************/
   
   SPK.zoomExtents = function () {
     var r = SPK.GLOBALS.boundingSphere.radius;
@@ -502,13 +485,7 @@ var SPK = function ( options ) {
     futureLocation.rotation = SPK.VIEWER.controls.object.rotation.clone();
     futureLocation.controlCenter = SPK.GLOBALS.boundingSphere.center.clone();
     SPK.setCameraTween(JSON.stringify(futureLocation));
-    
   }  
-
-  SPK.beep = function () {
-    return "boop"; // THE MOST AMAZING FUNCTION 3V3R
-  }
-
 
   /*************************************************
   /   SPK INIT

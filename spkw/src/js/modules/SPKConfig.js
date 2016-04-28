@@ -16,6 +16,7 @@ var SPKConfig = function () {
   SPKConfig.GEOMAPI    = location.origin + "/api/model/";
   SPKConfig.METAAPI    = location.origin + "/api/model/metadata/";
   SPKConfig.INSTAPI    = location.origin + "/api/model/instances/"; 
+  
 }
 
 module.exports = new SPKConfig();
