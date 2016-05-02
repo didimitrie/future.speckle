@@ -1,5 +1,4 @@
 # [Beta.Speckle](http://beta.speckle.xyz)
-*[namechange under public consideration](https://github.com/didimitrie/future.speckle/issues/12)*
 
 ## About 
 Beta.Speckle is an online parametric model viewer. It enables sharing with your clients/stakeholders/community flexible designs, not just static artefacts. 
