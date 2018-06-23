@@ -18,9 +18,9 @@
     "jquery": "^2.2.0",
     "nodemon": "^1.8.1",
     "normalize-scss": "^4.0.3",
-    "nouislider": "github:leongersen/noUiSlider",
+    "nouislider": "^8.5.1",
     "shortid": "^2.2.4",
-    "three": "^0.73.2",
+    "three": "^0.93.0",
     "three-orbit-controls": "^72.0.0",
     "tween.js": "^16.3.4",
     "wolfy87-eventemitter": "^4.3.0"

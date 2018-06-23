@@ -13,6 +13,10 @@ var sessionSchema = mongoose.Schema({
   mouseclicks: [ {
     location: { },
     timestamp: { type: Date, default: Date.now }
+  }],
+  mousetraces: [ {
+    location: { },
+    timestamp: { type: Date, default: Date.now }
   }]
 });
 

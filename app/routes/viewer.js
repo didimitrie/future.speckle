@@ -41,6 +41,10 @@ module.exports = function( app, passport, express ) {
     res.sendfile(appDir + "/spkw/dist/html/Parallel.html");
   });
 
+  app.get("/view/study/:m", isAuthorized, function(req, res) {
+    res.sendfile(appDir + "/spkw/dist/html/DefaultSingapore.html");
+  });
+
 } // module.exports end
 
 // this is more a placeholder for future functionality

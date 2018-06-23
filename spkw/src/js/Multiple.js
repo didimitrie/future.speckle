@@ -7,16 +7,34 @@ var SPKCommentsControl  = require('./modules/SPKCommentsControl.js')
 var SPKHelpControl      = require('./modules/SPKHelpControl.js')
 var keyhandler          = require('./modules/SPKMultipleKeyHandler.js')
 var camsync             = require('./modules/SPKCameraSync.js')
+var SPKLogger = require( './modules/SPKLogger.js' )
+
+window.submitSelection = function ( arg ) {
+//    console.log( window.Logger.sessionid + " >>> https://survey.engagingmobility.com/index.php/357942?newtest=Y&lang=en&DSEID=1234567890" )
+//    new link: 
+//    https://survey.engagingmobility.com/index.php/357942?newtest=Y&lang=en&DSEID=1234567890
+    if( arg ) {
+      window.Logger.addUsedInstance( arg )
+    }
+    location.assign( "https://survey.engagingmobility.com/index.php/357942?newtest=Y&lang=en&DSEID=" + window.Logger.sessionid )
+}
 
 
 $( function () {
+  
+  window.Logger = SPKLogger
+
+  SPKLogger.newSession( window.location.href.substr( window.location.href.lastIndexOf( '/' ) + 1 ) )
+  // SPKLogger.newSession( href.substr( window.location.href.lastIndexOf( '/' ) + 1 ) )
 
   var myFirstSPK  = new SPK( 
   {
     canvasid : 'spk-canvas-1', 
     zoomonchange : false,
-    camerafov : 10,
-    lightintensity: 0.9,
+    camerafov : 40,
+    lightintensity: 0.4,
+    grid: true,
+    clearColor: '#666666',
     onInitEnd : function ( SPK ) {
 
       keyhandler.register( SPK );
@@ -33,24 +51,20 @@ $( function () {
         icon : 'fa-sliders',
         data: SPK.PARAMS, 
         showmeasures: false,
-        spk : SPK
-      } );
-    },
-    onInstanceChange : function ( data, key ) { 
-      var mymeasures = "";
-      var found = false;
-      for( var i =0; i< data.kvpairs.length && !found; i++ )
-        if( data.kvpairs[i].key === key ) {
-          mymeasures = data.kvpairs[i].values;
-          found = true;
+        spk : SPK,
+        logger: SPKLogger,
+        selectButton: {
+          text: 'Select Version A',
+          id: 'VERSION-A'
         }
-      //console.log(mymeasures)
-      var mysplits = mymeasures.split(",");
-      var formattedMeasure = "";
-      for( var i = 0; i < mysplits.length - 1; i++ ) {
-        formattedMeasure += "<strong>" + data.propNames[i] + ": </strong>" + mysplits[i] + " ";
-      }
-      $("#spk-measures-1").html(formattedMeasure);
+      } );
+
+      // setInterval( mouseTrajectory, 500 )
+
+      // function mouseTrajectory( ) {
+      //   SPKLogger.addMouseTrace( )
+      // }
+
     }
   } )
 
@@ -58,8 +72,10 @@ $( function () {
   {
     canvasid : 'spk-canvas-2', 
     zoomonchange : false,
-    camerafov : 10,
-    lightintensity: 0.9,
+    camerafov : 40,
+    lightintensity: 0.4,
+    grid: true,
+    clearColor: '#666666',
     onInitEnd : function ( SPK ) { 
 
       keyhandler.register( SPK );
@@ -71,29 +87,16 @@ $( function () {
         icon : 'fa-sliders',
         data: SPK.PARAMS, 
         showmeasures: false,
-        spk : SPK
+        spk : SPK,
+        logger: SPKLogger,
+        selectButton: {
+          text: 'Select Version B',
+          id: 'VERSION-B'
+        }
       } );
       
       keyhandler.init({
-        shadows: false,
-        grid: true
       });
-    },
-    onInstanceChange : function ( data, key ) { 
-      var mymeasures = "";
-      var found = false;
-      for( var i =0; i< data.kvpairs.length && !found; i++ )
-        if( data.kvpairs[i].key === key ) {
-          mymeasures = data.kvpairs[i].values;
-          found = true;
-        }
-      //console.log(mymeasures)
-      var mysplits = mymeasures.split(",");
-      var formattedMeasure = "";
-      for( var i = 0; i < mysplits.length - 1; i++ ) {
-        formattedMeasure += "<strong>" + data.propNames[i] + ": </strong>" + mysplits[i] + " ";
-      }
-      $("#spk-measures-2").html(formattedMeasure);
     }
   })
 

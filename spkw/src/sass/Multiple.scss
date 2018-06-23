@@ -1,7 +1,6 @@
 // include these amazing base styles
 @import './includes/app';
 // drop your custom styles down here
-
 body {
   position: absolute;
   width: 100%;
@@ -14,34 +13,92 @@ body {
   float: left;
   width: 50%;
   height: 100%;
+  box-shadow: 0px 0px 42px 0px rgba(0, 0, 0, 0.05);
+  transition: all .6s ease;
+  z-index: 10;
 }
+
+.half:hover{
+  box-shadow: 0px 0px 42px 0px rgba(0, 0, 0, 0.35);
+  z-index: 100;
+}
+.top-header{ 
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  text-align: center;
+  background-color: #E6E6E6;
+  z-index: 100000;
+  font-size: 12px;
+  box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.35);
+}
+
+.super-button {
+  color: #FFF;
+  background-color: #CCCCCC; 
+  padding: 20px;
+  margin: auto;
+  width: 100%;
+  opacity: 0.42;
+  transition: all .3s ease;
+}
+
+
+
+.half:hover .super-button {
+  background-color: #0000FF;
+  // opacity: 0.6;
+}
+.super-button:hover{
+  background-color: #0000FF;
+  opacity: 1;
+}
+
 .half:first-of-type {
-  box-sizing: border-box;
-  border-right: 1px solid gray;
+  // box-sizing: border-box;
+  // border-right: 2px solid white;
+}
+
+.mid-bar {
+  // position: absolute;
+  // width: 1px;
+  // height: 150%;
+  // top: -25%;
+  // left: 49%;
+  // background-color: #808080;
+  // z-index: 1000;
+
+  // -webkit-box-shadow: 0px 0px 32px 0px rgba(0, 0, 0, 0.15);
+  // -moz-box-shadow: 0px 0px 32px 0px rgba(0, 0, 0, 0.15);
+  // box-shadow: 0px 0px 32px 0px rgba(0, 0, 0, 0.15);
 }
 
 .spk-canvas {
   position: absolute;
-  width: 100%; 
-  height: 70%;
-  left:0;
-  bottom:30%;
-  
+  width: 100%;
+  height: 60%;
+  left: 0;
+  top: 0%;
+
   z-index: 1;
-  @include respond-to(800) {   
-    
-  }
+  // box-shadow: 0px 0px 52px 0px rgba(0, 0, 0, 0.15);
+  @include respond-to(800) {}
 }
 
 .params {
   position: absolute;
   bottom: 0;
   width: 100%;
-  height: 30%;
-  z-index: 2;
+  height: 40%;
   overflow-y: auto;
-  background-color: white;
-  
+  background-color: #E6E6E6;
+  // background-color: #F2F2F2;
+  box-shadow: 0px 0px 52px 0px rgba(0, 0, 0, 0.05);
+  transition: all .3s ease;
+  z-index: 1002;
+
   .slider-group-title {
     width: 100%;
     display: inline-block;
@@ -101,7 +158,12 @@ body {
   }
 }
 
-.measures{
+.params:hover{
+  box-shadow: 0px 0px 32px 0px rgba(0, 0, 0, 0.15);
+  z-index: 1020;
+}
+
+.measures {
   @include boxshadow-right();
   position: absolute;
   top: 30px;
@@ -112,13 +174,12 @@ body {
   line-height: 30px;
   font-size: 12px;
   text-align: center;
-
 }
 
 #spk-metadata {
-  
+
   @include boxshadow-right();
-  
+
   position: absolute;
   top: 20px;
   right: 20px;
@@ -129,13 +190,13 @@ body {
   overflow: hidden;
   height: 30px;
   line-height: 30px;
-  
+
   a {
-      color: #C2FFF3;
+    color: #C2FFF3;
   }
   .metadata {
     display: inline-block;
-    float:left;
+    float: left;
     padding-right: 10px;
     font-weight: 700;
 
@@ -147,7 +208,7 @@ body {
       font-weight: 400;
     }
   }
-  
+
   .logo {
     font-size: 10px;
     font-weight: 700;
@@ -155,28 +216,31 @@ body {
     height: 30px;
     overflow: hidden;
     display: inline-block;
-    float:left;
+    float: left;
     transition: all 0.3s ease;
     i {
-      width: 30px; height: 30px; display: inline-block; float: left;
-      text-align: center; line-height: 30px;
+      width: 30px;
+      height: 30px;
+      display: inline-block;
+      float: left;
+      text-align: center;
+      line-height: 30px;
     }
     img {
       width: 30px;
       height: 30px;
       display: inline-block;
-      float:left;
+      float: left;
     }
   }
-  
+
   .logo:hover {
     width: 140px;
   }
 
   @include respond-to(3000) {
-    top:0;
-    left:0;
+    top: 0;
+    left: 0;
     width: 100%;
   }
 }
-

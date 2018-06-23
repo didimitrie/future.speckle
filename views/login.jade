@@ -13,22 +13,31 @@ block content
         .col-sm-6.col-sm-offset-3.text-center
           #root.text-center(style='width: 320px; margin: 40px auto; padding: 10px;')
           
-          script(src='https://cdn.auth0.com/js/lock-8.2.min.js')
+          script(src='https://cdn.auth0.com/js/lock/11.3.1/lock.min.js')
           
           script.
-            var lock = new Auth0Lock('#{authdata.clientId}', '#{authdata.domain}');
-            lock.show({
-            container: 'root'
-            , primaryColor: "#0000FF"
-            , icon: "#{authdata.baseUrl}/img/SPKLogo.svg"
-            , callbackURL: '#{authdata.baseUrl}/callback'
-            , responseType: 'code'
-            , authParams: {
-              scope: 'openid profile'
-            }
+            var lock = new Auth0Lock('#{authdata.clientId}', '#{authdata.domain}', {
+              auth: {
+                redirectUrl: '#{authdata.baseUrl}/callback',
+                responseType: 'code',
+                params: {
+                   scope: 'openid profile' // Learn about scopes: https://auth0.com/docs/scopes
+                 }
+              }
             });
-            var options = {
-              disableSignupAction: false,
-              disableResetAction: false
-            };
+            lock.show()
+            //- lock.show({
+            //- container: 'root'
+            //- , primaryColor: "#0000FF"
+            //- , icon: "#{authdata.baseUrl}/img/SPKLogo.svg"
+            //- , callbackURL: '#{authdata.baseUrl}/callback'
+            //- , responseType: 'code'
+            //- , authParams: {
+            //-   scope: 'openid profile'
+            //- }
+            //- });
+            //- var options = {
+            //-   disableSignupAction: false,
+            //-   disableResetAction: false
+            //- };
 

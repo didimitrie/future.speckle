@@ -21,12 +21,17 @@ var SPKSliderControl = function ( options ) {
   SPKSliderControl.Sliders = [];
   SPKSliderControl.MeasureSliders = []; 
 
+  SPKSliderControl.Logger = options.logger
+
   SPKSliderControl.init = function ( options ) {
 
     SPKSliderControl.Options = options;
     SPKSliderControl.Wrapper = $( "#" + options.wrapperid );
     SPKSliderControl.SPK = options.spk;
     SPKSliderControl.Data = options.data;
+    SPKSliderControl.Logger = options.logger
+
+    console.log( options  )
 
     $( SPKSliderControl.Wrapper ).attr( "spktabid", SPKSliderControl.id );
 
@@ -44,6 +49,10 @@ var SPKSliderControl = function ( options ) {
 
     SPKSliderControl.makeSliders( options.data.parameters );
     
+    if( options.selectButton )  {
+      $( SPKSliderControl.Wrapper ).append("<button class='super-button' onclick='window.submitSelection(`" + options.selectButton.id + "`)'>" + options.selectButton.text + "</button>")
+    }
+
     if( options.showmeasures === true ) 
       SPKSliderControl.makeMeasureSliders( options.data.properties );
   }
@@ -173,6 +182,12 @@ var SPKSliderControl = function ( options ) {
     for( var i = 0; i < SPKSliderControl.Sliders.length; i++ ) {
       key += Number( SPKSliderControl.Sliders[i].get() ).toString() + ","; 
     }
+    if( SPKSliderControl.Options.selectButton )  { 
+      SPKSliderControl.Logger.addUsedInstance( SPKSliderControl.Options.selectButton.id + ':' + key )
+    } else
+      SPKSliderControl.Logger.addUsedInstance( key )
+    //  add logger log
+
     return key;
   }
 

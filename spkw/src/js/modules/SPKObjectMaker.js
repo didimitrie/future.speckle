@@ -8,9 +8,9 @@
   Makes THREE objects from THREE geometry, adding some sugar in between
  */
 
-var THREE = require('three');
+var THREE = require( 'three' );
 
-var SPKObjectMaker = function() {
+var SPKObjectMaker = function( ) {
 
   // scope scope scope
   var SPKObjectMaker = this;
@@ -18,34 +18,34 @@ var SPKObjectMaker = function() {
   /**
    * CENTRAL DISTRIBUTION UNIT
    */
-  
-  SPKObjectMaker.make = function( data, key, callback) {
 
-    if( data.SPKLType === 'SPKL_Mesh' ) 
+  SPKObjectMaker.make = function( data, key, callback ) {
 
-      SPKObjectMaker.makeMesh( data, key, callback);
+    if ( data.SPKLType === 'SPKL_Mesh' )
+
+      SPKObjectMaker.makeMesh( data, key, callback );
 
     else
-    
-    if( data.SPKLType === 'SPKL_ColorMesh' ) 
-    
-      SPKObjectMaker.makeColorMesh( data, key, callback );
-    
-    else 
 
-    if( data.SPKLType === 'SPKL_Polyline' )
+    if ( data.SPKLType === 'SPKL_ColorMesh' )
+
+      SPKObjectMaker.makeColorMesh( data, key, callback );
+
+    else
+
+    if ( data.SPKLType === 'SPKL_Polyline' )
 
       SPKObjectMaker.makePolyline( data, key, callback );
 
-    else 
+    else
 
-    if( data.SPKLType === 'SPKL_Point' )
+    if ( data.SPKLType === 'SPKL_Point' )
 
       SPKObjectMaker.makePoint( data, key, callback );
 
     else {}
 
-      //console.warn( "ERR_MAKE: Unidentified type encountered: " + data.SPKLType );
+    //console.warn( "ERR_MAKE: Unidentified type encountered: " + data.SPKLType );
   }
 
   /**
@@ -54,25 +54,32 @@ var SPKObjectMaker = function() {
 
   SPKObjectMaker.makeMesh = function( data, key, callback ) {
 
-    var material = new THREE.MeshPhongMaterial( { color: 0xBABABA, specular: 0xD1ECFF, shininess: 10, shading: THREE.FlatShading } );
-    //var material = new THREE.MeshNormalMaterial();
-    
-    material.side = THREE.DoubleSide; material.transparent = true; material.opacity = 0;
+    var material = new THREE.MeshPhongMaterial( { color: 0xCCCCCC, specular: 0xD1ECFF, shininess: 10, shading: THREE.FlatShading } );
+    //var material = new THREE.MeshNormalMaterial();#CCCCCC; #BABABA
 
-    var myObj = new THREE.Mesh(data, material);
-    
-    myObj.castShadow = true; myObj.receiveShadow = true;
+    material.side = THREE.DoubleSide;
+    material.transparent = true;
+    material.opacity = 0;
+    // console.log( data )
+    // console.log( material )
+    var myObj = new THREE.Mesh( data, material );
 
-    myObj.geometry.computeFaceNormals(); myObj.geometry.computeVertexNormals();
+    myObj.castShadow = true;
+    myObj.receiveShadow = true;
 
-    myObj.selectable = true; myObj.removable = true; 
+    myObj.geometry.computeFaceNormals( );
+    myObj.geometry.computeVertexNormals( );
+
+    myObj.selectable = true;
+    myObj.removable = true;
 
     myObj.instance = key;
 
     var myEdges = new THREE.EdgesHelper( myObj, 0xA1A1A1, 30 );
-    
-    myEdges.removable = true; myEdges.material.transparent = true;
-    
+
+    myEdges.removable = true;
+    myEdges.material.transparent = true;
+
     myEdges.instance = key;
 
     // am not sure this is a good way to deal with two objs
@@ -81,81 +88,86 @@ var SPKObjectMaker = function() {
   }
 
   SPKObjectMaker.makeColorMesh = function( data, key, callback ) {
-    
-    for( var i=0 ; i < data.faces.length ; i++ ) {
-      
-      data.faces[i].vertexColors.push( new THREE.Color( data.vertexColors[data.faces[i].a] ) )
-      
-      data.faces[i].vertexColors.push( new THREE.Color( data.vertexColors[data.faces[i].b] ) )
-      
-      data.faces[i].vertexColors.push( new THREE.Color( data.vertexColors[data.faces[i].c] ) )  
+    for ( var i = 0; i < data.faces.length; i++ ) {
+
+      data.faces[ i ].vertexColors.push( new THREE.Color( data.vertexColors[ data.faces[ i ].a ] ) )
+
+      data.faces[ i ].vertexColors.push( new THREE.Color( data.vertexColors[ data.faces[ i ].b ] ) )
+
+      data.faces[ i ].vertexColors.push( new THREE.Color( data.vertexColors[ data.faces[ i ].c ] ) )
     }
 
-    var material = new THREE.MeshBasicMaterial({vertexColors: THREE.VertexColors});
-
-    material.side = 2; material.transparent = true; 
+    // var material = new THREE.MeshPhongMaterial( { vertexColors: THREE.VertexColors } );
+    //var material = new THREE.MeshPhongMaterial( { color: 0xcccccc, transparent: false, opacity: 1, specular: 0xD1ECFF, shininess: 10, shading: THREE.FlatShading } );
+    var material = new THREE.MeshPhongMaterial( { color: 0xBABABA, specular: 0xD1ECFF, shininess: 10, shading: THREE.FlatShading } );
+    
+    // material.side = 2;
+    material.transparent = false;
 
     var myObj = new THREE.Mesh( data, material );
 
-    myObj.castShadow = true; myObj.receiveShadow = true;
+    myObj.castShadow = true;
+    myObj.receiveShadow = true;
 
-    myObj.geometry.computeFaceNormals(); myObj.geometry.computeVertexNormals();
+    myObj.geometry.computeFaceNormals( );
+    myObj.geometry.computeVertexNormals( );
 
-    myObj.selectable = true; myObj.removable = true; 
+    myObj.selectable = true;
+    myObj.removable = true;
 
     myObj.instance = key;
 
-    var myEdges = new THREE.EdgesHelper( myObj, 0xA1A1A1, 30 );
-    
-    myEdges.removable = true; myEdges.material.transparent = true;
-    
+    var myEdges = new THREE.EdgesHelper( myObj, 0x1E2023, 45 );
+    myEdges.removable = true;
+    // myEdges.material.transparent = true;
     myEdges.instance = key;
 
-    if( callback != undefined )
-
-      callback( myObj );
-      callback( myEdges );
+    callback( myObj );
+    callback( myEdges );
   }
 
 
   SPKObjectMaker.makePolyline = function( data, key, callback ) {
 
-    var material = new THREE.LineBasicMaterial( { color : 0x97C3FF } ); //#
-    
+    var material = new THREE.LineBasicMaterial( { color: 0x97C3FF } ); //#
+
     material.transparent = true;
 
-    if( data.isClosed ) 
-    
-      data.vertices.push( data.vertices[0] );
+    if ( data.isClosed )
 
-    var myObj = new THREE.Line(data, material);
-    
-    myObj.removable = true; myObj.selectable = true; myObj.instance = key;
+      data.vertices.push( data.vertices[ 0 ] );
 
-    if( callback != undefined )
+    var myObj = new THREE.Line( data, material );
 
+    myObj.removable = true;
+    myObj.selectable = true;
+    myObj.instance = key;
+
+    if ( callback != undefined )
       callback( myObj );
   }
 
 
   SPKObjectMaker.makePoint = function( data, key, callback ) {
 
-    var material = new THREE.PointsMaterial( { color : 0x0000FF, size : 1 } );
-    
+    var material = new THREE.PointsMaterial( { color: 0x0000FF, size: 1 } );
+
     material.transparent = true;
 
-    var myObj = new THREE.Points(data, material);
-    
-    myObj.removable = true; myObj.selectable = true; myObj.instance = key;
+    var myObj = new THREE.Points( data, material );
 
-    if( callback != undefined ) 
+    myObj.removable = true;
+    myObj.selectable = true;
+    myObj.instance = key;
+
+    if ( callback != undefined )
 
       callback( myObj );
   }
 
-  SPKObjectMaker.makeNamedViews = function() {
+  SPKObjectMaker.makeNamedViews = function( ) {
     // TODO
   }
 }
 
-module.exports = new SPKObjectMaker();
+module.exports = new SPKObjectMaker( );

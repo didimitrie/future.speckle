@@ -1,0 +1,48 @@
+extends ./layout/layout.jade
+
+block header
+  // add the custom stylesheet and scripts here
+  link(rel='stylesheet' href="./../css/DefaultSingapore.css")
+  script(src="./../js/DefaultSingapore.js")
+
+block content
+  #spk-canvas
+  #spk-parameters.sidebar
+    br
+    br
+    br
+    h1.ideas-link #[a(href="https://ideasfortanjongpagar.com/") Ideas for Tanjong Pagar]
+    br
+    br
+    #spk-parameters2
+    br
+    br
+    div.submit-button
+      p Click here to submit your selection:
+      br
+      br
+      button.super-button(onclick='window.submitSelection()') submit
+  #spk-help.sidebar.sidebar-hidden
+    h1 Simple shortcuts to get you through the day:
+    .shortcut
+      .half-1
+        p Zoom All Objects 
+      .half-2
+        p 
+          span.hint--bottom(data-hint="Press Z on your keyboard!") Z
+    .shortcut
+      .half-1
+        p Toggle Ground Shadows
+      .half-2
+        p 
+          span.hint--bottom(data-hint="Press S on your keyboard!") S
+    .shortcut
+      .half-1
+        p Toggle Grid
+      .half-2
+        p 
+          span.hint--bottom(data-hint="Press G on your keyboard!") G
+  
+  
+  
+  

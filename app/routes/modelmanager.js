@@ -43,6 +43,7 @@ var upload          = multer( { storage: storage} ).single('userModel');
 module.exports = function( app, passport, express ) { 
   
   app.get( "/profile", isLoggedIn, function( req, res ){
+    console.log('gettinf profile!!!!')
     Model.findOwnerModels( req.user.id, function( err, models ){
       res.render( "profile.jade", {
         data : {
@@ -127,7 +128,8 @@ function getName ( req ) {
 }
 
 function isLoggedIn( req, res, next ) {
-  if(req.isAuthenticated()) {
+  console.log( 'failing here?' )
+  if( req.isAuthenticated() ) {
     User.findOne( {auth0id : req.user.id}, function( err, user ){
       if(err) res.redirect("/");
       req.myUser = user;

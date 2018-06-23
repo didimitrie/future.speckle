@@ -30,7 +30,7 @@ var SPKLogger = function () {
     $.post(SPKConfig.METAAPI, sendData, function (sessionid) {
 
       SPKLogger.sessionid = sessionid;
-
+      SPKLogger.updateScreenSize()
     });
     
   }
@@ -58,7 +58,11 @@ var SPKLogger = function () {
   }
 
   SPKLogger.addUsedInstance = function(key) {
-    
+    console.log( key )
+    console.log( "hello" )
+    console.log( key )
+    console.log( "hello" )
+    var x  = 12;
     var sendData = {
       sessionid : SPKLogger.sessionid,
       type : "addInstance",
@@ -74,6 +78,18 @@ var SPKLogger = function () {
     var sendData = {
       sessionid : SPKLogger.sessionid,
       type : "addMouseClick",
+      mouseloc : {x: SPKLogger.mx, y: SPKLogger.my}
+    }
+
+    SPKLogger.postUpdate(sendData);
+
+  }
+
+  SPKLogger.addMouseTrace = function(mouseposition) {
+    
+    var sendData = {
+      sessionid : SPKLogger.sessionid,
+      type : "addMouseTrace",
       mouseloc : {x: SPKLogger.mx, y: SPKLogger.my}
     }
 

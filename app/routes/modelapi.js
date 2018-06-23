@@ -58,6 +58,10 @@ module.exports = function( app, passport, express ) {
       
       case "addMouseClick":
         Session.findByIdAndUpdate( sessionid, { $push : { "mouseclicks" : { location: req.body.mouseloc}}}, { safe: true }, cb);
+      break 
+           
+      case "addMouseTrace":
+        Session.findByIdAndUpdate( sessionid, { $push : { "mousetraces" : { location: req.body.mouseloc}}}, { safe: true }, cb);
       break
 
       case "sessionend":

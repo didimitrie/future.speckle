@@ -8,7 +8,16 @@ var strategy = new Auth0Strategy({
     clientSecret:  AuthDetails.clientSecret,
     callbackURL:   '/callback'
 }, function(accessToken, refreshToken, extraParams, profile, done) {
-    return done(null, profile);
+    console.log('from the strategy:')
+    console.log( accessToken  )
+    console.log('------------------------------------')
+    console.log( refreshToken  )
+    console.log('------------------------------------')
+    console.log( extraParams  )
+    console.log('------------------------------------')
+    console.log( profile  )
+    console.log('------------------------------------')
+    return done( null, profile);
 });
 
 passport.use(strategy);

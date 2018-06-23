@@ -1,5 +1,6 @@
 var express         = require('express');
 var app             = express();
+var compression     = require('compression');
 var port            = process.env.PORT || 9009;
 var mongoose        = require('mongoose');
 var passport        = require('passport');
@@ -29,6 +30,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(bodyParser());
+app.use(compression());
 
 app.set('view engine', 'jade'); 
 
